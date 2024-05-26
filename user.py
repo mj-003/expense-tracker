@@ -9,16 +9,16 @@ class User:
     def register(self, database):
         try:
             database.add_user(self.username, self.password)
-            # messagebox.showinfo("Success", "Registration successful")
+            messagebox.showinfo("Success", "Registration successful")
             print("Registration successful")
         except ValueError as e:
-            # messagebox.showerror("Failed", str(e))
+            messagebox.showerror("Failed", str(e))
             print("Registration failed")
 
     def login(self, database):
         if database.get_user(self.username, self.password):
             return True
         else:
-            # messagebox.showerror("Error", "Invalid username or password")
+            messagebox.showerror("Error", "Invalid username or password")
             print("Invalid username or password")
             return False

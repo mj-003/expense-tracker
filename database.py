@@ -92,8 +92,8 @@ class Database:
         ''', (category_id,))
 
 
-if __name__ == '__main__':
-    db = Database()
-    db.add_user('user1', 'password1')
+# if __name__ == '__main__':
+#     db = Database()
+#     db.add_user('user1', 'password1')
 
 
