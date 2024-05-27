@@ -98,6 +98,13 @@ class Database:
             DELETE FROM categories WHERE id = ?
         ''', (category_id,))
 
+    # for tests
+    def get_columns(self):
+        self.cursor.execute("PRAGMA table_info(expenses)")
+        columns = self.cursor.fetchall()
+        column_names = [column[1] for column in columns]
+        return column_names
+
 
 
 

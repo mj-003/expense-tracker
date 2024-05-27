@@ -12,7 +12,9 @@ class LoginPage(CTkFrame):
 
         self.app = app
         self.parent = parent
-        self.database = database
+        self.database = Database('expenses.db')
+        print("______")
+        print(self.database.get_columns())
 
         self.user = None
         self.username_entry = None

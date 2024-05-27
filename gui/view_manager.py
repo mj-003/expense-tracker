@@ -7,6 +7,7 @@ from gui.add_expense import ExpensePage
 from gui.login_page import LoginPage
 from gui import const
 from user import User
+from database import Database
 
 
 class App(CTk):
@@ -28,10 +29,11 @@ class App(CTk):
         self.LoginPage = LoginPage
 
         self.user = None
+        self.database = Database('expenses.db')
         # self.define_and_pack_frames()
 
         # show login page
-        self.LoginPage = LoginPage(self.container, self, const.DATABASE)
+        self.LoginPage = LoginPage(self.container, self, self.database)
         self.LoginPage.grid(row=0, column=0, sticky="nsew")
         self.LoginPage.tkraise()
 
@@ -88,7 +90,7 @@ class App(CTk):
 
     def define_and_pack_frames(self):
         for F in [HomePage, ExpensePage]:
-            frame = F(self.container, self, const.DATABASE, self.user)
+            frame = F(self.container, self, self.database, self.user)
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")
 

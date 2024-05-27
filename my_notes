@@ -1,0 +1,42 @@
+HOME PAGE:
+- add deleting and editing next to the table row
+- add image while hovering over the table row
+- add sorting by sth
+- show only filtered rows
+- sth with description field
+
+LOGIN PAGE:
+- add register form
+- add forgot password (?)
+- add handling enter after entering password and login
+
+ADD EXPENSE PAGE:
+- add working calendar
+- add better description field
+- add path image for recipie
+- add button to go back
+- add confirming adding expense
+- add domain restrictions for all fields
+- add expense category
+
+EXPORT PAGE:
+- add sorting, filtration
+- add button to export to pdf (or sth)
+
+GRAPH PAGE:
+...
+- by category + per month, year, years
+- all categories
+- all expenses by month and by month a year ago
+- sth...
+
+REGISTER PAGE:
+...
+
+SETTINGS PAGE:
+...?
+- color theme?
+
+ACCOUNT PAGE:
+- change password
+- change personal data
