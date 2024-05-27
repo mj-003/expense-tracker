@@ -1,5 +1,5 @@
 import sqlite3
-
+from expenses.expense import Expense
 
 class Database:
     def __init__(self, db_name='expenses.db'):
@@ -22,6 +22,7 @@ class Database:
                 amount REAL,
                 category TEXT,
                 description TEXT,
+                payment_method TEXT,
                 date DATE,
                 FOREIGN KEY (user_id) REFERENCES users (id)
             )
@@ -55,11 +56,17 @@ class Database:
         ''', (username,))
         self.connection.commit()
 
-    def add_expense(self, user_id, amount, category, description, date):
+    def get_user_id(self, username):
         self.cursor.execute('''
-            INSERT INTO expenses (user_id, amount, category, description, date)
-            VALUES (?, ?, ?, ?, ?)
-        ''', (user_id, amount, category, description, date))
+            SELECT id FROM users WHERE username = ?
+        ''', (username,))
+        return self.cursor.fetchone()[0]
+
+    def add_expense(self, user_id, expense: Expense):
+        self.cursor.execute('''
+            INSERT INTO expenses (user_id, amount, category, description, payment_method, date)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ''', (user_id, expense.amount, expense.category, expense.description, expense.payment_method, expense.date))
         self.connection.commit()
 
     def get_expenses(self, user_id):
@@ -92,8 +99,6 @@ class Database:
         ''', (category_id,))
 
 
-# if __name__ == '__main__':
-#     db = Database()
-#     db.add_user('user1', 'password1')
+
 
 

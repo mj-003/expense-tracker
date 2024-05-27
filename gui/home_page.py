@@ -1,14 +1,18 @@
 from customtkinter import *
 from PIL import Image
 from gui.add_expense import ExpensePage
+from gui import const
 
 
 class HomePage(CTkFrame):
-    def __init__(self, parent, app):
+    def __init__(self, parent, app, database, user):
         super().__init__(parent)
 
         self.app = app
         self.parent = parent
+        self.user = user
+        self.database = database
+
         self.create_title_frame()
         self.create_metrics_frame()
         self.create_search_container()
@@ -17,10 +21,11 @@ class HomePage(CTkFrame):
         title_frame = CTkFrame(master=self, fg_color="transparent")
         title_frame.pack(anchor="n", fill="x", padx=27, pady=(25, 0))
 
-        CTkLabel(master=title_frame, text="Hello [username]!", font=("Arial Black", 25), text_color="#2A8C55").pack(
+        CTkLabel(master=title_frame, text=f"Hello {self.user.username}!", font=("Arial Black", 25),
+                 text_color="#2A8C55").pack(
             anchor="nw", side="left")
 
-        CTkButton(master=title_frame, text="+ New Expense", font=("Arial Black", 15),
+        CTkButton(master=title_frame, text="+ New Expense", width=205, font=("Arial Black", 15),
                   text_color="#fff", fg_color="#2A8C55", hover_color="#207244",
                   command=lambda: self.app.show_frame(ExpensePage)).pack(anchor="ne", side="right")
 
@@ -32,7 +37,7 @@ class HomePage(CTkFrame):
         total_sum_metric.grid_propagate(False)
         total_sum_metric.pack(side="left")
 
-        logistics_img_data = Image.open("logistics_icon.png")
+        logistics_img_data = Image.open("images/logistics_icon.png")
         logistics_img = CTkImage(light_image=logistics_img_data, dark_image=logistics_img_data, size=(43, 43))
 
         CTkLabel(master=total_sum_metric, image=logistics_img, text="").grid(row=0, column=0, rowspan=2, padx=(12, 5),
@@ -49,7 +54,7 @@ class HomePage(CTkFrame):
         biggest_expense_metrics.grid_propagate(False)
         biggest_expense_metrics.pack(side="left", expand=True, anchor="center")
 
-        shipping_img_data = Image.open("shipping_icon.png")
+        shipping_img_data = Image.open("images/shipping_icon.png")
         shipping_img = CTkImage(light_image=shipping_img_data, dark_image=shipping_img_data, size=(43, 43))
 
         CTkLabel(master=biggest_expense_metrics, image=shipping_img, text="").grid(row=0, column=0, rowspan=2,
@@ -68,7 +73,7 @@ class HomePage(CTkFrame):
         mean_expense_month.grid_propagate(False)
         mean_expense_month.pack(side="right")
 
-        delivered_img_data = Image.open("delivered_icon.png")
+        delivered_img_data = Image.open("images/delivered_icon.png")
         delivered_img = CTkImage(light_image=delivered_img_data, dark_image=delivered_img_data, size=(43, 43))
 
         CTkLabel(master=mean_expense_month, image=delivered_img, text="").grid(row=0, column=0, rowspan=2, padx=(12, 5),
