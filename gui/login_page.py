@@ -2,6 +2,7 @@ from PIL import Image
 from customtkinter import *
 from registration_window import RegistrationWindow
 from user import User
+from expenses.user_expenses import UserExpenses
 
 
 class LoginPage(CTkFrame):
@@ -13,6 +14,7 @@ class LoginPage(CTkFrame):
         self.database = database
 
         self.user = None
+        self.user_expenses = None
         self.username_entry = None
         self.password_entry = None
 
@@ -64,9 +66,10 @@ class LoginPage(CTkFrame):
         username = self.username_entry.get()
         password = self.password_entry.get()
         self.user = User(username, password)
+        self.user_expenses = UserExpenses(self.database, self.user)
 
         if self.user.login(self.database):
-            self.app.after_logged_in(self.user)
+            self.app.after_logged_in(self.user, self.user_expenses)
 
     def add_register(self):
         CTkButton(master=self.frame, text="Register", fg_color="#601E88", hover_color="#E44982", font=("Arial Bold", 12),

@@ -7,22 +7,24 @@ import category
 from gui.add_expense import ExpensePage
 from gui.export_page import ExportPage
 from categories import Categories
+from expenses.user_expenses import UserExpenses
 
 
 class HomePage(CTkFrame):
-    def __init__(self, parent, app, database, user):
+    def __init__(self, parent, app, database, user, user_expenses):
         super().__init__(parent)
 
-        self.user_expenses = None
+        self.user_expenses = user_expenses
         self.app = app
         self.parent = parent
         self.user = user
         self.database = database
+        self.user_expenses = UserExpenses(database, user)
+        self.user_expenses_list = self.user_expenses.get_expenses()
 
         self.create_title_frame()
         self.create_metrics_frame()
         self.create_search_container()
-        self.get_user_expenses()
         self.show_user_expenses()
 
     def create_title_frame(self):
@@ -214,7 +216,7 @@ class HomePage(CTkFrame):
 
         CTkComboBox(master=search_container,
                     width=125,
-                    values=[Categories.TRANSPORT.value, Categories.FOOD.value, Categories.ENTERTAINMENT.value,
+                    values=['Category', Categories.TRANSPORT.value, Categories.FOOD.value, Categories.ENTERTAINMENT.value,
                             Categories.HOME.value, Categories.PERSONAL.value,],
                     button_color="#2A8C55",
                     border_color="#2A8C55",
@@ -230,9 +232,11 @@ class HomePage(CTkFrame):
     def show_user_expenses(self):
         table_frame = CTkScrollableFrame(master=self, fg_color="transparent")
         table_frame.pack(expand=True, fill="both", padx=27, pady=21)
+        print('showing user expenses')
+
 
         table = CTkTable(master=table_frame,
-                         values=self.user_expenses,
+                         values=self.user_expenses_list,
                          colors=["#E6E6E6", "#EEEEEE"],
                          header_color="#2A8C55",
                          hover_color="#B4B4B4")
@@ -269,15 +273,6 @@ class HomePage(CTkFrame):
     #         print('dupa dupa dupa ------------------------------------------')
     #         print("Details for clicked row:", self.user_expenses[row_index])
     #
-    def get_user_expenses(self):
-        self.user_expenses = []
-        user_id = self.database.get_user_id(self.user.username)
-        self.user_expenses = self.database.get_expenses(user_id)
-        for i in range(len(self.user_expenses)):
-            self.user_expenses[i] = list(self.user_expenses[i])[2:]
 
-        self.user_expenses = [['Category', 'Amount', 'Description', 'Payment Method', 'Date']] + self.user_expenses
-
-        print(self.user_expenses)
 
 

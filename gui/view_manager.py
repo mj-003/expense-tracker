@@ -6,7 +6,7 @@ from gui.home_page import HomePage
 from gui.add_expense import ExpensePage
 from gui.login_page import LoginPage
 from gui.export_page import ExportPage
-
+from expenses.user_expenses import UserExpenses
 from gui import const
 from user import User
 from database import Database
@@ -33,7 +33,7 @@ class App(CTk):
 
         self.user = None
         self.database = Database('expenses.db')
-        # self.define_and_pack_frames()
+        self.user_expenses = None
 
         # show login page
         self.LoginPage = LoginPage(self.container, self, self.database)
@@ -92,18 +92,20 @@ class App(CTk):
         frame.tkraise()
 
     def return_to_home_page(self):
+        self.define_and_pack_frames()
         self.show_frame(HomePage)
 
     def define_and_pack_frames(self):
         for F in [HomePage, ExpensePage, ExportPage]:
-            frame = F(self.container, self, self.database, self.user)
+            frame = F(self.container, self, self.database, self.user, self.user_expenses)
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")
 
-    def after_logged_in(self, user: User):
+    def after_logged_in(self, user: User, user_expenses: UserExpenses):
         print("Logged in")
         # self.create_sidebar()
         self.user = user
+        self.user_expenses = user_expenses
         # print(self.user.username)
         self.container.grid_rowconfigure(0, weight=1)
         self.container.grid_columnconfigure(0, weight=1)

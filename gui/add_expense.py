@@ -1,17 +1,19 @@
 from customtkinter import *
 import tkinter as tk
-from expenses.expense import Expense
+from expenses.expense import Expense  # Zakładam, że klasa Expense jest w pliku expenses/expense.py
 from utils.date_entry import DateEntry
+from expenses.user_expenses import UserExpenses  # Zakładam, że klasa UserExpenses jest w pliku user_expenses.py
 
 
 class ExpensePage(CTkFrame):
-    def __init__(self, parent, app, database, user):
+    def __init__(self, parent, app, database, user, user_expenses):
         super().__init__(parent)
 
         self.app = app
         self.parent = parent
         self.user = user
         self.database = database
+        self.user_expenses = user_expenses
 
         self.category = None
         self.amount = None
@@ -91,7 +93,7 @@ class ExpensePage(CTkFrame):
                  font=("Arial Bold", 17),
                  text_color="#52A476",
                  justify="left").grid(
-            row=12,
+            row=2,
             column=0,
             sticky="w")
 
@@ -99,11 +101,10 @@ class ExpensePage(CTkFrame):
                                     fg_color="#F0F0F0",
                                     border_width=0,
                                     border_color="black",
-
                                     width=300,
                                     height=120)
         self.description.grid(
-            row=15,
+            row=3,
             column=0,
             ipady=10)
 
@@ -113,13 +114,13 @@ class ExpensePage(CTkFrame):
                  font=("Arial Bold", 17),
                  text_color="#52A476",
                  justify="left").grid(
-            row=12,
+            row=2,
             column=1,
             sticky="w",
             padx=(25, 0))
 
         self.date_entry = DateEntry(grid)
-        self.date_entry.grid(row=15, column=1, padx=(24, 0), pady=15)
+        self.date_entry.grid(row=3, column=1, padx=(24, 0), pady=15)
 
         # add payment method
         CTkLabel(master=grid,
@@ -127,7 +128,7 @@ class ExpensePage(CTkFrame):
                  font=("Arial Bold", 17),
                  text_color="#52A476",
                  justify="left").grid(
-            row=30,
+            row=4,
             column=0,
             sticky="w")
 
@@ -142,7 +143,7 @@ class ExpensePage(CTkFrame):
                        fg_color="#52A476",
                        border_color="#52A476",
                        hover_color="#207244").grid(
-            row=34,
+            row=5,
             column=0,
             sticky="w",
             pady=(16, 0))
@@ -156,7 +157,7 @@ class ExpensePage(CTkFrame):
                        fg_color="#52A476",
                        border_color="#52A476",
                        hover_color="#207244").grid(
-            row=35,
+            row=6,
             column=0,
             sticky="w",
             pady=(16, 0))
@@ -170,7 +171,7 @@ class ExpensePage(CTkFrame):
                        fg_color="#52A476",
                        border_color="#52A476",
                        hover_color="#207244").grid(
-            row=36,
+            row=7,
             column=0,
             sticky="w",
             pady=(16, 0))
@@ -203,9 +204,11 @@ class ExpensePage(CTkFrame):
 
     def add_expense_to_user(self):
         # map payment method
-        self.payment_method = ["Cash", "Card", "Online"][self.payment_method.get()]
+        payment_method = ["Cash", "Card", "Online"][self.payment_method.get()]
 
         curr_expense = Expense(self.amount.get(), self.category.get(), self.description.get(),
-                               self.payment_method, self.date_entry.date_var.get())
+                               payment_method, self.date_entry.date_var.get())
 
-        self.database.add_expense(self.user.id, curr_expense)
+        self.user_expenses.add_expense(curr_expense)
+
+        # self.app.return_to_home_page()

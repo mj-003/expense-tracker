@@ -5,33 +5,15 @@ import openpyxl
 from customtkinter import *
 from categories import Categories
 from CTkTable import CTkTable
-
-
-def export_to_excel(filename, data):
-    workbook = openpyxl.Workbook()
-    sheet = workbook.active
-    sheet.title = "Expenses"
-
-    # Write data
-    for row_num, row_data in enumerate(data, 1):
-        for col_num, cell_value in enumerate(row_data, 1):
-            sheet.cell(row=row_num, column=col_num, value=cell_value)
-
-    workbook.save(filename)
-    print(f"Data exported to {filename}")
-
-
-def export_to_csv(filename, data):
-    with open(filename, mode='w', newline='', encoding='utf-8') as file:
-        writer = csv.writer(file)
-        writer.writerows(data)
-    print(f"Data exported to {filename}")
+from utils.exports import export_to_excel, export_to_csv
 
 
 class ExportPage(CTkFrame):
-    def __init__(self, parent, app, database, user):
+    def __init__(self, parent, app, database, user, user_expenses):
         super().__init__(parent)
 
+        self.category_filter = None
+        self.date_filter = None
         self.table = None
         self.table_frame = None
         self.user_expenses = None
@@ -39,13 +21,11 @@ class ExportPage(CTkFrame):
         self.parent = parent
         self.user = user
         self.database = database
+        self.user_expenses = user_expenses
 
         self.add_title()
         self.add_filters()
-        # self.add_export_button()
-        self.get_user_expenses()
         self.add_table()
-        # self.export_data()
 
     def add_title(self):
         title_frame = CTkFrame(master=self, fg_color="transparent")
@@ -155,21 +135,6 @@ class ExportPage(CTkFrame):
             sticky="w",
             padx=(5, 0))
 
-    # def add_buttons(self):
-    #     button_frame = CTkFrame(master=self, fg_color="transparent")
-    #     button_frame.pack(fill="both", padx=27, pady=(15, 0))
-    #
-    #     CTkButton(master=button_frame,
-    #               text="Apply Filters",
-    #               width=150,
-    #               font=("Arial Black", 15),
-    #               text_color="#fff",
-    #               fg_color="#2A8C55",
-    #               hover_color="#207244",
-    #               command=self.update_table).pack(
-    #         side="left",
-    #         padx=(0, 10))
-
     def add_table(self):
         self.table_frame = CTkScrollableFrame(master=self, fg_color="transparent")
         self.table_frame.pack(expand=True, fill="both", padx=27, pady=21)
@@ -182,17 +147,6 @@ class ExportPage(CTkFrame):
 
         self.table.edit_row(0, text_color="#fff", hover_color="#2A8C55")
         self.table.pack(expand=True)
-
-    def get_user_expenses(self):
-        self.user_expenses = []
-        user_id = self.database.get_user_id(self.user.username)
-        self.user_expenses = self.database.get_expenses(user_id)
-        for i in range(len(self.user_expenses)):
-            self.user_expenses[i] = list(self.user_expenses[i])[2:]
-
-        self.user_expenses = [['Category', 'Amount', 'Description', 'Payment Method', 'Date']] + self.user_expenses
-        print('----------------')
-        print(self.user_expenses)
 
     def export_data(self):
 
@@ -210,12 +164,4 @@ class ExportPage(CTkFrame):
             elif file_path.endswith('.csv'):
                 export_to_csv(file_path, self.user_expenses)
 
-    # def update_table(self):
-    #     self.get_user_expenses()
-    #     filtered_expenses = self.apply_filters(self.user_expenses[1:])
-    #     self.table.update_data(filtered_expenses)
-    #
-    # def apply_filters(self, expenses):
-    #     # Placeholder method to apply filters to the expenses list
-    #     # Apply date, category, and sort filters here
-    #     return expenses
+
