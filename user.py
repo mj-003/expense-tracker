@@ -5,26 +5,25 @@ from gui.const import *
 
 
 class User:
-    def __init__(self, username, password):
+    def __init__(self, username, password, id=None):
         self.username = username
         self.password = password
+        self.id = id
 
     def __str__(self):
         return f"{self.username}"
 
     def register(self, database):
         try:
-            database.add_user(self.username, self.password)
+            self.id = database.add_user(self.username, self.password)
             messagebox.showinfo("Success", "Registration successful")
-            print("Registration successful")
         except ValueError as e:
             messagebox.showerror("Failed", str(e))
-            print("Registration failed")
 
     def login(self, database):
-        if database.get_user(self.username, self.password):
-            const.LOGGED_IN = True
-            print(const.LOGGED_IN)
+        user_data = database.get_user(self.username, self.password)
+        if user_data:
+            self.id = user_data[0]
             return True
         else:
             messagebox.showerror("Error", "Invalid username or password")

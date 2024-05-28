@@ -1,7 +1,8 @@
 from customtkinter import *
 import tkinter as tk
-from tkcalendar import Calendar
+#from tkcalendar import Calendar, DateEntry
 from expenses.expense import Expense
+from utils.date_entry import DateEntry
 
 
 class ExpensePage(CTkFrame):
@@ -18,6 +19,8 @@ class ExpensePage(CTkFrame):
         self.description = None
         self.date = None
         self.payment_method = None
+        self.date_entry = None
+
 
         self.add_title()
         self.add_fields()
@@ -65,11 +68,6 @@ class ExpensePage(CTkFrame):
             column=1,
             sticky="w",
             padx=(25, 0))
-        # CTkEntry(master=grid, fg_color="#F0F0F0", border_width=0, width=300).grid(
-        #     row=1,
-        #     column=1,
-        #     ipady=10,
-        #     padx=(24, 0))
 
         self.category = CTkComboBox(master=grid, width=300,
                                     values=["Personal", "Home", "Food", "Transport", "Entertainment", "Other"],
@@ -101,6 +99,8 @@ class ExpensePage(CTkFrame):
         self.description = CTkEntry(master=grid,
                                     fg_color="#F0F0F0",
                                     border_width=0,
+                                    border_color="black",
+
                                     width=300,
                                     height=140)
         self.description.grid(
@@ -119,13 +119,8 @@ class ExpensePage(CTkFrame):
             sticky="w",
             padx=(25, 0))
 
-        calendar = CustomCalendar(grid,
-                                  selectmode='day',
-                                  year=2022,
-                                  month=5,
-                                  day=22)
-        calendar.configure(background='#52A476', foreground='white')
-        calendar.grid(row=15, column=1, padx=(24, 0), pady=15)
+        self.date_entry = DateEntry(grid)
+        self.date_entry.grid(row=15, column=1, padx=(24, 0), pady=15)
 
         # add payment method
         CTkLabel(master=grid,
@@ -180,9 +175,6 @@ class ExpensePage(CTkFrame):
             column=0,
             sticky="w",
             pady=(16, 0))
-        # CTkRadioButton(master=grid, variable=payment_method, value=3, text="Not important", font=("Arial Bold", 14),
-        #                text_color="#52A476", fg_color="#52A476", border_color="#52A476", hover_color="#207244").grid(
-        #     row=33, column=0, sticky="w", pady=(16, 0))
 
         # add button
         CTkButton(master=self,
@@ -201,19 +193,8 @@ class ExpensePage(CTkFrame):
     def add_expense_to_user(self):
         # map payment method
         self.payment_method = ["Cash", "Card", "Online"][self.payment_method.get()]
-        print(self.payment_method)
 
         curr_expense = Expense(self.amount.get(), self.category.get(), self.description.get(),
-                               self.payment_method)
-        print(curr_expense)
-        print(self.database.get_columns())
-        self.database.add_expense(self.database.get_user_id(self.user.username), curr_expense)
+                               self.payment_method, self.date_entry.date_var.get())
 
-
-class CustomCalendar(Calendar):
-    def __init__(self, master=None, **kw):
-        super().__init__(master, **kw)
-
-        self.configure(background="white", disabledbackground="white", bordercolor="white",
-                       headersbackground="green", normalbackground="black", foreground='black',
-                       normalforeground='black', headersforeground='black')
+        self.database.add_expense(self.user.id, curr_expense)

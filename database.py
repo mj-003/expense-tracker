@@ -41,6 +41,7 @@ class Database:
                 INSERT INTO users (username, password) VALUES (?, ?)
             ''', (username, password))
             self.connection.commit()
+            return self.cursor.lastrowid  # Return the id of the newly inserted user
         except sqlite3.IntegrityError:
             raise ValueError("Username already exists")
 

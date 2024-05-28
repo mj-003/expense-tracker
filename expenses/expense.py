@@ -10,6 +10,8 @@ class Expense:
         self.date = date if date else datetime.now().date()
         self.image = image
 
+    def add_expense(self, database):
+        database.add_expense(self)
+
     def __str__(self):
         return f"{self.amount} - {self.category} - {self.date} - {self.payment_method} - {self.description}"
-

@@ -9,6 +9,8 @@ from user import User
 class RegistrationWindow(CTkToplevel):
     def __init__(self, parent, database):
         super().__init__(parent)
+        self.password_entry = None
+        self.username_entry = None
         self.title("Register")
         self.geometry("500x300")
 
@@ -22,7 +24,6 @@ class RegistrationWindow(CTkToplevel):
         self.add_register_button()
 
     def add_register_fields(self):
-        # Frame for email label and entry
         register_frame = CTkFrame(master=self, fg_color="transparent")
         register_frame.pack(anchor="center", pady=(50, 0))
 
