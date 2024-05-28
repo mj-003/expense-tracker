@@ -88,6 +88,7 @@ class App(CTk):
                                                                                    pady=(200, 0))
 
     def show_frame(self, cont):
+        print("Showing frame")
         frame = self.frames[cont]
         frame.tkraise()
 
@@ -100,9 +101,12 @@ class App(CTk):
             frame = F(self.container, self, self.database, self.user, self.user_expenses)
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")
+        print('done packing frames')
 
     def after_logged_in(self, user: User, user_expenses: UserExpenses):
         print("Logged in")
+        print('user: ', user)
+        print('user_expenses: ', user_expenses)
         # self.create_sidebar()
         self.user = user
         self.user_expenses = user_expenses

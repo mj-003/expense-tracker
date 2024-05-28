@@ -1,10 +1,9 @@
-import csv
 from datetime import datetime
 
-import openpyxl
-from customtkinter import *
-from categories import Categories
 from CTkTable import CTkTable
+from customtkinter import *
+
+from categories import Categories
 from utils.exports import export_to_excel, export_to_csv
 
 
@@ -22,6 +21,7 @@ class ExportPage(CTkFrame):
         self.user = user
         self.database = database
         self.user_expenses = user_expenses
+        self.user_expenses_list = self.user_expenses.get_expenses()
 
         self.add_title()
         self.add_filters()
@@ -140,7 +140,7 @@ class ExportPage(CTkFrame):
         self.table_frame.pack(expand=True, fill="both", padx=27, pady=21)
 
         self.table = CTkTable(master=self.table_frame,
-                              values=self.user_expenses,
+                              values=self.user_expenses_list,
                               colors=["#E6E6E6", "#EEEEEE"],
                               header_color="#2A8C55",
                               hover_color="#B4B4B4")
@@ -163,5 +163,3 @@ class ExportPage(CTkFrame):
                 export_to_excel(file_path, self.user_expenses)
             elif file_path.endswith('.csv'):
                 export_to_csv(file_path, self.user_expenses)
-
-

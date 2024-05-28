@@ -8,6 +8,9 @@ class UserExpenses:
         self.expenses = []
         self.load_expenses()
 
+    def __len__(self):
+        return len(self.expenses)
+
     def load_expenses(self):
         user_id = self.database.get_user_id(self.user.username)
         self.expenses = self.database.get_expenses(user_id)
@@ -45,4 +48,3 @@ class UserExpenses:
             return self.expenses
 
         return [expense for expense in self.expenses if datetime.strptime(expense[4], '%Y-%m-%d') >= start_date]
-

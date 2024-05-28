@@ -1,8 +1,7 @@
+from tkinter import Toplevel, ttk
+
 import customtkinter as ctk
 from tkcalendar import Calendar
-from tkinter import Toplevel, ttk
-from PIL import Image
-
 
 
 class DateEntry(ctk.CTkFrame):
@@ -16,7 +15,7 @@ class DateEntry(ctk.CTkFrame):
                                   border_color="#2A8C55",
                                   width=200)
 
-        self.entry.pack(side="left", padx=(10,0), pady=10)
+        self.entry.pack(side="left", padx=(10, 0), pady=10)
 
         self.button = ctk.CTkButton(self,
                                     text="▼",
@@ -25,7 +24,7 @@ class DateEntry(ctk.CTkFrame):
                                     fg_color="#2A8C55",
                                     hover_color="#207244")
 
-        self.button.pack(side="left", padx=(0,10), pady=10)
+        self.button.pack(side="left", padx=(0, 10), pady=10)
 
         self.calendar_window = None
 

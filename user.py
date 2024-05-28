@@ -1,8 +1,5 @@
 from tkinter import messagebox
 
-from gui import const
-from gui.const import *
-
 
 class User:
     def __init__(self, username, password, id=None):
@@ -28,5 +25,3 @@ class User:
         else:
             messagebox.showerror("Error", "Invalid username or password")
             return False
-
-

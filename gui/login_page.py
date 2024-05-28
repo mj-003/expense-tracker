@@ -45,14 +45,16 @@ class LoginPage(CTkFrame):
                  font=("Arial Bold", 12)).pack(anchor="w", padx=(25, 0))
 
         CTkLabel(master=self.frame, text="  Email:", text_color="#601E88", anchor="w", justify="left",
-                 font=("Arial Bold", 14), image=self.email_icon, compound="left").pack(anchor="w", pady=(38, 0), padx=(25, 0))
+                 font=("Arial Bold", 14), image=self.email_icon, compound="left").pack(anchor="w", pady=(38, 0),
+                                                                                       padx=(25, 0))
 
         self.username_entry = CTkEntry(master=self.frame, width=225, fg_color="#EEEEEE", border_color="#601E88",
                                        border_width=1, text_color="#000000")
         self.username_entry.pack(anchor="w", padx=(25, 0))
 
         CTkLabel(master=self.frame, text="  Password:", text_color="#601E88", anchor="w", justify="left",
-                 font=("Arial Bold", 14), image=self.password_icon, compound="left").pack(anchor="w", pady=(21, 0), padx=(25, 0))
+                 font=("Arial Bold", 14), image=self.password_icon, compound="left").pack(anchor="w", pady=(21, 0),
+                                                                                          padx=(25, 0))
 
         self.password_entry = CTkEntry(master=self.frame, width=225, fg_color="#EEEEEE", border_color="#601E88",
                                        border_width=1, text_color="#000000", show="*")
@@ -60,7 +62,8 @@ class LoginPage(CTkFrame):
 
     def login(self):
         CTkButton(master=self.frame, text="Login", fg_color="#601E88", hover_color="#E44982", font=("Arial Bold", 12),
-                  text_color="#ffffff", width=225, command=self.perform_login).pack(anchor="w", pady=(40, 0), padx=(25, 0))
+                  text_color="#ffffff", width=225, command=self.perform_login).pack(anchor="w", pady=(40, 0),
+                                                                                    padx=(25, 0))
 
     def perform_login(self):
         username = self.username_entry.get()
@@ -69,13 +72,16 @@ class LoginPage(CTkFrame):
         self.user_expenses = UserExpenses(self.database, self.user)
 
         if self.user.login(self.database):
+            print(self.user)
+            print(self.user_expenses)
             self.app.after_logged_in(self.user, self.user_expenses)
 
     def add_register(self):
-        CTkButton(master=self.frame, text="Register", fg_color="#601E88", hover_color="#E44982", font=("Arial Bold", 12),
-                  text_color="#ffffff", width=225, command=self.show_register_window).pack(anchor="w", pady=(15, 0), padx=(25, 0))
+        CTkButton(master=self.frame, text="Register", fg_color="#601E88", hover_color="#E44982",
+                  font=("Arial Bold", 12),
+                  text_color="#ffffff", width=225, command=self.show_register_window).pack(anchor="w", pady=(15, 0),
+                                                                                           padx=(25, 0))
 
     def show_register_window(self):
         register_window = RegistrationWindow(self, self.database)
         register_window.grab_set()
-
