@@ -1,6 +1,5 @@
 from customtkinter import *
 import tkinter as tk
-#from tkcalendar import Calendar, DateEntry
 from expenses.expense import Expense
 from utils.date_entry import DateEntry
 
@@ -21,18 +20,18 @@ class ExpensePage(CTkFrame):
         self.payment_method = None
         self.date_entry = None
 
-
         self.add_title()
         self.add_fields()
+        self.add_buttons()
 
     def add_title(self):
         CTkLabel(master=self,
                  text="Add expense",
                  font=("Arial Black", 25),
                  text_color="#2A8C55").pack(
-                                            anchor="nw",
-                                            pady=(29, 0),
-                                            padx=27)
+            anchor="nw",
+            pady=(29, 0),
+            padx=27)
 
     def add_fields(self):
         grid = CTkFrame(master=self, fg_color="transparent")
@@ -102,7 +101,7 @@ class ExpensePage(CTkFrame):
                                     border_color="black",
 
                                     width=300,
-                                    height=140)
+                                    height=120)
         self.description.grid(
             row=15,
             column=0,
@@ -128,7 +127,7 @@ class ExpensePage(CTkFrame):
                  font=("Arial Bold", 17),
                  text_color="#52A476",
                  justify="left").grid(
-            row=27,
+            row=30,
             column=0,
             sticky="w")
 
@@ -143,7 +142,7 @@ class ExpensePage(CTkFrame):
                        fg_color="#52A476",
                        border_color="#52A476",
                        hover_color="#207244").grid(
-            row=30,
+            row=34,
             column=0,
             sticky="w",
             pady=(16, 0))
@@ -157,7 +156,7 @@ class ExpensePage(CTkFrame):
                        fg_color="#52A476",
                        border_color="#52A476",
                        hover_color="#207244").grid(
-            row=31,
+            row=35,
             column=0,
             sticky="w",
             pady=(16, 0))
@@ -171,24 +170,36 @@ class ExpensePage(CTkFrame):
                        fg_color="#52A476",
                        border_color="#52A476",
                        hover_color="#207244").grid(
-            row=32,
+            row=36,
             column=0,
             sticky="w",
             pady=(16, 0))
 
-        # add button
+    def add_buttons(self):
+        CTkButton(master=self,
+                  text="BACK",
+                  width=150,
+                  height=50,
+                  fg_color="#2A8C55",
+                  hover_color="#207244",
+                  font=("Arial Black", 20),
+                  command=lambda: self.app.return_to_home_page()).pack(
+            side='right',
+            ipady=5,
+            pady=(0, 0),
+            padx=(20, 27))
+
         CTkButton(master=self,
                   text="ADD",
                   width=150,
-                  height=150,
+                  height=50,
                   fg_color="#2A8C55",
                   hover_color="#207244",
                   font=("Arial Black", 20),
                   command=self.add_expense_to_user).pack(
-            anchor="e",
+            side="right",
             ipady=5,
-            pady=(0, 25),
-            padx=27)
+            pady=(0, 0))
 
     def add_expense_to_user(self):
         # map payment method

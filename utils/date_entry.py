@@ -1,6 +1,8 @@
 import customtkinter as ctk
 from tkcalendar import Calendar
 from tkinter import Toplevel, ttk
+from PIL import Image
+
 
 
 class DateEntry(ctk.CTkFrame):
@@ -8,11 +10,22 @@ class DateEntry(ctk.CTkFrame):
         super().__init__(parent, *args, **kwargs)
         self.date_var = ctk.StringVar()
 
-        self.entry = ctk.CTkEntry(self, textvariable=self.date_var, width=150)
-        self.entry.pack(side="left", padx=10, pady=10)
+        self.entry = ctk.CTkEntry(self,
+                                  textvariable=self.date_var,
+                                  fg_color="#F0F0F0",
+                                  border_color="#2A8C55",
+                                  width=200)
 
-        self.button = ctk.CTkButton(self, text="▼", width=30, command=self.show_calendar)
-        self.button.pack(side="left", padx=10, pady=10)
+        self.entry.pack(side="left", padx=(10,0), pady=10)
+
+        self.button = ctk.CTkButton(self,
+                                    text="▼",
+                                    width=30,
+                                    command=self.show_calendar,
+                                    fg_color="#2A8C55",
+                                    hover_color="#207244")
+
+        self.button.pack(side="left", padx=(0,10), pady=10)
 
         self.calendar_window = None
 

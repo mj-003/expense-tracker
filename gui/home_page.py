@@ -1,9 +1,11 @@
 from CTkTable import CTkTable
 from customtkinter import *
 from PIL import Image
+import customtkinter as ctk
 
 import category
 from gui.add_expense import ExpensePage
+from gui.export_page import ExportPage
 from categories import Categories
 
 
@@ -11,6 +13,7 @@ class HomePage(CTkFrame):
     def __init__(self, parent, app, database, user):
         super().__init__(parent)
 
+        self.user_expenses = None
         self.app = app
         self.parent = parent
         self.user = user
@@ -234,9 +237,38 @@ class HomePage(CTkFrame):
                          header_color="#2A8C55",
                          hover_color="#B4B4B4")
 
-        table.edit_row(0, text_color="#fff", hover_color="#2A8C55")
+        # Dodajemy zdarzenie kliknięcia myszą do tabeli
+        # table.bind("<Button-1>", self.show_details)
+
         table.pack(expand=True)
 
+    # def show_details(self, event):
+    #     # Pobieramy widget, na którym nastąpiło kliknięcie myszą
+    #     widget = event.widget
+    #     row_index = None
+    #     print('kliknelo mnie')
+    #     print(widget)
+    #     while widget.master is not None:
+    #         if ctk.in_grid(widget.master):
+    #             row_index = widget.master.grid_info()["row"]
+    #             break
+    #         else:
+    #             widget = widget.master
+    #
+    #     # Jeśli widget to komórka tabeli, przeszukujemy hierarchię widgetów, aby znaleźć wiersz
+    #     if isinstance(widget, CTkLabel):
+    #         print('jestem komorka jej')
+    #         # while widget.master is not None:
+    #         #     if isinstance(widget.master, CTkFrame):
+    #         #         row_index = widget.master.grid_info()["row"]
+    #         #         break
+    #         #     else:
+    #         #         widget = widget.master
+    #
+    #         # Tutaj możesz dodać kod do wyświetlenia szczegółów dla klikniętego wiersza
+    #         print('dupa dupa dupa ------------------------------------------')
+    #         print("Details for clicked row:", self.user_expenses[row_index])
+    #
     def get_user_expenses(self):
         self.user_expenses = []
         user_id = self.database.get_user_id(self.user.username)
@@ -247,3 +279,5 @@ class HomePage(CTkFrame):
         self.user_expenses = [['Category', 'Amount', 'Description', 'Payment Method', 'Date']] + self.user_expenses
 
         print(self.user_expenses)
+
+

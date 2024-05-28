@@ -6,15 +6,15 @@ HOME PAGE:
 - sth with description field
 
 LOGIN PAGE:
-- add register form
+* add register form
 - add forgot password (?)
 - add handling enter after entering password and login
 
 ADD EXPENSE PAGE:
-- add working calendar
+-/* add working calendar
 - add better description field
 - add path image for recipie
-- add button to go back
+* add button to go back
 - add confirming adding expense
 - add domain restrictions for all fields
 - add expense category

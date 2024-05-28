@@ -5,6 +5,8 @@ from gui import const
 from gui.home_page import HomePage
 from gui.add_expense import ExpensePage
 from gui.login_page import LoginPage
+from gui.export_page import ExportPage
+
 from gui import const
 from user import User
 from database import Database
@@ -27,6 +29,7 @@ class App(CTk):
         self.HomePage = HomePage
         self.ExpensePage = ExpensePage
         self.LoginPage = LoginPage
+        self.ExportPage = ExportPage
 
         self.user = None
         self.database = Database('expenses.db')
@@ -70,7 +73,7 @@ class App(CTk):
         list_img = CTkImage(dark_image=list_img_data, light_image=list_img_data)
         CTkButton(master=sidebar_frame, image=list_img, text="Export", fg_color="transparent",
                   font=("Arial Bold", 14),
-                  hover_color="#207244", anchor="w").pack(anchor="center", ipady=5, pady=(16, 0))
+                  hover_color="#207244", anchor="w", command=lambda: self.show_frame(ExportPage)).pack(anchor="center", ipady=5, pady=(16, 0))
 
         settings_img_data = Image.open("images/settings_icon.png")
         settings_img = CTkImage(dark_image=settings_img_data, light_image=settings_img_data)
@@ -88,8 +91,11 @@ class App(CTk):
         frame = self.frames[cont]
         frame.tkraise()
 
+    def return_to_home_page(self):
+        self.show_frame(HomePage)
+
     def define_and_pack_frames(self):
-        for F in [HomePage, ExpensePage]:
+        for F in [HomePage, ExpensePage, ExportPage]:
             frame = F(self.container, self, self.database, self.user)
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")
