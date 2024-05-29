@@ -1,8 +1,10 @@
 from customtkinter import *
 import tkinter as tk
-from expenses.expense import Expense  # Zakładam, że klasa Expense jest w pliku expenses/expense.py
+from tkinter import filedialog
+from expenses.expense import Expense
 from utils.date_entry import DateEntry
-from expenses.user_expenses import UserExpenses  # Zakładam, że klasa UserExpenses jest w pliku user_expenses.py
+from expenses.user_expenses import UserExpenses
+from PIL import Image, ImageTk
 
 
 class ExpensePage(CTkFrame):
@@ -17,10 +19,10 @@ class ExpensePage(CTkFrame):
 
         self.category = None
         self.amount = None
-        self.description = None
         self.date = None
         self.payment_method = None
         self.date_entry = None
+        self.photo_path = None
 
         self.add_title()
         self.add_fields()
@@ -49,11 +51,10 @@ class ExpensePage(CTkFrame):
             column=0,
             sticky="w")
 
-        self.amount = (CTkEntry(master=grid,
-                                fg_color="#F0F0F0",
-                                border_width=0,
-                                width=300))
-
+        self.amount = CTkEntry(master=grid,
+                               fg_color="#F0F0F0",
+                               border_width=0,
+                               width=300)
         self.amount.grid(
             row=1,
             column=0,
@@ -79,34 +80,12 @@ class ExpensePage(CTkFrame):
                                     dropdown_fg_color="#2A8C55",
                                     dropdown_text_color="#fff",
                                     font=("Arial", 15))
-
         self.category.grid(
             row=1,
             column=1,
             ipady=10,
             padx=(24, 0),
             pady=15)
-
-        # add description
-        CTkLabel(master=grid,
-                 text="Description",
-                 font=("Arial Bold", 17),
-                 text_color="#52A476",
-                 justify="left").grid(
-            row=2,
-            column=0,
-            sticky="w")
-
-        self.description = CTkEntry(master=grid,
-                                    fg_color="#F0F0F0",
-                                    border_width=0,
-                                    border_color="black",
-                                    width=300,
-                                    height=120)
-        self.description.grid(
-            row=3,
-            column=0,
-            ipady=10)
 
         # add date
         CTkLabel(master=grid,
@@ -121,6 +100,31 @@ class ExpensePage(CTkFrame):
 
         self.date_entry = DateEntry(grid)
         self.date_entry.grid(row=3, column=1, padx=(24, 0), pady=15)
+
+        # add photo path
+        CTkLabel(master=grid,
+                 text="Image Path",
+                 font=("Arial Bold", 17),
+                 text_color="#52A476",
+                 justify="left").grid(
+            row=2,
+            column=0,
+            sticky="w")
+        # add button to browse photo
+        CTkButton(master=grid,
+                  text="Photo",
+                  fg_color="white",
+                  hover_color="#207244",
+                  font=("Arial Bold", 14),
+                  width=300,
+                  height=50,
+                  border_color="#2A8C55",
+                  border_width=2,
+                  text_color="#2A8C55",
+                  text_color_disabled="white",
+                  command=self.upload_photo).grid(
+            row=3,
+            column=0,)
 
         # add payment method
         CTkLabel(master=grid,
@@ -176,6 +180,7 @@ class ExpensePage(CTkFrame):
             sticky="w",
             pady=(16, 0))
 
+
     def add_buttons(self):
         CTkButton(master=self,
                   text="BACK",
@@ -202,18 +207,27 @@ class ExpensePage(CTkFrame):
             ipady=5,
             pady=(0, 0))
 
+    def upload_photo(self):
+        file_path = filedialog.askopenfilename(filetypes=[("Image Files", "*.png"), ("Image Files", "*.jpg"), ("Image Files", "*.jpeg"), ("Image Files", "*.bmp")])
+        if file_path:
+            self.photo_path = file_path
+            #self.image = Image.open(file_path)
+
     def add_expense_to_user(self):
         # map payment method
         payment_method = ["Cash", "Card", "Online"][self.payment_method.get()]
-
-        curr_expense = Expense(self.amount.get(), self.category.get(), self.description.get(),
-                               payment_method, self.date_entry.date_var.get())
+        path = self.photo_path if self.photo_path else None
+        curr_expense = Expense(amount=self.amount.get(),
+                               category=self.category.get(),
+                               payment_method=payment_method,
+                               date=self.date_entry.date_var.get(),
+                               photo_path=path)
 
         self.user_expenses.add_expense(curr_expense)
         self.amount.delete(0, 'end')
-        self.description.delete(0, 'end')
         self.category.set("Personal")
         self.payment_method.set(0)
         self.date_entry.date_var.set(self.date_entry.date_var.get())
+
 
         # self.app.return_to_home_page()

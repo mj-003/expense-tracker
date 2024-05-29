@@ -307,7 +307,7 @@ class HomePage(CTkFrame):
         delete_button.pack(side='right', padx=10, pady=10)
 
         photo_button = CTkButton(self.info_panel, text="Photo", fg_color='white', text_color='black', width=70,
-                                 height=50, command=lambda: self.delete_expense(self.selected_row))
+                                 height=50, command=lambda: self.show_photo(self.selected_row))
         photo_button.pack(side='right', padx=10, pady=10)
 
         back_button = CTkButton(self.info_panel, text="Back", fg_color='white', text_color='black', width=70, height=50,
@@ -354,20 +354,15 @@ class HomePage(CTkFrame):
     def save_expense(self, row_id, price_entry, category_entry, date_entry, photo_entry, edit_dialog):
         # Zapisanie zmienionych danych
         new_price = price_entry.get()
-        print(price_entry.get())
         new_category = category_entry.get()
         new_date = date_entry.get()
         new_photo = photo_entry.get()
         new_expense = Expense(new_price, new_category, new_date, new_photo)
+
         self.user_expenses.update_user_expense(row_id, new_expense)
         self.user_expenses_list = self.user_expenses.get_expenses()
         self.show_user_expenses()
-        edit_dialog.destroy()  # Zamknij okno dialogowe po zapisaniu
-
-        #if new_price and new_category and new_date and new_photo:
-
-
-        print(f"Saved expense: {self.user_expenses_list[row_id]}")
+        edit_dialog.destroy()
 
     def delete_expense(self, row_id):
         # Usuwanie wydatku
@@ -376,3 +371,12 @@ class HomePage(CTkFrame):
         self.user_expenses_list = self.user_expenses.get_expenses()
         self.show_user_expenses()
         self.info_panel.pack_forget()  # Ukrywanie panelu po usunięciu wydatku
+
+    def show_photo(self, selected_row):
+        print('jkcahfjc')
+        print(self.user_expenses.get_expense(self.selected_row))
+        file_path = self.user_expenses.get_expense(self.selected_row)[6]
+
+        if file_path:
+            image = Image.open(file_path)
+            image.show()

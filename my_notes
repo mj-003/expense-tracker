@@ -1,9 +1,9 @@
 HOME PAGE:
-- add deleting and editing next to the table row
+* add deleting and editing next to the table row
 - add image while hovering over the table row
 - add sorting by sth
 - show only filtered rows
-- sth with description field
+* sth with description field (deleted)
 
 LOGIN PAGE:
 * add register form

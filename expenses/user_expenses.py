@@ -1,6 +1,7 @@
 from datetime import datetime
 
-headers = [['No.', 'Amount', 'Category', 'Description', 'Payment method', 'Date']]
+headers = [['No.', 'Amount', 'Category', 'Payment method', 'Date']]
+
 
 class UserExpenses:
     def __init__(self, database, user):
@@ -47,9 +48,17 @@ class UserExpenses:
             if sort_order.split()[1] == "Amount":
                 filtered_expenses.sort(key=lambda x: x[1], reverse=reverse)
             elif sort_order.split()[1] == "Time":
-                filtered_expenses.sort(key=lambda x: datetime.strptime(x[5], '%Y-%m-%d'), reverse=reverse)
+                filtered_expenses.sort(key=lambda x: datetime.strptime(x[4], '%Y-%m-%d'), reverse=reverse)
 
         return headers + filtered_expenses
+
+    def get_expense(self, autonumbered_id):
+        if 0 < autonumbered_id <= len(self.original_ids):
+            expense_id = self.original_ids[autonumbered_id - 1]
+            return self.database.get_expense(expense_id)
+        else:
+            print(f"Invalid autonumbered ID: {autonumbered_id}")
+            return None
 
     def filter_by_date(self, expenses, date_filter):
         if date_filter == "This month":
@@ -59,7 +68,7 @@ class UserExpenses:
         else:
             return expenses
 
-        return [expense for expense in expenses if datetime.strptime(expense[5], '%Y-%m-%d') >= start_date]
+        return [expense for expense in expenses if datetime.strptime(expense[4], '%Y-%m-%d') >= start_date]
 
     def delete_expense(self, autonumbered_id):
         if 0 < autonumbered_id <= len(self.original_ids):

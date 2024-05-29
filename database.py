@@ -21,9 +21,9 @@ class Database:
                 user_id INTEGER,
                 amount REAL,
                 category TEXT,
-                description TEXT,
                 payment_method TEXT,
                 date DATE,
+                photo_path TEXT,
                 FOREIGN KEY (user_id) REFERENCES users (id)
             )
         ''')
@@ -65,9 +65,9 @@ class Database:
 
     def add_expense(self, user_id, expense: Expense):
         self.cursor.execute('''
-            INSERT INTO expenses (user_id, amount, category, description, payment_method, date)
+            INSERT INTO expenses (user_id, amount, category, payment_method, date, photo_path)
             VALUES (?, ?, ?, ?, ?, ?)
-        ''', (user_id, expense.amount, expense.category, expense.description, expense.payment_method, expense.date))
+        ''', (user_id, expense.amount, expense.category, expense.payment_method, expense.date, expense.photo_path))
         self.connection.commit()
         return self.cursor.lastrowid
 
@@ -77,12 +77,18 @@ class Database:
         ''', (user_id,))
         return self.cursor.fetchall()
 
+    def get_expense(self, expense_id):
+        self.cursor.execute('''
+            SELECT * FROM expenses WHERE id = ?
+        ''', (expense_id,))
+        return self.cursor.fetchone()
+
     def update_expense(self, expense_id, expense: Expense):
         self.cursor.execute('''
             UPDATE expenses
-            SET amount = ?, category = ?, description = ?, payment_method = ?, date = ?
+            SET amount = ?, category = ?, payment_method = ?, date = ?, photo_path = ?
             WHERE id = ?
-        ''', (expense.amount, expense.category, expense.description, expense.payment_method, expense.date, expense_id))
+        ''', (expense.amount, expense.category, expense.payment_method, expense.date, expense.photo_path, expense_id))
         self.connection.commit()
 
 
