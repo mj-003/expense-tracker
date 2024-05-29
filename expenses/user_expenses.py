@@ -69,7 +69,9 @@ class UserExpenses:
         else:
             print(f"Invalid autonumbered ID: {autonumbered_id}")
 
-    def update_expense(self, autonumbered_id, updated_expense):
+    def update_user_expense(self, autonumbered_id, updated_expense):
+        print('update_expense')
+        print(updated_expense)
         if 0 < autonumbered_id <= len(self.original_ids):
             expense_id = self.original_ids[autonumbered_id - 1]
             self.database.update_expense(expense_id, updated_expense)

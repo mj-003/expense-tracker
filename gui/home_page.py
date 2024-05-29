@@ -4,16 +4,21 @@ from PIL import Image
 import customtkinter as ctk
 
 import category
+from expenses.expense import Expense
 from gui.add_expense import ExpensePage
 from gui.export_page import ExportPage
 from categories import Categories
 from expenses.user_expenses import UserExpenses
 
+import customtkinter as ctk
+from CTkTable import CTkTable
+from PIL import Image
+
 
 class HomePage(CTkFrame):
     def __init__(self, parent, app, database, user, user_expenses):
         super().__init__(parent)
-
+        self.selected_row = None
         self.table_frame = None
         self.expense_id = None
         self.user_expenses = user_expenses
@@ -26,6 +31,7 @@ class HomePage(CTkFrame):
         self.create_title_frame()
         self.create_metrics_frame()
         self.create_search_container()
+        self.create_info_panel()  # Dodane: Tworzenie panelu bocznego
         self.show_user_expenses()
 
     def create_title_frame(self):
@@ -244,6 +250,11 @@ class HomePage(CTkFrame):
             padx=(13, 0),
             pady=15)
 
+    def create_info_panel(self):
+        self.info_panel = CTkFrame(master=self, fg_color="#2A8C55")
+        self.info_panel.pack(expand=True, fill="both")
+        self.info_panel.pack_forget()  # Ukrywanie panelu początkowo
+
     def show_user_expenses(self):
         if self.table_frame is None:
             # Tworzenie nowej ramki tabeli
@@ -273,10 +284,95 @@ class HomePage(CTkFrame):
                 self.table.edit_row(0, text_color="#fff", hover_color="#2A8C55")
 
     def get_more_info(self):
-        print("Getting more info on row: ", self.expense_id.get())
-        print(self.user_expenses_list[int(self.expense_id.get())])
-        # Usuwanie wydatku
-        self.user_expenses.delete_expense(int(self.expense_id.get()))
-        self.user_expenses = UserExpenses(self.database, self.user)
+        self.selected_row = int(self.expense_id.get())
+        expense_info = self.user_expenses_list[self.selected_row]
+        print("Getting more info on row: ", self.selected_row)
+        print(expense_info)
+
+        # Wypełnianie panelu bocznego danymi
+        for widget in self.info_panel.winfo_children():
+            widget.destroy()
+
+        label = CTkLabel(self.info_panel, text=f"Expense Info (ID: {self.selected_row})", font=("Arial Black", 14),
+
+                         width=30, height=2, text_color='white')
+        label.pack(pady=(27, 27), padx=(27, 27), side='left')
+
+        edit_button = CTkButton(self.info_panel, text="Edit", fg_color='white', text_color='black', width=70, height=50,
+                                command=lambda: self.edit_expense(self.selected_row))
+        edit_button.pack(side='right', padx=(10, 27), pady=10)
+
+        delete_button = CTkButton(self.info_panel, text="Delete", fg_color='white', text_color='black', width=70,
+                                  height=50, command=lambda: self.delete_expense(self.selected_row))
+        delete_button.pack(side='right', padx=10, pady=10)
+
+        photo_button = CTkButton(self.info_panel, text="Photo", fg_color='white', text_color='black', width=70,
+                                 height=50, command=lambda: self.delete_expense(self.selected_row))
+        photo_button.pack(side='right', padx=10, pady=10)
+
+        back_button = CTkButton(self.info_panel, text="Back", fg_color='white', text_color='black', width=70, height=50,
+                                command=lambda: self.app.return_to_home_page())
+        back_button.pack(side='right', padx=10, pady=10)
+
+        self.info_panel.pack(expand=True, fill="both", pady=(27, 27), padx=(27, 27))
+
+    def edit_expense(self, row_id):
+        expense_info = self.user_expenses_list[row_id]
+
+        # Tworzenie okna do edycji wydatku
+        edit_dialog = ctk.CTkToplevel(self)
+        edit_dialog.title("Edit Expense")
+        edit_dialog.geometry("400x300")  # Ustawienie rozmiaru okna
+
+        # Etykiety i pola tekstowe w układzie grid
+
+        ctk.CTkLabel(edit_dialog, text="Price:").grid(row=1, column=0, pady=10, padx=10, sticky="e")
+        price_entry = ctk.CTkEntry(edit_dialog, textvariable=StringVar(value=expense_info[1]))
+        price_entry.grid(row=1, column=1, pady=(20, 10), padx=10, sticky="w")
+
+        ctk.CTkLabel(edit_dialog, text="Category:").grid(row=2, column=0, pady=10, padx=10, sticky="e")
+        category_entry = ctk.CTkEntry(edit_dialog, textvariable=StringVar(value=expense_info[2]))
+        category_entry.grid(row=2, column=1, pady=10, padx=10, sticky="w")
+
+        ctk.CTkLabel(edit_dialog, text="Date:").grid(row=3, column=0, pady=10, padx=10, sticky="e")
+        date_entry = ctk.CTkEntry(edit_dialog, textvariable=StringVar(value=expense_info[3]))
+        date_entry.grid(row=3, column=1, pady=10, padx=10, sticky="w")
+
+        ctk.CTkLabel(edit_dialog, text="Recipe:").grid(row=4, column=0, pady=10, padx=10, sticky="e")
+        photo_entry = ctk.CTkEntry(edit_dialog, textvariable=StringVar(value=expense_info[4]))
+        photo_entry.grid(row=4, column=1, pady=10, padx=10, sticky="w")
+
+        save_button = ctk.CTkButton(edit_dialog, text="Save",
+                                    fg_color="#2A8C55",
+                                    command=lambda: self.save_expense(row_id, price_entry, category_entry, date_entry,
+                                                                      photo_entry, edit_dialog))
+        save_button.grid(row=5, column=0, columnspan=2, pady=20, padx=10)
+
+        edit_dialog.columnconfigure(0, weight=1)
+        edit_dialog.columnconfigure(1, weight=3)
+
+    def save_expense(self, row_id, price_entry, category_entry, date_entry, photo_entry, edit_dialog):
+        # Zapisanie zmienionych danych
+        new_price = price_entry.get()
+        print(price_entry.get())
+        new_category = category_entry.get()
+        new_date = date_entry.get()
+        new_photo = photo_entry.get()
+        new_expense = Expense(new_price, new_category, new_date, new_photo)
+        self.user_expenses.update_user_expense(row_id, new_expense)
         self.user_expenses_list = self.user_expenses.get_expenses()
         self.show_user_expenses()
+        edit_dialog.destroy()  # Zamknij okno dialogowe po zapisaniu
+
+        #if new_price and new_category and new_date and new_photo:
+
+
+        print(f"Saved expense: {self.user_expenses_list[row_id]}")
+
+    def delete_expense(self, row_id):
+        # Usuwanie wydatku
+        print(f"Deleting expense at row: {row_id}")
+        self.user_expenses.delete_expense(row_id)
+        self.user_expenses_list = self.user_expenses.get_expenses()
+        self.show_user_expenses()
+        self.info_panel.pack_forget()  # Ukrywanie panelu po usunięciu wydatku
