@@ -1,46 +1,54 @@
 import tkinter as tk
-from tkinter import filedialog
-from PIL import Image, ImageTk
-import customtkinter as ctk
+from tkinterweb import HtmlFrame
+import plotly.graph_objects as go
+import numpy as np
 
-# Ustawienia dla CustomTkinter
-ctk.set_appearance_mode("System")
-ctk.set_default_color_theme("blue")
+# Ustawienia wykresu
+np.random.seed(1)
+x = np.random.rand(100)
+y = np.random.rand(100)
 
-class ImageApp(ctk.CTk):
-    def __init__(self):
-        super().__init__()
+f = go.FigureWidget([go.Scatter(x=x, y=y, mode='markers')])
 
-        self.title("Image Viewer")
-        self.geometry("800x600")
+scatter = f.data[0]
+colors = ['#a3a7e4'] * 100
+scatter.marker.color = colors
+scatter.marker.size = [10] * 100
+f.layout.hovermode = 'closest'
 
-        # Przyciski i etykiety
-        self.upload_button = ctk.CTkButton(self, text="Upload Image", command=self.upload_image)
-        self.upload_button.pack(pady=20)
+def update_point(trace, points, selector):
+    c = list(scatter.marker.color)
+    s = list(scatter.marker.size)
+    for i in points.point_inds:
+        c[i] = '#bae2be'
+        s[i] = 20
+        with f.batch_update():
+            scatter.marker.color = c
+            scatter.marker.size = s
 
-        self.save_button = ctk.CTkButton(self, text="Save Image", command=self.save_image)
-        self.save_button.pack(pady=20)
+scatter.on_click(update_point)
 
-        self.image_label = ctk.CTkLabel(self, text="No image uploaded")
-        self.image_label.pack(pady=20)
+# Generowanie HTML dla wykresu
+plot_html = f.to_html(full_html=False)
 
-        self.image_path = None
-        self.image = None
+# Ustawienia tkinter
+root = tk.Tk()
+root.wm_title("Plotly w Tkinter")
 
-    def upload_image(self):
-        file_path = filedialog.askopenfilename(filetypes=[("Image Files", "*.png"), ("Image Files", "*.jpg"), ("Image Files", "*.jpeg"), ("Image Files", "*.bmp")])
-        if file_path:
-            self.image_path = file_path
-            self.image = Image.open(file_path)
+frame = tk.Frame(root)
+frame.pack(fill=tk.BOTH, expand=1)
 
-    def save_image(self):
-        if self.image:
-            save_path = filedialog.asksaveasfilename(defaultextension=".png", filetypes=[("PNG files", "*.png"), ("JPEG files", "*.jpg"), ("All files", "*.*")])
-            if save_path:
-                self.image.save(save_path)
+# Tworzenie HtmlFrame i osadzenie w nim wykresu
+html_frame = HtmlFrame(frame)
+html_frame.set_content(plot_html)
+html_frame.pack(fill=tk.BOTH, expand=1)
 
+# Funkcje przycisków
+def quit_app():
+    root.quit()
+    root.destroy()
 
+quit_button = tk.Button(root, text="Quit", command=quit_app)
+quit_button.pack(side=tk.BOTTOM)
 
-if __name__ == "__main__":
-    app = ImageApp()
-    app.mainloop()
+root.mainloop()

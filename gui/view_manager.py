@@ -10,6 +10,7 @@ from expenses.user_expenses import UserExpenses
 from gui import const
 from user import User
 from database import Database
+from charts_page import ChartsPage
 
 
 class App(CTk):
@@ -31,6 +32,7 @@ class App(CTk):
         self.ExpensePage = ExpensePage
         self.LoginPage = LoginPage
         self.ExportPage = ExportPage
+        self.ChartsPage = ChartsPage
 
         self.user = None
         self.database = Database('expenses.db')
@@ -59,7 +61,7 @@ class App(CTk):
 
         CTkButton(master=self.sidebar_frame, image=analytics_img, text="Analytics", fg_color="transparent",
                   font=("Arial Bold", 14), hover_color="#207244", anchor="w",
-                  command=lambda: self.show_frame(ExpensePage)).pack(anchor="center", ipady=5,
+                  command=lambda: self.show_frame(ChartsPage)).pack(anchor="center", ipady=5,
                                                                      pady=(60, 0))
 
         package_img_data = Image.open("images/package_icon.png")
@@ -98,7 +100,7 @@ class App(CTk):
         self.show_frame(HomePage)
 
     def define_and_pack_frames(self):
-        for F in [HomePage, ExpensePage, ExportPage]:
+        for F in [HomePage, ExpensePage, ExportPage, ChartsPage]:
             frame = F(self.container, self, self.database, self.user, self.user_expenses)
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")
