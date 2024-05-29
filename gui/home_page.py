@@ -52,9 +52,10 @@ class HomePage(CTkFrame):
             side="left")
 
         CTkButton(master=title_frame,
-                  text="+ New Expense",
-                  width=205,
-                  font=("Arial Black", 15),
+                  text="✚ New",
+                  width=100,
+                  height=50,
+                  font=("Arial", 16),
                   text_color="#fff",
                   fg_color="#2A8C55",
                   hover_color="#207244",
@@ -68,7 +69,7 @@ class HomePage(CTkFrame):
             anchor="n",
             fill="x",
             padx=27,
-            pady=(36, 0))
+            pady=(25, 0))
 
         total_sum_metric = CTkFrame(master=metrics_frame,
                                     fg_color="#2A8C55",
@@ -224,7 +225,7 @@ class HomePage(CTkFrame):
 
         self.date_filter = CTkComboBox(master=search_container,
                                        width=120,
-                                       values=["Date", "Most Recent Order", "Least Recent Order"],
+                                       values=["Date", "This month", "This year"],
                                        button_color="#2A8C55",
                                        border_color="#2A8C55",
                                        border_width=2,
@@ -332,19 +333,19 @@ class HomePage(CTkFrame):
                          width=30, height=2, text_color='white')
         label.pack(pady=(27, 27), padx=(27, 27), side='left')
 
-        edit_button = CTkButton(self.info_panel, text="Edit", fg_color='white', text_color='black', width=70, height=50,
+        edit_button = CTkButton(self.info_panel, text="📝", fg_color='white', text_color='black', width=60, height=60,
                                 command=lambda: self.edit_expense(self.selected_row))
         edit_button.pack(side='right', padx=(10, 27), pady=10)
 
-        delete_button = CTkButton(self.info_panel, text="Delete", fg_color='white', text_color='black', width=70,
-                                  height=50, command=lambda: self.delete_expense(self.selected_row))
+        delete_button = CTkButton(self.info_panel, text="✖️", fg_color='white', text_color='black', width=60,
+                                  height=60, command=lambda: self.delete_expense(self.selected_row))
         delete_button.pack(side='right', padx=10, pady=10)
 
-        photo_button = CTkButton(self.info_panel, text="Photo", fg_color='white', text_color='black', width=70,
-                                 height=50, command=lambda: self.show_photo(self.selected_row))
+        photo_button = CTkButton(self.info_panel, text="📷", fg_color='white', text_color='black', width=60,
+                                 height=60, command=lambda: self.show_photo(self.selected_row))
         photo_button.pack(side='right', padx=10, pady=10)
 
-        back_button = CTkButton(self.info_panel, text="Back", fg_color='white', text_color='black', width=70, height=50,
+        back_button = CTkButton(self.info_panel, text="🔙", fg_color='white', text_color='black', width=60, height=60,
                                 command=lambda: self.app.return_to_home_page())
         back_button.pack(side='right', padx=10, pady=10)
 
