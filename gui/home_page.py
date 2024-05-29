@@ -46,7 +46,7 @@ class HomePage(CTkFrame):
 
         CTkLabel(master=title_frame,
                  text=f"Hello {self.user.username}!",
-                 font=("Arial Black", 25),
+                 font=("Aptos", 40, 'bold'),
                  text_color="#2A8C55").pack(
             anchor="nw",
             side="left")
@@ -55,10 +55,11 @@ class HomePage(CTkFrame):
                   text="✚ New",
                   width=100,
                   height=50,
-                  font=("Arial", 16),
+                  font=("Aptos", 16),
                   text_color="#fff",
                   fg_color="#2A8C55",
                   hover_color="#207244",
+                  corner_radius=50,
                   command=lambda: self.app.show_frame(ExpensePage)).pack(
             anchor="ne",
             side="right")
@@ -71,10 +72,13 @@ class HomePage(CTkFrame):
             padx=27,
             pady=(25, 0))
 
+
+
         total_sum_metric = CTkFrame(master=metrics_frame,
                                     fg_color="#2A8C55",
-                                    width=200,
-                                    height=60)
+                                    width=350,
+                                    height=60,
+                                    corner_radius=30)
 
         total_sum_metric.grid_propagate(False)
         total_sum_metric.pack(side="left")
@@ -94,103 +98,32 @@ class HomePage(CTkFrame):
             pady=10)
 
         CTkLabel(master=total_sum_metric,
-                 text="Total sum:",
+                 text="Total expenses: 1929,99 zł",
                  text_color="#fff",
-                 font=("Arial Black", 14)).grid(
+                 font=("Aptos", 18)).grid(
             row=0,
             column=1,
             sticky="sw")
 
-        CTkLabel(master=total_sum_metric,
-                 text="1235,99 zł",
-                 text_color="#fff",
-                 font=("Arial Black", 14),
-                 justify="left").grid(
-            row=1,
-            column=1,
-            sticky="nw",
-            pady=(0, 10))
+        date_frame = CTkFrame(master=metrics_frame,
+                              fg_color="transparent",
+                              width=200,
+                              height=60)
 
-        biggest_expense_metrics = CTkFrame(master=metrics_frame,
-                                           fg_color="#2A8C55",
-                                           width=205,
-                                           height=60)
+        date_frame.grid_propagate(False)
+        date_frame.pack(side="right")
 
-        biggest_expense_metrics.grid_propagate(False)
-        biggest_expense_metrics.pack(side="left",
-                                     expand=True,
-                                     anchor="center")
-
-        shipping_img_data = Image.open("images/shipping_icon.png")
-        shipping_img = CTkImage(light_image=shipping_img_data,
-                                dark_image=shipping_img_data,
-                                size=(43, 43))
-
-        CTkLabel(master=biggest_expense_metrics,
-                 image=shipping_img,
-                 text="").grid(
-            row=0,
-            column=0,
-            rowspan=2,
-            padx=(12, 5),
-            pady=10)
-
-        CTkLabel(master=biggest_expense_metrics,
-                 text="Biggest expense:",
-                 text_color="#fff",
-                 font=("Arial Black", 14)).grid(row=0,
-                                                column=1,
-                                                sticky="sw")
-
-        CTkLabel(master=biggest_expense_metrics,
-                 text="199,94 zł",
-                 text_color="#fff",
-                 font=("Arial Black", 14),
-                 justify="left").grid(
-            row=1,
-            column=1,
-            sticky="nw",
-            pady=(0, 10))
-
-        mean_expense_month = CTkFrame(master=metrics_frame,
-                                      fg_color="#2A8C55",
-                                      width=205,
-                                      height=60)
-
-        mean_expense_month.grid_propagate(False)
-        mean_expense_month.pack(side="right")
-
-        delivered_img_data = Image.open("images/delivered_icon.png")
-        delivered_img = CTkImage(light_image=delivered_img_data,
-                                 dark_image=delivered_img_data,
-                                 size=(43, 43))
-
-        CTkLabel(master=mean_expense_month,
-                 image=delivered_img,
-                 text="").grid(
-            row=0,
-            column=0,
-            rowspan=2,
-            padx=(12, 5),
-            pady=10)
-
-        CTkLabel(master=mean_expense_month,
-                 text="Mean per month:",
-                 text_color="#fff",
-                 font=("Arial Black", 14)).grid(
+        CTkLabel(master=date_frame,
+                 text="Thur, 30.05",
+                 text_color="#2A8C55",
+                 font=("Aptos", 35)).grid(
             row=0,
             column=1,
-            sticky="sw")
-
-        CTkLabel(master=mean_expense_month,
-                 text="1000 zł",
-                 text_color="#fff",
-                 font=("Arial Black", 14),
-                 justify="left").grid(
-            row=1,
-            column=1,
-            sticky="nw",
+            sticky="se",
             pady=(0, 10))
+
+
+
 
     def create_search_container(self):
         search_container = CTkFrame(master=self,
@@ -214,7 +147,7 @@ class HomePage(CTkFrame):
         CTkButton(master=search_container,
                   text='✔',
                   width=30,
-                  font=("Arial", 15),
+                  font=("Aptos", 15),
                   text_color="#fff",
                   fg_color="#2A8C55",
                   hover_color="#207244",
@@ -276,7 +209,7 @@ class HomePage(CTkFrame):
         CTkButton(master=search_container,
                   text='✔',
                   width=30,
-                  font=("Arial", 15),
+                  font=("Aptos", 15),
                   text_color="#fff",
                   fg_color="#2A8C55",
                   hover_color="#207244",
@@ -328,7 +261,7 @@ class HomePage(CTkFrame):
         for widget in self.info_panel.winfo_children():
             widget.destroy()
 
-        label = CTkLabel(self.info_panel, text=f"Expense Info (ID: {self.selected_row})", font=("Arial Black", 14),
+        label = CTkLabel(self.info_panel, text=f"Expense Info (ID: {self.selected_row})", font=("Aptos", 14),
 
                          width=30, height=2, text_color='white')
         label.pack(pady=(27, 27), padx=(27, 27), side='left')

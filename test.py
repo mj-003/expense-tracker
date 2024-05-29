@@ -1,54 +1,25 @@
-import tkinter as tk
-from tkinterweb import HtmlFrame
-import plotly.graph_objects as go
-import numpy as np
+import matplotlib.pyplot as plt
 
-# Ustawienia wykresu
-np.random.seed(1)
-x = np.random.rand(100)
-y = np.random.rand(100)
+# Przykładowe dane
+labels = ['Net tuition and fees', 'Self-supporting', 'Private gifts', 'Taxes', 'Loan repayment', 'Promotions', 'All other']
+sizes = [21, 21, 4, 8, 16, 8, 21]
+colors = ['#66b3ff', '#ff6666', '#ffcc99', '#99ff99', '#c2c2f0', '#ffb3e6', '#c4e17f']
 
-f = go.FigureWidget([go.Scatter(x=x, y=y, mode='markers')])
+# Tworzenie wykresu
+fig, ax = plt.subplots()
+wedges, texts, autotexts = ax.pie(sizes, colors=colors, autopct=lambda pct: f'{int(round(pct))}%', startangle=140, wedgeprops=dict(width=0.45), pctdistance=0.85)
 
-scatter = f.data[0]
-colors = ['#a3a7e4'] * 100
-scatter.marker.color = colors
-scatter.marker.size = [10] * 100
-f.layout.hovermode = 'closest'
+# Dodawanie legendy
+legend = ax.legend(wedges, labels, loc="lower center", bbox_to_anchor=(0.5, -0.25), ncol=3)
 
-def update_point(trace, points, selector):
-    c = list(scatter.marker.color)
-    s = list(scatter.marker.size)
-    for i in points.point_inds:
-        c[i] = '#bae2be'
-        s[i] = 20
-        with f.batch_update():
-            scatter.marker.color = c
-            scatter.marker.size = s
+# Środek wykresu
+ax.set(aspect="equal")
 
-scatter.on_click(update_point)
+# Dodanie tekstu w środku wykresu
+plt.text(0, 0, 'Expenses', ha='center', va='center', fontsize=12, fontweight='bold')
 
-# Generowanie HTML dla wykresu
-plot_html = f.to_html(full_html=False)
+# Dostosowanie marginesów figury, aby przesunąć wykres w lewo
+fig.subplots_adjust(left=0.1, right=0.9, top=0.9, bottom=0.2)
 
-# Ustawienia tkinter
-root = tk.Tk()
-root.wm_title("Plotly w Tkinter")
-
-frame = tk.Frame(root)
-frame.pack(fill=tk.BOTH, expand=1)
-
-# Tworzenie HtmlFrame i osadzenie w nim wykresu
-html_frame = HtmlFrame(frame)
-html_frame.set_content(plot_html)
-html_frame.pack(fill=tk.BOTH, expand=1)
-
-# Funkcje przycisków
-def quit_app():
-    root.quit()
-    root.destroy()
-
-quit_button = tk.Button(root, text="Quit", command=quit_app)
-quit_button.pack(side=tk.BOTTOM)
-
-root.mainloop()
+# Wyświetlanie wykresu
+plt.show()

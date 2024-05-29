@@ -1,9 +1,7 @@
-from datetime import datetime
-import matplotlib.pyplot as plt
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from customtkinter import CTkFrame, CTkLabel, CTkButton, CTkImage
-from PIL import Image
 import customtkinter as ctk
+from PIL import Image
+from customtkinter import *
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 from plots import MyPlotter
 
@@ -33,7 +31,7 @@ class ChartsPage(CTkFrame):
 
     def create_chart_thumbnails(self):
         charts = [
-            {"title": "Category Pie Chart", "image": "images/delivered_icon.png", "function": self.show_category_pie_chart},
+            {"title": "Category Pie Chart", "image": "images/pie_chart.png", "function": self.show_category_pie_chart},
             {"title": "Monthly Expenses Bar Chart", "image": "images/delivered_icon.png", "function": self.show_monthly_expenses_bar_chart},
             {"title": "Expenses Over Time Line Chart", "image": "images/delivered_icon.png", "function": self.show_expenses_over_time_line_chart},
             {"title": "Comparison of Monthly Expenses", "image": "images/delivered_icon.png", "function": self.show_comparison_chart}
@@ -42,22 +40,12 @@ class ChartsPage(CTkFrame):
         row = 0
         column = 0
         for index, chart in enumerate(charts):
-            chart_frame = CTkFrame(self.thumbnail_frame)
-            chart_frame.grid(row=row, column=column, pady=10, padx=10, sticky="nsew")
-
             chart_image = Image.open(chart["image"])
-            chart_image = chart_image.resize((100, 100))
-            chart_image = CTkImage(light_image=chart_image, dark_image=chart_image, size=(100, 100))
+            chart_image = chart_image.resize((150, 150))  # Zmieniony rozmiar obrazu
+            chart_image = CTkImage(light_image=chart_image, dark_image=chart_image, size=(150, 150))
 
-            chart_label = CTkLabel(chart_frame, image=chart_image)
-            chart_label.image = chart_image
-            chart_label.pack(pady=5)
-
-            chart_title = CTkLabel(chart_frame, text=chart["title"], font=("Arial", 15))
-            chart_title.pack(pady=5, anchor='s')
-
-            chart_button = CTkButton(chart_frame, text="View Chart", command=chart["function"])
-            chart_button.pack(pady=5, anchor='s')
+            chart_button = CTkButton(self.thumbnail_frame, image=chart_image, text=chart["title"], compound="top", command=chart["function"])
+            chart_button.grid(row=row, column=column, pady=20, padx=20, sticky="nsew")
 
             column += 1
             if column > 1:
@@ -67,7 +55,7 @@ class ChartsPage(CTkFrame):
         # Konfiguracja proporcji w siatce, aby wypełniała dostępną przestrzeń
         for i in range(2):  # 2 kolumny
             self.thumbnail_frame.columnconfigure(i, weight=1)
-        for i in range(2):  # 2 rzędy (lub więcej w zależności od liczby wykresów)
+        for i in range(row + 1):  # liczba rzędów
             self.thumbnail_frame.rowconfigure(i, weight=1)
 
     def show_category_pie_chart(self):
