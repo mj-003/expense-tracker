@@ -44,11 +44,12 @@ class UserExpenses:
 
         if sort_order:
             reverse = sort_order.split()[0] == "⬇"
+            if sort_order != 'Sort':
 
-            if sort_order.split()[1] == "Amount":
-                filtered_expenses.sort(key=lambda x: x[1], reverse=reverse)
-            elif sort_order.split()[1] == "Time":
-                filtered_expenses.sort(key=lambda x: datetime.strptime(x[4], '%Y-%m-%d'), reverse=reverse)
+                if sort_order.split()[1] == "Amount":
+                    filtered_expenses.sort(key=lambda x: x[1], reverse=reverse)
+                elif sort_order.split()[1] == "Time":
+                    filtered_expenses.sort(key=lambda x: datetime.strptime(x[4], '%Y-%m-%d'), reverse=reverse)
 
         return headers + filtered_expenses
 

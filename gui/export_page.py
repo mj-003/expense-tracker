@@ -137,7 +137,7 @@ class ExportPage(CTkFrame):
 
         self.sort_filter = CTkComboBox(master=self.filter_frame,
                                        width=125,
-                                       values=['⬆ Amount', '⬇ Amount', '⬆ Time', '⬇ Time'],
+                                       values=['Sort','⬆ Amount', '⬇ Amount', '⬆ Time', '⬇ Time'],
                                        button_color="#2A8C55",
                                        border_color="#2A8C55",
                                        border_width=2,

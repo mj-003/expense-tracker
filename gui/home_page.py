@@ -1,18 +1,15 @@
-from CTkTable import CTkTable
-from customtkinter import *
-from PIL import Image
-import customtkinter as ctk
+import os
+from tkinter import messagebox
 
-import category
+import customtkinter as ctk
+from CTkTable import CTkTable
+from PIL import Image, ImageTk
+from customtkinter import *
+
+from categories import Categories
 from expenses.expense import Expense
 from gui.add_expense import ExpensePage
-from gui.export_page import ExportPage
-from categories import Categories
-from expenses.user_expenses import UserExpenses
-
-import customtkinter as ctk
-from CTkTable import CTkTable
-from PIL import Image
+from home_page_controller import HomePageController
 
 
 class HomePage(CTkFrame):
@@ -27,6 +24,11 @@ class HomePage(CTkFrame):
         self.user = user
         self.database = database
         self.user_expenses_list = self.user_expenses.get_expenses()
+        self.controller = HomePageController(database, user, user_expenses)
+
+        self.date_filter = None
+        self.category_filter = None
+        self.sort_filter = None
 
         self.create_title_frame()
         self.create_metrics_frame()
@@ -199,8 +201,8 @@ class HomePage(CTkFrame):
                               padx=27)
 
         self.expense_id = CTkEntry(master=search_container,
-                                   width=200,
-                                   placeholder_text="More info (place ID)",
+                                   width=110,
+                                   placeholder_text="More (place ID)",
                                    border_color="#2A8C55",
                                    border_width=2, )
         self.expense_id.pack(
@@ -210,7 +212,7 @@ class HomePage(CTkFrame):
 
         CTkButton(master=search_container,
                   text='✔',
-                  width=35,
+                  width=30,
                   font=("Arial", 15),
                   text_color="#fff",
                   fg_color="#2A8C55",
@@ -220,32 +222,64 @@ class HomePage(CTkFrame):
             padx=(13, 0),
             pady=15)
 
-        CTkComboBox(master=search_container,
-                    width=125,
-                    values=["Date", "Most Recent Order", "Least Recent Order"],
-                    button_color="#2A8C55",
-                    border_color="#2A8C55",
-                    border_width=2,
-                    button_hover_color="#207244",
-                    dropdown_hover_color="#207244",
-                    dropdown_fg_color="#2A8C55",
-                    dropdown_text_color="#fff").pack(
+        self.date_filter = CTkComboBox(master=search_container,
+                                       width=120,
+                                       values=["Date", "Most Recent Order", "Least Recent Order"],
+                                       button_color="#2A8C55",
+                                       border_color="#2A8C55",
+                                       border_width=2,
+                                       button_hover_color="#207244",
+                                       dropdown_hover_color="#207244",
+                                       dropdown_fg_color="#2A8C55",
+                                       dropdown_text_color="#fff")
+
+        self.date_filter.pack(
             side="left",
             padx=(13, 0),
             pady=15)
 
-        CTkComboBox(master=search_container,
-                    width=125,
-                    values=['Category', Categories.TRANSPORT.value, Categories.FOOD.value,
-                            Categories.ENTERTAINMENT.value,
-                            Categories.HOME.value, Categories.PERSONAL.value, ],
-                    button_color="#2A8C55",
-                    border_color="#2A8C55",
-                    border_width=2,
-                    button_hover_color="#207244",
-                    dropdown_hover_color="#207244",
-                    dropdown_fg_color="#2A8C55",
-                    dropdown_text_color="#fff").pack(
+        self.category_filter = CTkComboBox(master=search_container,
+                                           width=120,
+                                           values=['Category', Categories.TRANSPORT.value, Categories.FOOD.value,
+                                                   Categories.ENTERTAINMENT.value,
+                                                   Categories.HOME.value, Categories.PERSONAL.value, ],
+                                           button_color="#2A8C55",
+                                           border_color="#2A8C55",
+                                           border_width=2,
+                                           button_hover_color="#207244",
+                                           dropdown_hover_color="#207244",
+                                           dropdown_fg_color="#2A8C55",
+                                           dropdown_text_color="#fff")
+
+        self.category_filter.pack(
+            side="left",
+            padx=(13, 0),
+            pady=15)
+
+        self.sort_filter = CTkComboBox(master=search_container,
+                                       width=120,
+                                       values=['Sort', '⬆ Amount', '⬇ Amount', '⬆ Time', '⬇ Time'],
+                                       button_color="#2A8C55",
+                                       border_color="#2A8C55",
+                                       border_width=2,
+                                       button_hover_color="#207244",
+                                       dropdown_hover_color="#207244",
+                                       dropdown_fg_color="#2A8C55",
+                                       dropdown_text_color="#fff")
+
+        self.sort_filter.pack(
+            side="left",
+            padx=(13, 0),
+            pady=15)
+
+        CTkButton(master=search_container,
+                  text='✔',
+                  width=30,
+                  font=("Arial", 15),
+                  text_color="#fff",
+                  fg_color="#2A8C55",
+                  hover_color="#207244",
+                  command=self.get_filtered_expenses).pack(
             side="left",
             padx=(13, 0),
             pady=15)
@@ -373,10 +407,34 @@ class HomePage(CTkFrame):
         self.info_panel.pack_forget()  # Ukrywanie panelu po usunięciu wydatku
 
     def show_photo(self, selected_row):
-        print('jkcahfjc')
-        print(self.user_expenses.get_expense(self.selected_row))
         file_path = self.user_expenses.get_expense(self.selected_row)[6]
 
-        if file_path:
+        if file_path and os.path.exists(file_path):
+            # Otwieranie nowego okna dialogowego
+            photo_dialog = CTkToplevel(self)
+            photo_dialog.title("Expense Photo")
+
+            # Ładowanie i wyświetlanie obrazu w interfejsie
             image = Image.open(file_path)
-            image.show()
+            photo = ImageTk.PhotoImage(image)
+            photo_label = CTkLabel(photo_dialog, image=photo)
+            photo_label.image = photo  # Przechowujemy referencję do zdjęcia
+            photo_label.pack(expand=True, fill='both', padx=20, pady=20)
+        else:
+            messagebox.showinfo("No photo", "No photo found for this expense")
+
+    def get_filtered_expenses(self):
+        date = self.date_filter.get()
+        category = self.category_filter.get()
+        sort = self.sort_filter.get()
+
+        self.user_expenses_list = self.controller.get_filtered_expenses(date, category, sort)
+
+        indicates_to_remove = []
+        for i in range(self.table.rows):
+            indicates_to_remove.append(i)
+        self.table.delete_rows(indicates_to_remove)
+
+        for row_data in self.user_expenses_list:
+            self.table.add_row(row_data)
+        self.table.edit_row(0, text_color="#fff", hover_color="#2A8C55")
