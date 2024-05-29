@@ -13,6 +13,8 @@ class LoginPage(CTkFrame):
         self.parent = parent
         self.database = database
 
+
+
         self.user = None
         self.user_expenses = None
         self.username_entry = None
@@ -69,11 +71,9 @@ class LoginPage(CTkFrame):
         username = self.username_entry.get()
         password = self.password_entry.get()
         self.user = User(username, password)
-        self.user_expenses = UserExpenses(self.database, self.user)
 
         if self.user.login(self.database):
-            print(self.user)
-            print(self.user_expenses)
+            self.user_expenses = UserExpenses(self.database, self.user)
             self.app.after_logged_in(self.user, self.user_expenses)
 
     def add_register(self):

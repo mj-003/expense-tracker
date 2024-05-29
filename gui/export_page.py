@@ -5,6 +5,7 @@ from customtkinter import *
 
 from categories import Categories
 from utils.exports import export_to_excel, export_to_csv
+from export_page_controller import ExpensePageController
 
 
 class ExportPage(CTkFrame):
@@ -16,12 +17,14 @@ class ExportPage(CTkFrame):
         self.table = None
         self.table_frame = None
         self.user_expenses = None
+
         self.app = app
         self.parent = parent
         self.user = user
         self.database = database
         self.user_expenses = user_expenses
         self.user_expenses_list = self.user_expenses.get_expenses()
+        self.controller = ExpensePageController(database, user, user_expenses)
 
         self.add_title()
         self.add_filters()
@@ -51,13 +54,26 @@ class ExportPage(CTkFrame):
             pady=(10, 0),
             padx=(0, 27))
 
+        # CTkButton(master=title_frame,
+        #           text="✔",
+        #           width=35,
+        #           font=("Arial", 15),
+        #           text_color="#fff",
+        #           fg_color="#2A8C55",
+        #           hover_color="#207244",
+        #           command=self.get_filtered_expenses).pack(
+        #     anchor="ne",
+        #     side="right",
+        #     pady=(10, 0),
+        #     padx=(0, 15))
+
     def add_filters(self):
         self.filter_frame = CTkFrame(master=self, fg_color="transparent")
         self.filter_frame.pack(fill="both", padx=27, pady=(31, 0))
 
         # add start date
         CTkLabel(master=self.filter_frame,
-                 text="Date:",
+                 text="Filter:",
                  font=("Arial Bold", 17),
                  text_color="#52A476",
                  justify="left").grid(
@@ -79,21 +95,21 @@ class ExportPage(CTkFrame):
             row=0,
             column=1,
             sticky="w",
-            padx=(5, 0))
+            padx=(5, 15))
 
-        CTkLabel(master=self.filter_frame,
-                 text="Category:",
-                 font=("Arial Bold", 17),
-                 text_color="#52A476",
-                 justify="left").grid(
-            row=0,
-            column=2,
-            sticky="w",
-            padx=(20, 0))
+        # CTkLabel(master=self.filter_frame,
+        #          text="Category:",
+        #          font=("Arial Bold", 17),
+        #          text_color="#52A476",
+        #          justify="left").grid(
+        #     row=0,
+        #     column=2,
+        #     sticky="w",
+        #     padx=(20, 0))
 
         self.category_filter = CTkComboBox(master=self.filter_frame,
                                            width=125,
-                                           values=[Categories.TRANSPORT.value, Categories.FOOD.value,
+                                           values=['Category', Categories.TRANSPORT.value, Categories.FOOD.value,
                                                    Categories.ENTERTAINMENT.value,
                                                    Categories.HOME.value, Categories.PERSONAL.value, ],
                                            button_color="#2A8C55",
@@ -105,7 +121,7 @@ class ExportPage(CTkFrame):
                                            dropdown_text_color="#fff")
         self.category_filter.grid(
             row=0,
-            column=3,
+            column=2,
             sticky="w",
             padx=(5, 0))
 
@@ -115,13 +131,13 @@ class ExportPage(CTkFrame):
                  text_color="#52A476",
                  justify="left").grid(
             row=0,
-            column=4,
+            column=3,
             sticky="w",
-            padx=(20, 0))
+            padx=(30, 5))
 
         self.sort_filter = CTkComboBox(master=self.filter_frame,
                                        width=125,
-                                       values=['Ascending', 'Descending'],
+                                       values=['⬆ Amount', '⬇ Amount', '⬆ Time', '⬇ Time'],
                                        button_color="#2A8C55",
                                        border_color="#2A8C55",
                                        border_width=2,
@@ -131,9 +147,22 @@ class ExportPage(CTkFrame):
                                        dropdown_text_color="#fff")
         self.sort_filter.grid(
             row=0,
-            column=5,
+            column=4,
             sticky="w",
             padx=(5, 0))
+
+        CTkButton(master=self.filter_frame,
+                  text="✔",
+                  width=35,
+                  font=("Arial", 15),
+                  text_color="#fff",
+                  fg_color="#2A8C55",
+                  hover_color="#207244",
+                  command=self.get_filtered_expenses).grid(
+            column=5,
+            sticky="e",
+            padx=(35, 27),
+            row=0)
 
     def add_table(self):
         self.table_frame = CTkScrollableFrame(master=self, fg_color="transparent")
@@ -160,6 +189,25 @@ class ExportPage(CTkFrame):
 
         if file_path:
             if file_path.endswith('.xlsx'):
-                export_to_excel(file_path, self.user_expenses)
+                export_to_excel(file_path, self.user_expenses_list)
             elif file_path.endswith('.csv'):
-                export_to_csv(file_path, self.user_expenses)
+                export_to_csv(file_path, self.user_expenses_list)
+
+    def get_filtered_expenses(self):
+        date = self.date_filter.get()
+        category = self.category_filter.get()
+        sort = self.sort_filter.get()
+
+        self.user_expenses_list = self.controller.get_filtered_expenses(date, category, sort)
+
+        indicates_to_remove = []
+        for i in range(self.table.rows):
+            indicates_to_remove.append(i)
+        self.table.delete_rows(indicates_to_remove)
+
+        for row_data in self.user_expenses_list:
+            self.table.add_row(row_data)
+        self.table.edit_row(0, text_color="#fff", hover_color="#2A8C55")
+
+
+

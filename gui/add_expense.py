@@ -210,5 +210,10 @@ class ExpensePage(CTkFrame):
                                payment_method, self.date_entry.date_var.get())
 
         self.user_expenses.add_expense(curr_expense)
+        self.amount.delete(0, 'end')
+        self.description.delete(0, 'end')
+        self.category.set("Personal")
+        self.payment_method.set(0)
+        self.date_entry.date_var.set(self.date_entry.date_var.get())
 
         # self.app.return_to_home_page()

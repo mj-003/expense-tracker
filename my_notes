@@ -17,11 +17,10 @@ ADD EXPENSE PAGE:
 * add button to go back
 - add confirming adding expense
 - add domain restrictions for all fields
-- add expense category
 
-EXPORT PAGE:
-- add sorting, filtration
-- add button to export to pdf (or sth)
+EXPORT PAGE: -> done
+* add sorting, filtration
+* add button to export to pdf (or sth)
 
 GRAPH PAGE:
 ...
@@ -30,7 +29,7 @@ GRAPH PAGE:
 - all expenses by month and by month a year ago
 - sth...
 
-REGISTER PAGE:
+REGISTER PAGE: -> done
 ...
 
 SETTINGS PAGE:
@@ -40,3 +39,6 @@ SETTINGS PAGE:
 ACCOUNT PAGE:
 - change password
 - change personal data
+- add category?
+
+INCOME?????????

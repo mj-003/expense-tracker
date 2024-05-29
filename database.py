@@ -69,12 +69,23 @@ class Database:
             VALUES (?, ?, ?, ?, ?, ?)
         ''', (user_id, expense.amount, expense.category, expense.description, expense.payment_method, expense.date))
         self.connection.commit()
+        return self.cursor.lastrowid
 
     def get_expenses(self, user_id):
         self.cursor.execute('''
             SELECT * FROM expenses WHERE user_id = ?
         ''', (user_id,))
         return self.cursor.fetchall()
+
+    def update_expense(self, expense_id, expense: Expense):
+        self.cursor.execute('''
+            UPDATE expenses
+            SET amount = ?, category = ?, description = ?, payment_method = ?, date = ?
+            WHERE id = ?
+        ''', (expense.amount, expense.category, expense.description, expense.payment_method, expense.date, expense_id))
+        self.connection.commit()
+
+
 
     def del_expense(self, expense_id):
         self.cursor.execute('''

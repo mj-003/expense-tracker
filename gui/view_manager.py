@@ -17,6 +17,7 @@ class App(CTk):
         super().__init__()
 
         # Setting up Initial Things
+        self.sidebar_frame = None
         self.title("Expense Tracker")
         self.geometry("856x645")
         set_appearance_mode("light")
@@ -44,19 +45,19 @@ class App(CTk):
 
     def create_sidebar(self):
         print("Creating sidebar")
-        sidebar_frame = CTkFrame(master=self, fg_color="#2A8C55", width=176, height=650, corner_radius=0)
-        sidebar_frame.pack_propagate(False)
-        sidebar_frame.pack(fill="y", anchor="w", side="left")
+        self.sidebar_frame = CTkFrame(master=self, fg_color="#2A8C55", width=176, height=650, corner_radius=0)
+        self.sidebar_frame.pack_propagate(False)
+        self.sidebar_frame.pack(fill="y", anchor="w", side="left")
 
         logo_img_data = Image.open("images/logo.png")
         logo_img = CTkImage(dark_image=logo_img_data, light_image=logo_img_data, size=(78, 85))
 
-        CTkLabel(master=sidebar_frame, text="", image=logo_img).pack(pady=(38, 0), anchor="center")
+        CTkLabel(master=self.sidebar_frame, text="", image=logo_img).pack(pady=(38, 0), anchor="center")
 
         analytics_img_data = Image.open("images/analytics_icon.png")
         analytics_img = CTkImage(dark_image=analytics_img_data, light_image=analytics_img_data)
 
-        CTkButton(master=sidebar_frame, image=analytics_img, text="Analytics", fg_color="transparent",
+        CTkButton(master=self.sidebar_frame, image=analytics_img, text="Analytics", fg_color="transparent",
                   font=("Arial Bold", 14), hover_color="#207244", anchor="w",
                   command=lambda: self.show_frame(ExpensePage)).pack(anchor="center", ipady=5,
                                                                      pady=(60, 0))
@@ -64,26 +65,26 @@ class App(CTk):
         package_img_data = Image.open("images/package_icon.png")
         package_img = CTkImage(dark_image=package_img_data, light_image=package_img_data)
 
-        CTkButton(master=sidebar_frame, image=package_img, text="Expenses", fg_color="#fff",
+        CTkButton(master=self.sidebar_frame, image=package_img, text="Expenses", fg_color="#fff",
                   font=("Arial Bold", 14),
                   text_color="#2A8C55", hover_color="#eee", anchor="w", command=lambda: self.show_frame(HomePage)).pack(
             anchor="center", ipady=5, pady=(16, 0))
 
         list_img_data = Image.open("images/list_icon.png")
         list_img = CTkImage(dark_image=list_img_data, light_image=list_img_data)
-        CTkButton(master=sidebar_frame, image=list_img, text="Export", fg_color="transparent",
+        CTkButton(master=self.sidebar_frame, image=list_img, text="Export", fg_color="transparent",
                   font=("Arial Bold", 14),
                   hover_color="#207244", anchor="w", command=lambda: self.show_frame(ExportPage)).pack(anchor="center", ipady=5, pady=(16, 0))
 
         settings_img_data = Image.open("images/settings_icon.png")
         settings_img = CTkImage(dark_image=settings_img_data, light_image=settings_img_data)
-        CTkButton(master=sidebar_frame, image=settings_img, text="Settings", fg_color="transparent",
+        CTkButton(master=self.sidebar_frame, image=settings_img, text="Settings", fg_color="transparent",
                   font=("Arial Bold", 14), hover_color="#207244", anchor="w").pack(anchor="center", ipady=5,
                                                                                    pady=(16, 0))
 
         person_img_data = Image.open("images/person_icon.png")
         person_img = CTkImage(dark_image=person_img_data, light_image=person_img_data)
-        CTkButton(master=sidebar_frame, image=person_img, text="Account", fg_color="transparent",
+        CTkButton(master=self.sidebar_frame, image=person_img, text="Account", fg_color="transparent",
                   font=("Arial Bold", 14), hover_color="#207244", anchor="w").pack(anchor="s", ipady=5,
                                                                                    pady=(200, 0))
 

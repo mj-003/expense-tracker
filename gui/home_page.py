@@ -14,6 +14,8 @@ class HomePage(CTkFrame):
     def __init__(self, parent, app, database, user, user_expenses):
         super().__init__(parent)
 
+        self.table_frame = None
+        self.expense_id = None
         self.user_expenses = user_expenses
         self.app = app
         self.parent = parent
@@ -190,11 +192,24 @@ class HomePage(CTkFrame):
                               pady=(45, 0),
                               padx=27)
 
-        CTkEntry(master=search_container,
-                 width=305,
-                 placeholder_text="Search through description",
-                 border_color="#2A8C55",
-                 border_width=2).pack(
+        self.expense_id = CTkEntry(master=search_container,
+                                   width=200,
+                                   placeholder_text="More info (place ID)",
+                                   border_color="#2A8C55",
+                                   border_width=2, )
+        self.expense_id.pack(
+            side="left",
+            padx=(13, 0),
+            pady=15)
+
+        CTkButton(master=search_container,
+                  text='✔',
+                  width=35,
+                  font=("Arial", 15),
+                  text_color="#fff",
+                  fg_color="#2A8C55",
+                  hover_color="#207244",
+                  command=self.get_more_info).pack(
             side="left",
             padx=(13, 0),
             pady=15)
@@ -230,47 +245,38 @@ class HomePage(CTkFrame):
             pady=15)
 
     def show_user_expenses(self):
-        table_frame = CTkScrollableFrame(master=self, fg_color="transparent")
-        table_frame.pack(expand=True, fill="both", padx=27, pady=21)
-        print('showing user expenses')
+        if self.table_frame is None:
+            # Tworzenie nowej ramki tabeli
+            self.table_frame = CTkScrollableFrame(master=self, fg_color="transparent")
+            self.table_frame.pack(expand=True, fill="both", padx=27, pady=21)
 
-        table = CTkTable(master=table_frame,
-                         values=self.user_expenses_list,
-                         colors=["#E6E6E6", "#EEEEEE"],
-                         header_color="#2A8C55",
-                         hover_color="#B4B4B4")
+            # Tworzenie nowej tabeli
+            self.table = CTkTable(master=self.table_frame,
+                                  values=self.user_expenses_list,
+                                  colors=["#E6E6E6", "#EEEEEE"],
+                                  header_color="#2A8C55",
+                                  hover_color="#B4B4B4")
+            self.table.pack(expand=True)
 
-        print('done showing user expenses')
-        # Dodajemy zdarzenie kliknięcia myszą do tabeli
-        # table.bind("<Button-1>", self.show_details)
+        # Aktualizacja istniejącej tabeli
+        else:
+            # Usuwanie wszystkich istniejących wierszy
+            indicates_to_remove = list(range(len(self.table.values)))
+            self.table.delete_rows(indicates_to_remove)
 
-        table.pack(expand=True)
-        print('done packing table')
+            # Dodawanie nowych wierszy
+            for row_data in self.user_expenses_list:
+                self.table.add_row(row_data)
 
-    # def show_details(self, event):
-    #     # Pobieramy widget, na którym nastąpiło kliknięcie myszą
-    #     widget = event.widget
-    #     row_index = None
-    #     print('kliknelo mnie')
-    #     print(widget)
-    #     while widget.master is not None:
-    #         if ctk.in_grid(widget.master):
-    #             row_index = widget.master.grid_info()["row"]
-    #             break
-    #         else:
-    #             widget = widget.master
-    #
-    #     # Jeśli widget to komórka tabeli, przeszukujemy hierarchię widgetów, aby znaleźć wiersz
-    #     if isinstance(widget, CTkLabel):
-    #         print('jestem komorka jej')
-    #         # while widget.master is not None:
-    #         #     if isinstance(widget.master, CTkFrame):
-    #         #         row_index = widget.master.grid_info()["row"]
-    #         #         break
-    #         #     else:
-    #         #         widget = widget.master
-    #
-    #         # Tutaj możesz dodać kod do wyświetlenia szczegółów dla klikniętego wiersza
-    #         print('dupa dupa dupa ------------------------------------------')
-    #         print("Details for clicked row:", self.user_expenses[row_index])
-    #
+            # Edytowanie pierwszego wiersza (zakładam, że chcesz to zrobić po każdej aktualizacji)
+            if self.table.rows > 0:
+                self.table.edit_row(0, text_color="#fff", hover_color="#2A8C55")
+
+    def get_more_info(self):
+        print("Getting more info on row: ", self.expense_id.get())
+        print(self.user_expenses_list[int(self.expense_id.get())])
+        # Usuwanie wydatku
+        self.user_expenses.delete_expense(int(self.expense_id.get()))
+        self.user_expenses = UserExpenses(self.database, self.user)
+        self.user_expenses_list = self.user_expenses.get_expenses()
+        self.show_user_expenses()
