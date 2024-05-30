@@ -32,9 +32,12 @@ class UserFinancials(ABC):
         pass
 
     def get_item(self, autonumbered_id, get_function):
+        print('get_item')
         if 0 < autonumbered_id <= len(self.original_ids):
-            expense_id = self.original_ids[autonumbered_id - 1]
-            return get_function(expense_id)
+            item_id = self.original_ids[autonumbered_id - 1]
+            # print('item id: ', item_id)
+            # print(get_function(item_id))
+            return get_function(item_id)
         else:
             print(f"Invalid autonumbered ID: {autonumbered_id}")
             return None

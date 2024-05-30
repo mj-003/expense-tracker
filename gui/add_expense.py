@@ -8,7 +8,7 @@ from PIL import Image, ImageTk
 
 
 class ExpensePage(CTkFrame):
-    def __init__(self, parent, app, database, user, user_expenses):
+    def __init__(self, parent, app, database, user, user_expenses, user_incomes):
         super().__init__(parent)
 
         self.app = app

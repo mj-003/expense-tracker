@@ -10,15 +10,17 @@ from categories import Categories
 from financials.expense import Expense
 from gui.add_expense import ExpensePage
 from home_page_controller import HomePageController
+from gui.add_income import IncomePage
 
 
 class HomePage(CTkFrame):
-    def __init__(self, parent, app, database, user, user_expenses):
+    def __init__(self, parent, app, database, user, user_expenses, user_incomes):
         super().__init__(parent)
         self.selected_row = None
         self.table_frame = None
         self.expense_id = None
         self.user_expenses = user_expenses
+        self.user_incomes = user_incomes
         self.app = app
         self.parent = parent
         self.user = user
@@ -61,6 +63,19 @@ class HomePage(CTkFrame):
                   hover_color="#207244",
                   corner_radius=50,
                   command=lambda: self.app.show_frame(ExpensePage)).pack(
+            anchor="ne",
+            side="right")
+
+        CTkButton(master=title_frame,
+                  text="✚ New",
+                  width=100,
+                  height=50,
+                  font=("Aptos", 16),
+                  text_color="#fff",
+                  fg_color="#2A8C55",
+                  hover_color="#207244",
+                  corner_radius=50,
+                  command=lambda: self.app.show_frame(IncomePage)).pack(
             anchor="ne",
             side="right")
 
@@ -275,7 +290,7 @@ class HomePage(CTkFrame):
         delete_button.pack(side='right', padx=10, pady=10)
 
         photo_button = CTkButton(self.info_panel, text="📷", fg_color='white', text_color='black', width=60,
-                                 height=60, command=lambda: self.show_photo(self.selected_row))
+                                 height=60, command=lambda: self.show_photo())
         photo_button.pack(side='right', padx=10, pady=10)
 
         back_button = CTkButton(self.info_panel, text="🔙", fg_color='white', text_color='black', width=60, height=60,
@@ -340,8 +355,11 @@ class HomePage(CTkFrame):
         self.show_user_expenses()
         self.info_panel.pack_forget()  # Ukrywanie panelu po usunięciu wydatku
 
-    def show_photo(self, selected_row):
+    def show_photo(self):
+        print(self.selected_row)
+        print(self.user_expenses.get_expense(self.selected_row)[6])
         file_path = self.user_expenses.get_expense(self.selected_row)[6]
+        print('dupsko')
 
         if file_path and os.path.exists(file_path):
             # Otwieranie nowego okna dialogowego

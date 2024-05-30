@@ -3,12 +3,14 @@ from customtkinter import *
 from registration_window import RegistrationWindow
 from user import User
 from financials.user_expenses import UserExpenses
+from financials.user_incomes import UserIncomes
 
 
 class LoginPage(CTkFrame):
     def __init__(self, parent, app, database):
         super().__init__(parent)
 
+        self.user_incomes = None
         self.app = app
         self.parent = parent
         self.database = database
@@ -73,8 +75,7 @@ class LoginPage(CTkFrame):
         self.user = User(username, password)
 
         if self.user.login(self.database):
-            self.user_expenses = UserExpenses(self.database, self.user)
-            self.app.after_logged_in(self.user, self.user_expenses)
+            self.app.after_logged_in(self.user)
 
     def add_register(self):
         CTkButton(master=self.frame, text="Register", fg_color="#658354", hover_color="#E44982",

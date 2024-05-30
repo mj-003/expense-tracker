@@ -35,7 +35,12 @@ class UserExpenses(UserFinancials):
         return headers + filtered_expenses
 
     def get_expense(self, autonumbered_id):
-        self.get_item(autonumbered_id, self.database.get_expenses)
+        if 0 < autonumbered_id <= len(self.original_ids):
+            item_id = self.original_ids[autonumbered_id - 1]
+            return self.database.get_expense(item_id)
+        else:
+            print(f"Invalid autonumbered ID: {autonumbered_id}")
+            return None
 
     def filter_by_date(self, expenses, date_filter):
         if date_filter == "This month":

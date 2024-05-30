@@ -6,11 +6,14 @@ from gui.home_page import HomePage
 from gui.add_expense import ExpensePage
 from gui.login_page import LoginPage
 from gui.export_page import ExportPage
+from gui.add_income import IncomePage
 from financials.user_expenses import UserExpenses
 from gui import const
 from user import User
 from database import Database
 from charts_page import ChartsPage
+from financials.user_expenses import UserExpenses
+from financials.user_incomes import UserIncomes
 
 
 class App(CTk):
@@ -33,10 +36,12 @@ class App(CTk):
         self.LoginPage = LoginPage
         self.ExportPage = ExportPage
         self.ChartsPage = ChartsPage
+        self.IncomePage = IncomePage
 
         self.user = None
         self.database = Database('expenses.db')
         self.user_expenses = None
+        self.user_incomes = None
 
         # show login page
         self.LoginPage = LoginPage(self.container, self, self.database)
@@ -102,19 +107,21 @@ class App(CTk):
         self.show_frame(HomePage)
 
     def define_and_pack_frames(self):
-        for F in [HomePage, ExpensePage, ExportPage, ChartsPage]:
-            frame = F(self.container, self, self.database, self.user, self.user_expenses)
+        for F in [HomePage, ExpensePage, ExportPage, ChartsPage, IncomePage]:
+            frame = F(self.container, self, self.database, self.user, self.user_expenses, self.user_incomes)
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")
         print('done packing frames')
 
-    def after_logged_in(self, user: User, user_expenses: UserExpenses):
+    def after_logged_in(self, user: User):
         print("Logged in")
         print('user: ', user)
-        print('user_expenses: ', user_expenses)
+        #print('user_expenses: ', user_expenses)
         self.create_sidebar()
         self.user = user
-        self.user_expenses = user_expenses
+        self.user_expenses = UserExpenses(self.database, self.user)
+        self.user_incomes = UserIncomes(self.database, self.user)
+
         # print(self.user.username)
         self.container.grid_rowconfigure(0, weight=1)
         self.container.grid_columnconfigure(0, weight=1)
