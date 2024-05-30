@@ -23,7 +23,7 @@ class App(CTk):
         self.geometry("856x645")
         set_appearance_mode("light")
         self.resizable(True, True)
-        self.create_sidebar()
+
         self.container = CTkFrame(self)
         self.container.pack(side="right", fill="both", expand=True)
 
@@ -47,6 +47,7 @@ class App(CTk):
 
     def create_sidebar(self):
         print("Creating sidebar")
+        self.container.pack_forget()
         self.sidebar_frame = CTkFrame(master=self, fg_color="#2A8C55", width=176, height=650, corner_radius=0)
         self.sidebar_frame.pack_propagate(False)
         self.sidebar_frame.pack(fill="y", anchor="w", side="left")
@@ -89,6 +90,7 @@ class App(CTk):
         CTkButton(master=self.sidebar_frame, image=person_img, text="Account", fg_color="transparent",
                   font=("Arial Bold", 14), hover_color="#207244", anchor="w").pack(anchor="s", ipady=5,
                                                                                    pady=(200, 0))
+        self.container.pack(side="right", fill="both", expand=True)
 
     def show_frame(self, cont):
         print("Showing frame")
@@ -110,7 +112,7 @@ class App(CTk):
         print("Logged in")
         print('user: ', user)
         print('user_expenses: ', user_expenses)
-        # self.create_sidebar()
+        self.create_sidebar()
         self.user = user
         self.user_expenses = user_expenses
         # print(self.user.username)
