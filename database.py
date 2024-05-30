@@ -1,5 +1,6 @@
 import sqlite3
-from expenses.expense import Expense
+from financials.expense import Expense
+
 
 class Database:
     def __init__(self, db_name='expenses.db'):
@@ -27,6 +28,16 @@ class Database:
                 FOREIGN KEY (user_id) REFERENCES users (id)
             )
         ''')
+        self.cursor.execute('''
+                    CREATE TABLE IF NOT EXISTS incomes (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        user_id INTEGER,
+                        amount REAL,
+                        sender TEXT,
+                        date DATE,
+                        FOREIGN KEY (user_id) REFERENCES users (id)
+                    )
+                ''')
         self.cursor.execute('''
             CREATE TABLE IF NOT EXISTS categories (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -65,7 +76,7 @@ class Database:
 
     def add_expense(self, user_id, expense: Expense):
         self.cursor.execute('''
-            INSERT INTO expenses (user_id, amount, category, payment_method, date, photo_path)
+            INSERT INTO financials (user_id, amount, category, payment_method, date, photo_path)
             VALUES (?, ?, ?, ?, ?, ?)
         ''', (user_id, expense.amount, expense.category, expense.payment_method, expense.date, expense.photo_path))
         self.connection.commit()
@@ -73,29 +84,27 @@ class Database:
 
     def get_expenses(self, user_id):
         self.cursor.execute('''
-            SELECT * FROM expenses WHERE user_id = ?
+            SELECT * FROM financials WHERE user_id = ?
         ''', (user_id,))
         return self.cursor.fetchall()
 
     def get_expense(self, expense_id):
         self.cursor.execute('''
-            SELECT * FROM expenses WHERE id = ?
+            SELECT * FROM financials WHERE id = ?
         ''', (expense_id,))
         return self.cursor.fetchone()
 
     def update_expense(self, expense_id, expense: Expense):
         self.cursor.execute('''
-            UPDATE expenses
+            UPDATE financials
             SET amount = ?, category = ?, payment_method = ?, date = ?, photo_path = ?
             WHERE id = ?
         ''', (expense.amount, expense.category, expense.payment_method, expense.date, expense.photo_path, expense_id))
         self.connection.commit()
 
-
-
     def del_expense(self, expense_id):
         self.cursor.execute('''
-            DELETE FROM expenses WHERE id = ?
+            DELETE FROM financials WHERE id = ?
         ''', (expense_id,))
         self.connection.commit()
 
@@ -118,12 +127,41 @@ class Database:
 
     # for tests
     def get_columns(self):
-        self.cursor.execute("PRAGMA table_info(expenses)")
+        self.cursor.execute("PRAGMA table_info(financials)")
         columns = self.cursor.fetchall()
         column_names = [column[1] for column in columns]
         return column_names
 
+    def add_income(self, user_id, income):
+        self.cursor.execute('''
+            INSERT INTO incomes (user_id, amount, sender, date)
+            VALUES (?, ?, ?, ?)
+        ''', (user_id, income.amount, income.sender, income.date))
+        self.connection.commit()
+        return self.cursor.lastrowid
 
+    def get_incomes(self, user_id):
+        self.cursor.execute('''
+            SELECT * FROM incomes WHERE user_id = ?
+        ''', (user_id,))
+        return self.cursor.fetchall()
 
+    def get_income(self, income_id):
+        self.cursor.execute('''
+            SELECT * FROM incomes WHERE id = ?
+        ''', (income_id,))
+        return self.cursor.fetchone()
 
+    def update_income(self, income_id, income):
+        self.cursor.execute('''
+            UPDATE incomes
+            SET amount = ?, sender = ?, date = ?
+            WHERE id = ?
+        ''', (income.amount, income.sender, income.date, income_id))
+        self.connection.commit()
 
+    def del_income(self, income_id):
+        self.cursor.execute('''
+            DELETE FROM incomes WHERE id = ?
+        ''', (income_id,))
+        self.connection.commit()

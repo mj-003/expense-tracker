@@ -7,7 +7,7 @@ from PIL import Image, ImageTk
 from customtkinter import *
 
 from categories import Categories
-from expenses.expense import Expense
+from financials.expense import Expense
 from gui.add_expense import ExpensePage
 from home_page_controller import HomePageController
 
@@ -98,7 +98,7 @@ class HomePage(CTkFrame):
             pady=10)
 
         CTkLabel(master=total_sum_metric,
-                 text="Total expenses: 1929,99 zł",
+                 text="Total financials: 1929,99 zł",
                  text_color="#fff",
                  font=("Aptos", 18)).grid(
             row=0,

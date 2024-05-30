@@ -6,7 +6,7 @@ from gui.home_page import HomePage
 from gui.add_expense import ExpensePage
 from gui.login_page import LoginPage
 from gui.export_page import ExportPage
-from expenses.user_expenses import UserExpenses
+from financials.user_expenses import UserExpenses
 from gui import const
 from user import User
 from database import Database

@@ -1,9 +1,9 @@
 from customtkinter import *
 import tkinter as tk
 from tkinter import filedialog
-from expenses.expense import Expense
+from financials.expense import Expense
 from utils.date_entry import DateEntry
-from expenses.user_expenses import UserExpenses
+from financials.user_expenses import UserExpenses
 from PIL import Image, ImageTk
 
 

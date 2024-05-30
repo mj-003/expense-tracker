@@ -11,13 +11,6 @@ class Expense:
         self.expense_id = expense_id
 
     def add_expense(self, database):
-        print('add_expense')
-        print('amount: ', self.amount)
-        print('category: ', self.category)
-        print('payment_method: ', self.payment_method)
-        print('date: ', self.date)
-        print('photo_path: ', self.photo_path)
-        print('expense_id: ', self.expense_id)
         self.expense_id = database.add_expense(self)
 
     def __str__(self):

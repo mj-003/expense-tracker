@@ -1,4 +1,4 @@
-from expenses.user_expenses import UserExpenses
+from financials.user_expenses import UserExpenses
 from utils.exports import export_to_excel, export_to_csv
 from datetime import datetime
 

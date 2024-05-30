@@ -2,7 +2,7 @@ from PIL import Image
 from customtkinter import *
 from registration_window import RegistrationWindow
 from user import User
-from expenses.user_expenses import UserExpenses
+from financials.user_expenses import UserExpenses
 
 
 class LoginPage(CTkFrame):

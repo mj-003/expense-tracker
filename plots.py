@@ -3,7 +3,7 @@ from datetime import datetime
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
-from expenses.user_expenses import UserExpenses
+from financials.user_expenses import UserExpenses
 
 
 class MyPlotter:
