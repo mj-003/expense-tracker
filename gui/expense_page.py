@@ -314,6 +314,8 @@ class ExpensesPage(CTkFrame):
         self.user_expenses.add_expense(new_expense)
         self.user_expenses_list = self.user_expenses.get_expenses()
         self.show_user_expenses()
+        #self.app.update_user_expenses(self.user_expenses)
+        self.app.define_and_pack_frames()
         #self.info_panel.pack_forget()
 
     def edit_expense(self, row_id):
@@ -347,6 +349,7 @@ class ExpensesPage(CTkFrame):
 
         edit_dialog.columnconfigure(0, weight=1)
         edit_dialog.columnconfigure(1, weight=3)
+        self.app.update_user_expenses()
 
     def save_expense(self, row_id, price_entry, category_entry, date_entry, photo_entry, edit_dialog):
         new_price = price_entry.get()
@@ -362,10 +365,11 @@ class ExpensesPage(CTkFrame):
 
     def delete_expense(self, row_id):
         print(f"Deleting expense at row: {row_id}")
-        self.user_expenses.delete_expense(row_id)
+        self.user_expenses.delete_income(row_id)
         self.user_expenses_list = self.user_expenses.get_expenses()
         self.show_user_expenses()
         self.info_panel.pack_forget()
+        self.app.update_user_expenses()
 
     def show_photo(self):
         print(self.selected_row)
@@ -400,3 +404,6 @@ class ExpensesPage(CTkFrame):
         for row_data in self.user_expenses_list:
             self.table.add_row(row_data)
         self.table.edit_row(0, text_color="#fff", hover_color="#2A8C55")
+
+    def get_user_expenses(self):
+        return self.user_expenses

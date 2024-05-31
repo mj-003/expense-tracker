@@ -20,7 +20,7 @@ class IncomesPage(CTkFrame):
         self.financials = None
         self.selected_row = None
         self.table_frame = None
-        self.expense_id = None
+        self.income_id = None
         self.user_expenses = user_expenses
         self.user_incomes = user_incomes
         self.app = app
@@ -65,7 +65,7 @@ class IncomesPage(CTkFrame):
                   fg_color="#2A8C55",
                   hover_color="#207244",
                   corner_radius=50,
-                  command=self.show_add_expense_form).pack(
+                  command=self.ahow_add_income_form).pack(
             anchor="ne",
             side="right")
 
@@ -134,12 +134,12 @@ class IncomesPage(CTkFrame):
                               pady=(27, 0),
                               padx=27)
 
-        self.expense_id = CTkEntry(master=search_container,
-                                   width=110,
-                                   placeholder_text="More (place ID)",
-                                   border_color="#2A8C55",
-                                   border_width=2, )
-        self.expense_id.pack(
+        self.income_id = CTkEntry(master=search_container,
+                                  width=110,
+                                  placeholder_text="More (place ID)",
+                                  border_color="#2A8C55",
+                                  border_width=2, )
+        self.income_id.pack(
             side="left",
             padx=(13, 0),
             pady=15)
@@ -213,7 +213,7 @@ class IncomesPage(CTkFrame):
                   text_color="#fff",
                   fg_color="#2A8C55",
                   hover_color="#207244",
-                  command=self.get_filtered_expenses).pack(
+                  command=self.get_filtered_incomes).pack(
             side="left",
             padx=(13, 0),
             pady=15)
@@ -246,10 +246,10 @@ class IncomesPage(CTkFrame):
             self.table.edit_row(0, text_color="#fff", hover_color="#2A8C55")
 
     def get_more_info(self):
-        self.selected_row = int(self.expense_id.get())
-        expense_info = self.user_expenses_list[self.selected_row]
+        self.selected_row = int(self.income_id.get())
+        income_info = self.user_incomes_list[self.selected_row]
         print("Getting more info on row: ", self.selected_row)
-        print(expense_info)
+        print(income_info)
 
         for widget in self.info_panel.winfo_children():
             widget.destroy()
@@ -259,11 +259,11 @@ class IncomesPage(CTkFrame):
         label.pack(pady=(27, 27), padx=(27, 27), fill='both')
 
         edit_button = CTkButton(self.info_panel, text="✍︎", fg_color='#2A8C55', text_color='black', corner_radius=100, width=40, height=60,
-                                command=lambda: self.edit_expense(self.selected_row))
+                                command=lambda: self.edit_income(self.selected_row))
         edit_button.pack(padx=(10, 27), pady=10, fill='both')
 
         delete_button = CTkButton(self.info_panel, text="✕️", fg_color='#2A8C55', text_color='black', corner_radius=50, width=60,
-                                  height=60, command=lambda: self.delete_expense(self.selected_row))
+                                  height=60, command=lambda: self.delete_income(self.selected_row))
         delete_button.pack(padx=10, pady=10, fill='both')
 
         photo_button = CTkButton(self.info_panel, text="📷", fg_color='#2A8C55', text_color='black', corner_radius=50, width=60,
@@ -276,7 +276,7 @@ class IncomesPage(CTkFrame):
 
         self.info_panel.pack(expand=True, fill="both", pady=(27, 27), padx=(0, 27))
 
-    def show_add_expense_form(self):
+    def ahow_add_income_form(self):
         for widget in self.info_panel.winfo_children():
             widget.destroy()
 
@@ -313,87 +313,65 @@ class IncomesPage(CTkFrame):
         self.show_user_incomes()
         #self.info_panel.pack_forget()
 
-    def edit_expense(self, row_id):
-        expense_info = self.user_expenses_list[row_id]
+    def edit_income(self, row_id):
+        income_info = self.user_incomes_list[row_id]
 
         edit_dialog = ctk.CTkToplevel(self)
-        edit_dialog.title("Edit Expense")
+        edit_dialog.title("Edit Income")
         edit_dialog.geometry("400x300")
 
-        ctk.CTkLabel(edit_dialog, text="Price:").grid(row=1, column=0, pady=10, padx=10, sticky="e")
-        price_entry = ctk.CTkEntry(edit_dialog, textvariable=StringVar(value=expense_info[1]))
-        price_entry.grid(row=1, column=1, pady=(20, 10), padx=10, sticky="w")
+        ctk.CTkLabel(edit_dialog, text="Amount:").grid(row=1, column=0, pady=10, padx=10, sticky="e")
+        amount_entry = ctk.CTkEntry(edit_dialog, textvariable=StringVar(value=income_info[1]))
+        amount_entry.grid(row=1, column=1, pady=(20, 10), padx=10, sticky="w")
 
-        ctk.CTkLabel(edit_dialog, text="Category:").grid(row=2, column=0, pady=10, padx=10, sticky="e")
-        category_entry = ctk.CTkEntry(edit_dialog, textvariable=StringVar(value=expense_info[2]))
-        category_entry.grid(row=2, column=1, pady=10, padx=10, sticky="w")
+        ctk.CTkLabel(edit_dialog, text="From:").grid(row=2, column=0, pady=10, padx=10, sticky="e")
+        from_entry = ctk.CTkEntry(edit_dialog, textvariable=StringVar(value=income_info[2]))
+        from_entry.grid(row=2, column=1, pady=10, padx=10, sticky="w")
 
         ctk.CTkLabel(edit_dialog, text="Date:").grid(row=3, column=0, pady=10, padx=10, sticky="e")
-        date_entry = ctk.CTkEntry(edit_dialog, textvariable=StringVar(value=expense_info[3]))
+        date_entry = ctk.CTkEntry(edit_dialog, textvariable=StringVar(value=income_info[3]))
         date_entry.grid(row=3, column=1, pady=10, padx=10, sticky="w")
 
-        ctk.CTkLabel(edit_dialog, text="Recipe:").grid(row=4, column=0, pady=10, padx=10, sticky="e")
-        photo_entry = ctk.CTkEntry(edit_dialog, textvariable=StringVar(value=expense_info[4]))
-        photo_entry.grid(row=4, column=1, pady=10, padx=10, sticky="w")
 
         save_button = ctk.CTkButton(edit_dialog, text="Save",
                                     fg_color="#2A8C55",
-                                    command=lambda: self.save_expense(row_id, price_entry, category_entry, date_entry,
-                                                                      photo_entry, edit_dialog))
+                                    command=lambda: self.save_income(row_id, amount_entry, from_entry, date_entry,
+                                                                     edit_dialog))
         save_button.grid(row=5, column=0, columnspan=2, pady=20, padx=10)
 
         edit_dialog.columnconfigure(0, weight=1)
         edit_dialog.columnconfigure(1, weight=3)
 
-    def save_expense(self, row_id, price_entry, category_entry, date_entry, photo_entry, edit_dialog):
-        new_price = price_entry.get()
-        new_category = category_entry.get()
+    def save_income(self, row_id, amount_entry, from_entry, date_entry, edit_dialog):
+        new_amount = amount_entry.get()
+        new_from = from_entry.get()
         new_date = date_entry.get()
-        new_photo = photo_entry.get()
-        new_expense = Expense(new_price, new_category, new_date, new_photo)
+        new_income = Income(new_amount, new_from, new_date)
 
-        self.user_expenses.update_user_expense(row_id, new_expense)
-        self.user_expenses_list = self.user_expenses.get_expenses()
-        self.show_user_expenses()
+        self.user_incomes.update_user_incomes(row_id, new_income)
+        self.user_incomes_list = self.user_incomes.get_incomes()
+        self.show_user_incomes()
         edit_dialog.destroy()
 
-    def delete_expense(self, row_id):
-        print(f"Deleting expense at row: {row_id}")
-        self.user_expenses.delete_expense(row_id)
-        self.user_expenses_list = self.user_expenses.get_expenses()
-        self.show_user_expenses()
+    def delete_income(self, row_id):
+        print(f"Deleting income at row: {row_id}")
+        self.user_incomes.delete_income(row_id)
+        self.user_incomes_list = self.user_incomes.get_incomes()
+        self.show_user_incomes()
         self.info_panel.pack_forget()
 
-    def show_photo(self):
-        print(self.selected_row)
-        print(self.user_expenses.get_expense(self.selected_row)[6])
-        file_path = self.user_expenses.get_expense(self.selected_row)[6]
-        print('dupsko')
-
-        if file_path and os.path.exists(file_path):
-            photo_dialog = CTkToplevel(self)
-            photo_dialog.title("Expense Photo")
-
-            image = Image.open(file_path)
-            photo = ImageTk.PhotoImage(image)
-            photo_label = CTkLabel(photo_dialog, image=photo)
-            photo_label.image = photo
-            photo_label.pack(expand=True, fill='both', padx=20, pady=20)
-        else:
-            messagebox.showinfo("No photo", "No photo found for this expense")
-
-    def get_filtered_expenses(self):
+    def get_filtered_incomes(self):
         date = self.date_filter.get()
-        category = self.category_filter.get()
+        from_who = self.category_filter.get()
         sort = self.sort_filter.get()
 
-        self.user_expenses_list = self.controller.get_filtered_expenses(date, category, sort)
+        self.user_incomes_list = self.controller.get_filtered_incomes(date, from_who, sort)
 
         indicates_to_remove = []
         for i in range(self.table.rows):
             indicates_to_remove.append(i)
         self.table.delete_rows(indicates_to_remove)
 
-        for row_data in self.user_expenses_list:
+        for row_data in self.user_incomes_list:
             self.table.add_row(row_data)
         self.table.edit_row(0, text_color="#fff", hover_color="#2A8C55")

@@ -57,4 +57,4 @@ class UserExpenses(UserFinancials):
         self.delete_item(autonumbered_id, self.database.del_expense, self.database.get_expenses)
 
     def update_user_expense(self, autonumbered_id, updated_expense):
-        self.update_item(autonumbered_id, updated_expense, self.database.update_expense)
+        self.update_item(autonumbered_id, updated_expense, self.database.update_expense, self.database.get_expenses)

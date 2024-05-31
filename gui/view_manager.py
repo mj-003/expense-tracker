@@ -108,10 +108,10 @@ class App(CTk):
                                                                                    pady=(170, 0))
         self.container.pack(side="right", fill="both", expand=True)
 
-    def show_frame(self, cont):
-        print("Showing frame")
-        frame = self.frames[cont]
-        frame.tkraise()
+    # def show_frame(self, cont):
+    #     print("Showing frame")
+    #     frame = self.frames[cont]
+    #     frame.tkraise()
 
     def return_to_home_page(self):
         self.define_and_pack_frames()
@@ -122,7 +122,16 @@ class App(CTk):
             frame = F(self.container, self, self.database, self.user, self.user_expenses, self.user_incomes)
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")
+            frame.grid_remove()  # Ukryj ramkę zaraz po jej zapakowaniu
         print('done packing frames')
+
+        # Wyświetl tylko pierwszą ramkę (HomePage)
+        # self.show_frame(HomePage)
+
+    def show_frame(self, cont):
+        frame = self.frames[cont]
+        frame.grid()  # Upewnij się, że ramka jest widoczna
+        frame.tkraise()  # Przenieś ramkę na wierzch
 
     def after_logged_in(self, user: User):
         print("Logged in")
@@ -138,6 +147,11 @@ class App(CTk):
         self.container.grid_columnconfigure(0, weight=1)
         self.define_and_pack_frames()
         self.show_frame(HomePage)
+
+    def update_user_expenses(self, new_expenses):
+        for frame in self.frames:
+            print('frame: ', frame)
+            self.frames[frame].user_expenses = new_expenses
 
 
 if __name__ == "__main__":

@@ -41,7 +41,7 @@ class UserIncomes(UserFinancials):
         return headers + filtered_incomes
 
     def delete_income(self, autonumbered_id):
-        self.delete_item(autonumbered_id, self.database.del_income)
+        self.delete_item(autonumbered_id, self.database.del_income, self.database.get_incomes)
 
     def update_user_income(self, autonumbered_id, updated_income):
         self.update_item(autonumbered_id, updated_income, self.database.update_income)
@@ -55,3 +55,6 @@ class UserIncomes(UserFinancials):
             return incomes
 
         return [income for income in incomes if datetime.strptime(income[3], '%Y-%m-%d') >= start_date]
+
+    def update_user_incomes(self, autonumbered_id, updated_income):
+        self.update_item(autonumbered_id, updated_income, self.database.update_income, self.database.get_incomes)

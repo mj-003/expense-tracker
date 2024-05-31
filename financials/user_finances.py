@@ -49,12 +49,12 @@ class UserFinancials(ABC):
         else:
             print(f"Invalid autonumbered ID: {autonumbered_id}")
 
-    def update_item(self, autonumbered_id, updated_item, update_function):
+    def update_item(self, autonumbered_id, updated_item, update_function, get_function):
         print('update_item')
         print(updated_item)
         if 0 < autonumbered_id <= len(self.original_ids):
             item_id = self.original_ids[autonumbered_id - 1]
             update_function(item_id, updated_item)
-            self.load_items()
+            self.load_items(get_function)
         else:
             print(f"Invalid autonumbered ID: {autonumbered_id}")
