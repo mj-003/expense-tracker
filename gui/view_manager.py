@@ -7,6 +7,8 @@ from gui.add_expense import ExpensePage
 from gui.login_page import LoginPage
 from gui.export_page import ExportPage
 from gui.add_income import IncomePage
+from gui.expense_page import ExpensesPage
+from gui.incomes_page import IncomesPage
 from financials.user_expenses import UserExpenses
 from gui import const
 from user import User
@@ -23,7 +25,7 @@ class App(CTk):
         # Setting up Initial Things
         self.sidebar_frame = None
         self.title("Expense Tracker")
-        self.geometry("956x645")
+        self.geometry("1000x645")
         set_appearance_mode("light")
         self.resizable(True, True)
 
@@ -37,6 +39,8 @@ class App(CTk):
         self.ExportPage = ExportPage
         self.ChartsPage = ChartsPage
         self.IncomePage = IncomePage
+        self.ExpensesPage = ExpensesPage
+        self.IncomesPage = IncomesPage
 
         self.user = None
         self.database = Database('expenses.db')
@@ -73,28 +77,35 @@ class App(CTk):
         package_img_data = Image.open("images/package_icon.png")
         package_img = CTkImage(dark_image=package_img_data, light_image=package_img_data)
 
-        CTkButton(master=self.sidebar_frame, image=package_img, text="Expenses", fg_color="#fff",
+        CTkButton(master=self.sidebar_frame, image=package_img, text="Financials", fg_color="#fff",
                   font=("Arial Bold", 14),
                   text_color="#2A8C55", hover_color="#eee", anchor="w", command=lambda: self.show_frame(HomePage)).pack(
             anchor="center", ipady=5, pady=(16, 0))
 
         list_img_data = Image.open("images/list_icon.png")
         list_img = CTkImage(dark_image=list_img_data, light_image=list_img_data)
-        CTkButton(master=self.sidebar_frame, image=list_img, text="Export", fg_color="transparent",
-                  font=("Arial Bold", 14),
-                  hover_color="#207244", anchor="w", command=lambda: self.show_frame(ExportPage)).pack(anchor="center", ipady=5, pady=(16, 0))
 
         settings_img_data = Image.open("images/settings_icon.png")
         settings_img = CTkImage(dark_image=settings_img_data, light_image=settings_img_data)
-        CTkButton(master=self.sidebar_frame, image=settings_img, text="Settings", fg_color="transparent",
-                  font=("Arial Bold", 14), hover_color="#207244", anchor="w").pack(anchor="center", ipady=5,
+        CTkButton(master=self.sidebar_frame, image=settings_img, text="Incomes", fg_color="transparent",
+                  font=("Arial Bold", 14), hover_color="#207244", anchor="w", command=lambda: self.show_frame(IncomesPage)).pack(anchor="center", ipady=5,
                                                                                    pady=(16, 0))
+
+        CTkButton(master=self.sidebar_frame, image=settings_img, text="Expenses", fg_color="transparent",
+                  font=("Arial Bold", 14), hover_color="#207244", anchor="w", command=lambda: self.show_frame(ExpensesPage)).pack(anchor="center", ipady=5,
+                                                                                   pady=(16, 0))
+
+        CTkButton(master=self.sidebar_frame, image=list_img, text="Export", fg_color="transparent",
+                  font=("Arial Bold", 14),
+                  hover_color="#207244", anchor="w", command=lambda: self.show_frame(ExportPage)).pack(anchor="center",
+                                                                                                       ipady=5,
+                                                                                                       pady=(16, 0))
 
         person_img_data = Image.open("images/person_icon.png")
         person_img = CTkImage(dark_image=person_img_data, light_image=person_img_data)
         CTkButton(master=self.sidebar_frame, image=person_img, text="Account", fg_color="transparent",
                   font=("Arial Bold", 14), hover_color="#207244", anchor="w").pack(anchor="s", ipady=5,
-                                                                                   pady=(200, 0))
+                                                                                   pady=(170, 0))
         self.container.pack(side="right", fill="both", expand=True)
 
     def show_frame(self, cont):
@@ -107,7 +118,7 @@ class App(CTk):
         self.show_frame(HomePage)
 
     def define_and_pack_frames(self):
-        for F in [HomePage, ExpensePage, ExportPage, ChartsPage, IncomePage]:
+        for F in [HomePage, ExportPage, ChartsPage, ExpensesPage, IncomesPage]:
             frame = F(self.container, self, self.database, self.user, self.user_expenses, self.user_incomes)
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")

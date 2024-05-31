@@ -175,7 +175,7 @@ class ExportPage(CTkFrame):
                               hover_color="#B4B4B4")
 
         self.table.edit_row(0, text_color="#fff", hover_color="#2A8C55")
-        self.table.pack(expand=True)
+        self.table.pack(expand=True, fill='both')
 
     def export_data(self):
 

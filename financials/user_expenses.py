@@ -54,7 +54,7 @@ class UserExpenses(UserFinancials):
         return [expense for expense in expenses if datetime.strptime(expense[4], '%Y-%m-%d') >= start_date]
 
     def delete_expense(self, autonumbered_id):
-        self.delete_item(autonumbered_id, self.database.del_expense)
+        self.delete_item(autonumbered_id, self.database.del_expense, self.database.get_expenses)
 
     def update_user_expense(self, autonumbered_id, updated_expense):
         self.update_item(autonumbered_id, updated_expense, self.database.update_expense)

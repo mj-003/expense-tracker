@@ -8,12 +8,13 @@ from customtkinter import *
 
 from categories import Categories
 from financials.expense import Expense
+from financials.income import Income
 from gui.add_expense import ExpensePage
 from home_page_controller import HomePageController
 from gui.add_income import IncomePage
 
 
-class HomePage(CTkFrame):
+class IncomesPage(CTkFrame):
     def __init__(self, parent, app, database, user, user_expenses, user_incomes):
         super().__init__(parent)
         self.financials = None
@@ -37,9 +38,8 @@ class HomePage(CTkFrame):
         self.create_title_frame()
         self.create_metrics_frame()
         self.create_search_container()
-        self.create_info_panel()  # Dodane: Tworzenie panelu bocznego
+        self.create_info_panel()
         self.show_user_incomes()
-        #self.show_user_expenses()
 
     def create_title_frame(self):
         title_frame = CTkFrame(master=self, fg_color="transparent")
@@ -50,20 +50,24 @@ class HomePage(CTkFrame):
             pady=(25, 0))
 
         CTkLabel(master=title_frame,
-                 text=f"Hello {self.user.username}!",
+                 text=f"Your incomes",
                  font=("Aptos", 40, 'bold'),
                  text_color="#2A8C55").pack(
             anchor="nw",
             side="left")
 
-        CTkLabel(master=title_frame,
-                 text="Thur, 30.05",
-                 text_color="#2A8C55",
-                 font=("Aptos", 35)).pack(
-            anchor='nw',
-            side='right',
-            pady=5)
-
+        CTkButton(master=title_frame,
+                  text="✚ New",
+                  width=100,
+                  height=50,
+                  font=("Aptos", 16),
+                  text_color="#fff",
+                  fg_color="#2A8C55",
+                  hover_color="#207244",
+                  corner_radius=50,
+                  command=self.show_add_expense_form).pack(
+            anchor="ne",
+            side="right")
 
     def create_metrics_frame(self):
         metrics_frame = CTkFrame(master=self, fg_color="transparent")
@@ -71,7 +75,7 @@ class HomePage(CTkFrame):
             anchor="n",
             fill="x",
             padx=27,
-            pady=(27, 0))
+            pady=(25, 0))
 
         total_sum_metric = CTkFrame(master=metrics_frame,
                                     fg_color="#2A8C55",
@@ -97,7 +101,7 @@ class HomePage(CTkFrame):
             pady=10)
 
         CTkLabel(master=total_sum_metric,
-                 text="Total financials: 1929,99 zł",
+                 text="Total incomes: 1929,99 zł",
                  text_color="#fff",
                  font=("Aptos", 18)).grid(
             row=0,
@@ -112,14 +116,14 @@ class HomePage(CTkFrame):
         date_frame.grid_propagate(False)
         date_frame.pack(side="right")
 
-        # CTkLabel(master=date_frame,
-        #          text="Thur, 30.05",
-        #          text_color="#2A8C55",
-        #          font=("Aptos", 35)).grid(
-        #     row=0,
-        #     column=1,
-        #     sticky="se",
-        #     pady=(0, 10))
+        CTkLabel(master=date_frame,
+                 text="Thur, 30.05",
+                 text_color="#2A8C55",
+                 font=("Aptos", 35)).grid(
+            row=0,
+            column=1,
+            sticky="se",
+            pady=(0, 10))
 
     def create_search_container(self):
         search_container = CTkFrame(master=self,
@@ -129,21 +133,6 @@ class HomePage(CTkFrame):
         search_container.pack(fill="x",
                               pady=(27, 0),
                               padx=27)
-        self.financials = CTkComboBox(master=search_container,
-                                      width=120,
-                                      values=["Expenses", "Incomes", "Both"],
-                                      button_color="#2A8C55",
-                                      border_color="#2A8C55",
-                                      border_width=2,
-                                      button_hover_color="#207244",
-                                      dropdown_hover_color="#207244",
-                                      dropdown_fg_color="#2A8C55",
-                                      dropdown_text_color="#fff")
-
-        self.financials.pack(
-            side="left",
-            padx=(13, 0),
-            pady=15)
 
         self.expense_id = CTkEntry(master=search_container,
                                    width=110,
@@ -230,46 +219,15 @@ class HomePage(CTkFrame):
             pady=15)
 
     def create_info_panel(self):
-        self.info_panel = CTkFrame(master=self, fg_color="white", border_width=2, border_color="#2A8C55")
-        self.info_panel.pack(expand=True, fill="both")
-        self.info_panel.pack_forget()  # Ukrywanie panelu początkowo
-
-    def show_user_expenses(self):
-        if self.table_frame is None:
-            # Tworzenie nowej ramki tabeli
-            self.table_frame = CTkScrollableFrame(master=self, fg_color="transparent")
-            self.table_frame.pack(expand=True, fill="both", padx=27, pady=21)
-
-            # Tworzenie nowej tabeli
-            self.table = CTkTable(master=self.table_frame,
-                                  values=self.user_expenses_list,
-                                  colors=["#E6E6E6", "#EEEEEE"],
-                                  header_color="#2A8C55",
-                                  hover_color="#B4B4B4")
-
-            self.table.pack(expand=True)
-
-        # Aktualizacja istniejącej tabeli
-        else:
-            # Usuwanie wszystkich istniejących wierszy
-            indicates_to_remove = list(range(len(self.table.values)))
-            self.table.delete_rows(indicates_to_remove)
-
-            # Dodawanie nowych wierszy
-            for row_data in self.user_expenses_list:
-                self.table.add_row(row_data)
-
-            # Edytowanie pierwszego wiersza (zakładam, że chcesz to zrobić po każdej aktualizacji)
-        if self.table.rows > 0:
-            self.table.edit_row(0, text_color="#fff", hover_color="#2A8C55")
+        self.info_panel = CTkFrame(master=self, fg_color="white", border_width=2, border_color="#2A8C55", width=200)
+        self.info_panel.pack(expand=True, fill="both", pady=20)
+        self.info_panel.pack_forget()
 
     def show_user_incomes(self):
         if self.table_frame is None:
-            # Tworzenie nowej ramki tabeli
             self.table_frame = CTkScrollableFrame(master=self, fg_color="transparent")
-            self.table_frame.pack(expand=True, fill="both", padx=27, pady=21)
+            self.table_frame.pack(expand=True, fill="both", padx=27, pady=21, side='left')
 
-            # Tworzenie nowej tabeli
             self.table = CTkTable(master=self.table_frame,
                                   values=self.user_incomes_list,
                                   colors=["#E6E6E6", "#EEEEEE"],
@@ -277,18 +235,13 @@ class HomePage(CTkFrame):
                                   hover_color="#B4B4B4")
 
             self.table.pack(expand=True, fill='both')
-
-        # Aktualizacja istniejącej tabeli
         else:
-            # Usuwanie wszystkich istniejących wierszy
             indicates_to_remove = list(range(len(self.table.values)))
             self.table.delete_rows(indicates_to_remove)
 
-            # Dodawanie nowych wierszy
             for row_data in self.user_incomes_list:
                 self.table.add_row(row_data)
 
-            # Edytowanie pierwszego wiersza (zakładam, że chcesz to zrobić po każdej aktualizacji)
         if self.table.rows > 0:
             self.table.edit_row(0, text_color="#fff", hover_color="#2A8C55")
 
@@ -298,42 +251,74 @@ class HomePage(CTkFrame):
         print("Getting more info on row: ", self.selected_row)
         print(expense_info)
 
-        # Wypełnianie panelu bocznego danymi
         for widget in self.info_panel.winfo_children():
             widget.destroy()
 
-        label = CTkLabel(self.info_panel, text=f"Expense Info (ID: {self.selected_row})", font=("Aptos", 14),
-
+        label = CTkLabel(self.info_panel, text=f"Income Info (ID: {self.selected_row})", font=("Aptos", 14),
                          width=30, height=2, text_color='#2A8C55')
-        label.pack(pady=(27, 27), padx=(27, 27), side='left')
+        label.pack(pady=(27, 27), padx=(27, 27), fill='both')
 
         edit_button = CTkButton(self.info_panel, text="✍︎", fg_color='#2A8C55', text_color='black', corner_radius=100, width=40, height=60,
                                 command=lambda: self.edit_expense(self.selected_row))
-        edit_button.pack(side='right', padx=(10, 27), pady=10)
+        edit_button.pack(padx=(10, 27), pady=10, fill='both')
 
         delete_button = CTkButton(self.info_panel, text="✕️", fg_color='#2A8C55', text_color='black', corner_radius=50, width=60,
                                   height=60, command=lambda: self.delete_expense(self.selected_row))
-        delete_button.pack(side='right', padx=10, pady=10)
+        delete_button.pack(padx=10, pady=10, fill='both')
 
         photo_button = CTkButton(self.info_panel, text="📷", fg_color='#2A8C55', text_color='black', corner_radius=50, width=60,
                                  height=60, command=lambda: self.show_photo())
-        photo_button.pack(side='right', padx=10, pady=10)
+        photo_button.pack(padx=10, pady=10, fill='both')
 
         back_button = CTkButton(self.info_panel, text="↩︎", font=('Aptos',25), fg_color='#2A8C55', text_color='white', corner_radius=50, width=60, height=60,
                                 command=lambda: self.app.return_to_home_page())
-        back_button.pack(side='right', padx=10, pady=10)
+        back_button.pack(padx=10, pady=10, fill='both')
 
-        self.info_panel.pack(expand=True, fill="both", pady=(27, 27), padx=(27, 27))
+        self.info_panel.pack(expand=True, fill="both", pady=(27, 27), padx=(0, 27))
+
+    def show_add_expense_form(self):
+        for widget in self.info_panel.winfo_children():
+            widget.destroy()
+
+
+        label = CTkLabel(self.info_panel, text="Add New Income", font=("Aptos", 18),
+                         width=30, height=2, text_color='#2A8C55')
+        label.pack(pady=(20, 20), padx=(35, 35))
+
+        amount_entry = CTkEntry(self.info_panel, placeholder_text="Amount")
+        amount_entry.pack(pady=(10, 10), padx=(10, 10))
+
+        from_entry = CTkEntry(self.info_panel, placeholder_text="From")
+        from_entry.pack(pady=(10, 10), padx=(10, 10))
+
+        date_entry = CTkEntry(self.info_panel, placeholder_text="Date")
+        date_entry.pack(pady=(10, 10), padx=(10, 10))
+
+        save_button = CTkButton(self.info_panel, text="Save",
+                                fg_color="#2A8C55",
+                                command=lambda: self.save_new_income(amount_entry, from_entry, date_entry
+                                                                      ))
+        save_button.pack(pady=(10, 10), padx=(10, 10))
+
+        self.info_panel.pack(expand=True, fill="both", pady=(27, 27), padx=(0, 27))
+
+    def save_new_income(self, amount_entry, from_entry, date_entry):
+        new_amount = amount_entry.get()
+        new_from = from_entry.get()
+        new_date = date_entry.get()
+        new_income = Income(new_amount, new_from, new_date)
+
+        self.user_incomes.add_income(new_income)
+        self.user_incomes_list = self.user_incomes.get_incomes()
+        self.show_user_incomes()
+        #self.info_panel.pack_forget()
 
     def edit_expense(self, row_id):
         expense_info = self.user_expenses_list[row_id]
 
-        # Tworzenie okna do edycji wydatku
         edit_dialog = ctk.CTkToplevel(self)
         edit_dialog.title("Edit Expense")
-        edit_dialog.geometry("400x300")  # Ustawienie rozmiaru okna
-
-        # Etykiety i pola tekstowe w układzie grid
+        edit_dialog.geometry("400x300")
 
         ctk.CTkLabel(edit_dialog, text="Price:").grid(row=1, column=0, pady=10, padx=10, sticky="e")
         price_entry = ctk.CTkEntry(edit_dialog, textvariable=StringVar(value=expense_info[1]))
@@ -361,7 +346,6 @@ class HomePage(CTkFrame):
         edit_dialog.columnconfigure(1, weight=3)
 
     def save_expense(self, row_id, price_entry, category_entry, date_entry, photo_entry, edit_dialog):
-        # Zapisanie zmienionych danych
         new_price = price_entry.get()
         new_category = category_entry.get()
         new_date = date_entry.get()
@@ -374,12 +358,11 @@ class HomePage(CTkFrame):
         edit_dialog.destroy()
 
     def delete_expense(self, row_id):
-        # Usuwanie wydatku
         print(f"Deleting expense at row: {row_id}")
         self.user_expenses.delete_expense(row_id)
         self.user_expenses_list = self.user_expenses.get_expenses()
         self.show_user_expenses()
-        self.info_panel.pack_forget()  # Ukrywanie panelu po usunięciu wydatku
+        self.info_panel.pack_forget()
 
     def show_photo(self):
         print(self.selected_row)
@@ -388,15 +371,13 @@ class HomePage(CTkFrame):
         print('dupsko')
 
         if file_path and os.path.exists(file_path):
-            # Otwieranie nowego okna dialogowego
             photo_dialog = CTkToplevel(self)
             photo_dialog.title("Expense Photo")
 
-            # Ładowanie i wyświetlanie obrazu w interfejsie
             image = Image.open(file_path)
             photo = ImageTk.PhotoImage(image)
             photo_label = CTkLabel(photo_dialog, image=photo)
-            photo_label.image = photo  # Przechowujemy referencję do zdjęcia
+            photo_label.image = photo
             photo_label.pack(expand=True, fill='both', padx=20, pady=20)
         else:
             messagebox.showinfo("No photo", "No photo found for this expense")

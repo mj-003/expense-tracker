@@ -41,11 +41,11 @@ class UserFinancials(ABC):
             print(f"Invalid autonumbered ID: {autonumbered_id}")
             return None
 
-    def delete_item(self, autonumbered_id, del_function):
+    def delete_item(self, autonumbered_id, del_function, get_function):
         if 0 < autonumbered_id <= len(self.original_ids):
             expense_id = self.original_ids[autonumbered_id - 1]
             del_function(expense_id)
-            self.load_items()
+            self.load_items(get_function)
         else:
             print(f"Invalid autonumbered ID: {autonumbered_id}")
 
