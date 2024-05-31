@@ -17,6 +17,7 @@ from financials.expense import Expense
 from gui.add_expense import ExpensePage
 from home_page_controller import HomePageController
 from gui.add_income import IncomePage
+from plots import MyPlotter
 
 
 def create_user_items_list(user_expenses, user_incomes):
@@ -37,6 +38,7 @@ def create_user_items_list(user_expenses, user_incomes):
 class HomePage(CTkFrame):
     def __init__(self, parent, app, database, user, user_expenses, user_incomes):
         super().__init__(parent)
+        self.current_month = datetime.datetime.now().replace(day=1)
         self.financials = None
         self.selected_row = None
         self.table_frame = None
@@ -51,6 +53,7 @@ class HomePage(CTkFrame):
         self.user_expenses_list = self.user_expenses.get_expenses()
         self.user_incomes_list = self.user_incomes.get_incomes()
         self.controller = HomePageController(database, user, user_expenses)
+        self.plotter = MyPlotter(user_expenses)
 
         self.date_filter = None
         self.category_filter = None
@@ -60,9 +63,8 @@ class HomePage(CTkFrame):
         self.create_metrics_frame()
         self.create_search_container()
         self.show_user_items()
-        self.chart_frame = CTkFrame(master=self, fg_color="transparent")
-        self.chart_frame.pack(fill='both', expand=True, padx=27, pady=(21, 0))
-        self.show_charts()
+        self.create_chart_panel()
+
 
 
     def create_title_frame(self):
@@ -211,7 +213,7 @@ class HomePage(CTkFrame):
         if self.table_frame is None:
 
             self.table_frame = CTkScrollableFrame(master=self, fg_color="transparent")
-            self.table_frame.pack(expand=True, fill="both", padx=27, pady=21)
+            self.table_frame.pack(expand=True, fill="both", padx=27, pady=21, side='left')
 
             # Tworzenie nowej tabeli
             self.table = CTkTable(master=self.table_frame,
@@ -252,71 +254,48 @@ class HomePage(CTkFrame):
             self.table.add_row(row_data)
         self.table.edit_row(0, text_color="#fff", hover_color="#2A8C55")
 
-    def show_chart_window(self):
-        chart_window = CTkFrame(master=self, fg_color="transparent")
-        chart_window.pack(
-            fill="both",
-            padx=27,
-            pady=(21, 0))
+    def create_chart_panel(self):
+        print('create chart panel')
+        self.info_panel = ctk.CTkFrame(master=self, fg_color="white", border_width=2, border_color="#2A8C55",
+                                       corner_radius=10, width=200)
+        self.info_panel.pack(expand=True, fill="both", pady=27, padx=(0,27))
+        self.update_chart()
 
-    def show_charts(self):
-        dates, expense_values, income_values = self.get_last_30_days_data()
+        # Add navigation buttons
 
-        fig, ax = plt.subplots(figsize=(10, 4))
 
-        width = 0.4
-        ax.bar(np.array(dates) - datetime.timedelta(days=0.2), expense_values, width=width, label='Expenses',
-               color='red')
-        ax.bar(np.array(dates) + datetime.timedelta(days=0.2), income_values, width=width, label='Incomes',
-               color='green')
-
-        ax.set_xlabel('Date')
-        ax.set_ylabel('Amount')
-        ax.set_title('Incomes and Expenses in the Last 30 Days')
-        ax.legend()
-
-        # Format the date labels
-        ax.xaxis.set_major_formatter(
-            plt.FuncFormatter(lambda x, _: (datetime.date.fromordinal(int(x))).strftime('%b %d')))
-        fig.autofmt_xdate()
-
-        # Clear any previous canvas before adding new one
-        for widget in self.chart_frame.winfo_children():
+    def update_chart(self):
+        # Clear the previous chart if it exists
+        for widget in self.info_panel.winfo_children():
             widget.destroy()
 
-        canvas = FigureCanvasTkAgg(fig, master=self.chart_frame)
-        canvas.draw()
-        canvas.get_tk_widget().pack(fill='both', expand=True)
+        # Get the current month in 'YYYY-MM' format
+        month_str = self.current_month.strftime('%Y-%m')
+        fig, ax = self.plotter.plot_incomes_expenses_per_month(month_str, self.user_incomes_list[1:],
+                                                       self.user_expenses_list[1:])
 
-    def get_last_30_days_data(self):
-        today = datetime.date.today()
-        date_30_days_ago = today - datetime.timedelta(days=30)
+        chart_canvas = FigureCanvasTkAgg(fig, master=self.info_panel)
+        chart_canvas.draw()
+        chart_canvas.get_tk_widget().pack(fill='both', expand=True, padx=10, pady=10)
 
-        expenses = self.user_expenses.get_expenses()
-        incomes = self.user_incomes.get_incomes()
+        button_frame = ctk.CTkFrame(master=self.info_panel, fg_color="transparent")
+        button_frame.pack(side='bottom', pady=10)
 
-        expense_data = {}
-        income_data = {}
+        prev_button = ctk.CTkButton(master=button_frame, text="Previous", fg_color='#2A8C55', command=self.show_prev_month)
+        prev_button.pack(side='left', padx=5)
 
-        for expense in expenses[1:]:
-            date = datetime.datetime.strptime(expense[4], '%Y-%m-%d').date()
-            if date_30_days_ago <= date <= today:
-                if date not in expense_data:
-                    expense_data[date] = 0
-                expense_data[date] += float(expense[1])
+        next_button = ctk.CTkButton(master=button_frame, text="Next", fg_color='#2A8C55',command=self.show_next_month)
+        next_button.pack(side='right', padx=5)
 
-        for income in incomes[1:]:
-            print('hkjavnkbgb ', income[3])
-            date = datetime.datetime.strptime(income[3], '%Y-%m-%d').date()
-            if date_30_days_ago <= date <= today:
-                if date not in income_data:
-                    income_data[date] = 0
-                income_data[date] += float(income[1])
+    def show_prev_month(self):
+        self.current_month = self.current_month - datetime.timedelta(days=1)
+        self.current_month = self.current_month.replace(day=1)
+        self.update_chart()
 
-        dates = [date_30_days_ago + datetime.timedelta(days=i) for i in range(31)]
-        expense_values = [expense_data.get(date, 0) for date in dates]
-        income_values = [income_data.get(date, 0) for date in dates]
+    def show_next_month(self):
+        next_month = self.current_month + datetime.timedelta(days=31)
+        self.current_month = next_month.replace(day=1)
+        self.update_chart()
 
-        return dates, expense_values, income_values
 
 
