@@ -1,25 +1,26 @@
-import matplotlib.pyplot as plt
+import ttkbootstrap as ttk
+from ttkbootstrap.constants import *
+from ttkbootstrap.dialogs import Messagebox
+from ttkbootstrap.widgets import DateEntry
+import tkinter as tk
 
-# Przykładowe dane
-labels = ['Net tuition and fees', 'Self-supporting', 'Private gifts', 'Taxes', 'Loan repayment', 'Promotions', 'All other']
-sizes = [21, 21, 4, 8, 16, 8, 21]
-colors = ['#66b3ff', '#ff6666', '#ffcc99', '#99ff99', '#c2c2f0', '#ffb3e6', '#c4e17f']
+def on_date_selected(event):
+    selected_date = date_entry.entry.get()
+    Messagebox.show_info("Selected Date", f"You selected: {selected_date}")
 
-# Tworzenie wykresu
-fig, ax = plt.subplots()
-wedges, texts, autotexts = ax.pie(sizes, colors=colors, autopct=lambda pct: f'{int(round(pct))}%', startangle=140, wedgeprops=dict(width=0.45), pctdistance=0.85)
+# Tworzenie głównego okna aplikacji
+root = ttk.Window(themename="flatly")
+root.title("DateEntry Example")
+root.geometry("300x200")
 
-# Dodawanie legendy
-legend = ax.legend(wedges, labels, loc="lower center", bbox_to_anchor=(0.5, -0.25), ncol=3)
+# Tworzenie stylu dla DateEntry
+style = ttk.Style()
+style.configure('TEntry', borderwidth=3, relief='solid', bordercolor='green', borderradius=10)
 
-# Środek wykresu
-ax.set(aspect="equal")
+# Tworzenie widgetu DateEntry
+date_entry = DateEntry(root, bootstyle=PRIMARY, dateformat="%Y-%m-%d", style='TEntry')
+date_entry.pack(pady=20)
+date_entry.bind("<<DateEntrySelected>>", on_date_selected)
 
-# Dodanie tekstu w środku wykresu
-plt.text(0, 0, 'Expenses', ha='center', va='center', fontsize=12, fontweight='bold')
-
-# Dostosowanie marginesów figury, aby przesunąć wykres w lewo
-fig.subplots_adjust(left=0.1, right=0.9, top=0.9, bottom=0.2)
-
-# Wyświetlanie wykresu
-plt.show()
+# Uruchomienie pętli głównej
+root.mainloop()

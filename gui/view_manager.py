@@ -23,7 +23,7 @@ class App(CTk):
         # Setting up Initial Things
         self.sidebar_frame = None
         self.title("Expense Tracker")
-        self.geometry("856x645")
+        self.geometry("956x645")
         set_appearance_mode("light")
         self.resizable(True, True)
 

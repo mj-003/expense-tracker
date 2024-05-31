@@ -7,26 +7,25 @@ class UserFinancials(ABC):
         self.user = user
         self.items = []
         self.original_ids = []
-        self.load_items()
 
-    def load_items(self):
+    def load_items(self, get_function):
         user_id = self.database.get_user_id(self.user.username)
-        expenses_from_db = self.database.get_expenses(user_id)
+        items_from_db = get_function(user_id)
         self.items = []
         self.original_ids = []
 
-        for idx, expense in enumerate(expenses_from_db):
-            self.original_ids.append(expense[0])
-            autonumbered_expense = [idx + 1] + list(expense[2:])
-            self.items.append(autonumbered_expense)
+        for idx, item in enumerate(items_from_db):
+            self.original_ids.append(item[0])
+            autonumbered_item = [idx + 1] + list(item[2:])
+            self.items.append(autonumbered_item)
 
         print('--------start--------')
         print(self.items)
         print('--------stop--------')
 
-    def add_item(self, item, add_function):
+    def add_item(self, item, add_function, get_function):
         add_function(self.user.id, item)
-        self.load_items()
+        self.load_items(get_function)
 
     def get_items(self, date_filter=None, category_filter=None, sort_order=None):
         pass

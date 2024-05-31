@@ -7,12 +7,13 @@ headers = [['No.', 'Amount', 'Category', 'Payment method', 'Date']]
 class UserExpenses(UserFinancials):
     def __init__(self, database, user):
         super().__init__(database, user)
+        self.load_expenses()
 
     def load_expenses(self):
-        self.load_items()
+        self.load_items(self.database.get_expenses)
 
     def add_expense(self, expense):
-        self.add_item(expense, self.database.add_expense)
+        self.add_item(expense, self.database.add_expense, self.database.get_expenses)
 
     def get_expenses(self, date_filter=None, category_filter=None, sort_order=None):
         filtered_expenses = self.items[:]

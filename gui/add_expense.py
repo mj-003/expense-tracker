@@ -2,7 +2,7 @@ from customtkinter import *
 import tkinter as tk
 from tkinter import filedialog
 from financials.expense import Expense
-from utils.date_entry import DateEntry
+from tkcalendar import DateEntry
 from financials.user_expenses import UserExpenses
 from PIL import Image, ImageTk
 
@@ -53,7 +53,8 @@ class ExpensePage(CTkFrame):
 
         self.amount = CTkEntry(master=grid,
                                fg_color="#F0F0F0",
-                               border_width=0,
+                               border_width=2,
+                               border_color="#2A8C55",
                                width=300)
         self.amount.grid(
             row=1,

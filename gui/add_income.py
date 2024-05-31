@@ -121,7 +121,9 @@ class IncomePage(CTkFrame):
 
         income = Income(amount, from_who, date)
         self.user_incomes.add_income(income)
-        print(list(self.user_incomes))
+        print('added income:')
+        print(self.user_incomes.get_incomes())
+        # print(list(self.user_incomes))
         self.amount.delete(0, 'end')
         self.from_who.delete(0, 'end')
         self.date.delete(0, 'end')
