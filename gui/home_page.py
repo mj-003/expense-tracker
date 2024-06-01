@@ -20,19 +20,7 @@ from gui.add_income import IncomePage
 from plots import MyPlotter
 
 
-def create_user_items_list(user_expenses, user_incomes):
-    cat_names = ['No.', 'Amount', 'Category', 'Date']
-    user_expenses_list = user_expenses.get_expenses()
-    user_incomes_list = user_incomes.get_incomes()
-    user_items_list = [cat_names]
-    print('----------user expenses----------')
-    print(user_expenses_list)
 
-    for i, expense in enumerate(user_expenses_list[1:]):
-        user_items_list.append([i + 1] + [expense[1]] + ['Expense'] + [expense[4]])
-    for i, income in enumerate(user_incomes_list[1:]):
-        user_items_list.append([len(user_items_list) + 1] + [income[1]] + ['Income'] + [income[3]])
-    return user_items_list
 
 
 class HomePage(CTkFrame):
@@ -45,25 +33,28 @@ class HomePage(CTkFrame):
         self.expense_id = None
         self.user_expenses = user_expenses
         self.user_incomes = user_incomes
-        self.user_items_list = create_user_items_list(self.user_expenses, self.user_incomes)
         self.app = app
         self.parent = parent
         self.user = user
         self.database = database
         self.user_expenses_list = self.user_expenses.get_expenses()
         self.user_incomes_list = self.user_incomes.get_incomes()
-        self.controller = HomePageController(database, user, user_expenses)
+        self.controller = HomePageController(database, user, user_expenses, user_incomes)
+        self.user_items_list = self.controller.create_user_items_list()
+
         self.plotter = MyPlotter(user_expenses)
 
         self.date_filter = None
         self.category_filter = None
         self.sort_filter = None
+        self.var_show_chart = ctk.StringVar(value="on")
 
         self.create_title_frame()
         self.create_metrics_frame()
         self.create_search_container()
         self.show_user_items()
         self.create_chart_panel()
+        self.if_show_chart()
 
 
 
@@ -209,6 +200,9 @@ class HomePage(CTkFrame):
             padx=(13, 0),
             pady=15)
 
+        self.is_chart = CTkCheckBox(master=search_container, text="Show chart", font=('Aptos', 12), variable=self.var_show_chart, onvalue="on", offvalue="off", command=self.if_show_chart, fg_color="#2A8C55")
+        self.is_chart.pack(pady=20)
+
     def show_user_items(self):
         if self.table_frame is None:
 
@@ -239,6 +233,7 @@ class HomePage(CTkFrame):
             self.table.edit_row(0, text_color="#fff", hover_color="#2A8C55")
 
     def get_filtered_items(self):
+        self.user_items_list = self.controller.create_user_items_list()
         date = self.date_filter.get()
         category = self.category_filter.get()
         sort = self.sort_filter.get()
@@ -254,14 +249,18 @@ class HomePage(CTkFrame):
             self.table.add_row(row_data)
         self.table.edit_row(0, text_color="#fff", hover_color="#2A8C55")
 
+    def if_show_chart(self):
+        if self.var_show_chart.get() == "on":
+            self.info_panel.pack(expand=True, fill="both", pady=27, padx=(0,27))
+        else:
+            self.info_panel.pack_forget()
+
     def create_chart_panel(self):
         print('create chart panel')
         self.info_panel = ctk.CTkFrame(master=self, fg_color="white", border_width=2, border_color="#2A8C55",
                                        corner_radius=10, width=200)
-        self.info_panel.pack(expand=True, fill="both", pady=27, padx=(0,27))
+        self.info_panel.pack_forget()
         self.update_chart()
-
-        # Add navigation buttons
 
 
     def update_chart(self):
@@ -269,10 +268,9 @@ class HomePage(CTkFrame):
         for widget in self.info_panel.winfo_children():
             widget.destroy()
 
-        # Get the current month in 'YYYY-MM' format
-        month_str = self.current_month.strftime('%Y-%m')
-        fig, ax = self.plotter.plot_incomes_expenses_per_month(month_str, self.user_incomes_list[1:],
-                                                       self.user_expenses_list[1:])
+        month_str, self.user_incomes_list, self.user_expenses_list = self.controller.get_chart_data(self.current_month)
+        fig, ax = self.plotter.plot_incomes_expenses_per_month(month_str, self.user_incomes_list,
+                                                       self.user_expenses_list)
 
         chart_canvas = FigureCanvasTkAgg(fig, master=self.info_panel)
         chart_canvas.draw()

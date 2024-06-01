@@ -1,10 +1,14 @@
 import os
+from datetime import datetime
 from tkinter import messagebox
+import tkinter as tk
+from tkinter.ttk import Style
 
 import customtkinter as ctk
 from CTkTable import CTkTable
 from PIL import Image, ImageTk
 from customtkinter import *
+from tkcalendar import DateEntry, Calendar
 
 from categories import Categories
 from financials.expense import Expense
@@ -16,6 +20,7 @@ from gui.add_income import IncomePage
 class ExpensesPage(CTkFrame):
     def __init__(self, parent, app, database, user, user_expenses, user_incomes):
         super().__init__(parent)
+        self.photo_path = None
         self.financials = None
         self.selected_row = None
         self.table_frame = None
@@ -28,11 +33,13 @@ class ExpensesPage(CTkFrame):
         self.database = database
         self.user_expenses_list = self.user_expenses.get_expenses()
         self.user_incomes_list = self.user_incomes.get_incomes()
-        self.controller = HomePageController(database, user, user_expenses)
+        self.controller = HomePageController(database, user, user_expenses, user_incomes)
 
         self.date_filter = None
         self.category_filter = None
         self.sort_filter = None
+        self.date_var = None
+        self.calendar = None
 
         self.create_title_frame()
         self.create_metrics_frame()
@@ -134,7 +141,7 @@ class ExpensesPage(CTkFrame):
                               padx=27)
 
         self.expense_id = CTkEntry(master=search_container,
-                                   width=110,
+                                   width=150,
                                    placeholder_text="More (place ID)",
                                    border_color="#2A8C55",
                                    border_width=2, )
@@ -152,11 +159,11 @@ class ExpensesPage(CTkFrame):
                   hover_color="#207244",
                   command=self.get_more_info).pack(
             side="left",
-            padx=(13, 0),
+            padx=(13, 70),
             pady=15)
 
         self.date_filter = CTkComboBox(master=search_container,
-                                       width=120,
+                                       width=130,
                                        values=["Date", "This month", "This year"],
                                        button_color="#2A8C55",
                                        border_color="#2A8C55",
@@ -172,7 +179,7 @@ class ExpensesPage(CTkFrame):
             pady=15)
 
         self.category_filter = CTkComboBox(master=search_container,
-                                           width=120,
+                                           width=130,
                                            values=['Category', Categories.TRANSPORT.value, Categories.FOOD.value,
                                                    Categories.ENTERTAINMENT.value,
                                                    Categories.HOME.value, Categories.PERSONAL.value, ],
@@ -190,7 +197,7 @@ class ExpensesPage(CTkFrame):
             pady=15)
 
         self.sort_filter = CTkComboBox(master=search_container,
-                                       width=120,
+                                       width=130,
                                        values=['Sort', '⬆ Amount', '⬇ Amount', '⬆ Time', '⬇ Time'],
                                        button_color="#2A8C55",
                                        border_color="#2A8C55",
@@ -246,7 +253,7 @@ class ExpensesPage(CTkFrame):
 
     def get_more_info(self):
         self.selected_row = int(self.expense_id.get())
-        expense_info = self.user_expenses_list[self.selected_row]
+        expense_info = self.user_expenses.get_expenses()[self.selected_row]
         print("Getting more info on row: ", self.selected_row)
         print(expense_info)
 
@@ -270,7 +277,7 @@ class ExpensesPage(CTkFrame):
         photo_button.pack(padx=10, pady=10, fill='both')
 
         back_button = CTkButton(self.info_panel, text="↩︎", font=('Aptos',25), fg_color='#2A8C55', text_color='white', corner_radius=50, width=60, height=60,
-                                command=lambda: self.app.return_to_home_page())
+                                command=lambda: self.app.define_and_pack_frames())
         back_button.pack(padx=10, pady=10, fill='both')
 
         self.info_panel.pack(expand=True, fill="both", pady=(27, 27), padx=(0, 27))
@@ -282,44 +289,63 @@ class ExpensesPage(CTkFrame):
 
         label = CTkLabel(self.info_panel, text="Add New Expense", font=("Aptos", 18),
                          width=30, height=2, text_color='#2A8C55')
-        label.pack(pady=(20, 20), padx=(27, 27))
+        label.pack(pady=(15, 10), padx=(27, 27))
 
         price_entry = CTkEntry(self.info_panel, placeholder_text="Price")
         price_entry.pack(pady=(10, 10), padx=(10, 10))
 
-        category_entry = CTkEntry(self.info_panel, placeholder_text="Category")
+        category_entry = CTkComboBox(self.info_panel, values=['Personal', 'Transport', 'Food', 'Entertainment', 'Home' ,'Other'])
         category_entry.pack(pady=(10, 10), padx=(10, 10))
 
-        date_entry = CTkEntry(self.info_panel, placeholder_text="Date")
-        date_entry.pack(pady=(10, 10), padx=(10, 10))
+        self.date_var = ctk.StringVar(value=datetime.now().strftime('%Y-%m-%d'))
+        self.date_entry = ctk.CTkEntry(self.info_panel, textvariable=self.date_var, state='readonly', fg_color="white")
+        self.date_entry.pack(pady=(10, 10), padx=(10, 10))
+        self.date_entry.bind("<Button-1>", self.open_calendar)
 
-        photo_entry = CTkEntry(self.info_panel, placeholder_text="Recipe Photo Path")
-        photo_entry.pack(pady=(10, 10), padx=(10, 10))
+
+
+
+        payment_entry = CTkComboBox(self.info_panel, values=['Online', 'Card', 'Cash', 'Other'])
+        payment_entry.pack(pady=(10, 10), padx=(10, 10))
+
+        CTkButton(master=self.info_panel,
+                  text="Photo",
+                  fg_color="white",
+                  hover_color="#207244",
+                  font=("Aptos", 12),
+                  border_color="#2A8C55",
+                  border_width=2,
+                  text_color="#2A8C55",
+                  text_color_disabled="white",
+                  command=self.upload_photo).pack(pady=(10, 10), padx=(10, 10))
+
+        # photo_entry = CTkEntry(self.info_panel, placeholder_text="Recipe Photo Path")
+        # photo_entry.pack(pady=(10, 10), padx=(10, 10))
 
         save_button = CTkButton(self.info_panel, text="Save",
                                 fg_color="#2A8C55",
-                                command=lambda: self.save_new_expense(price_entry, category_entry, date_entry,
-                                                                      photo_entry))
+                                command=lambda: self.save_new_expense(price_entry, category_entry, self.date_entry,
+                                                                      payment_entry))
         save_button.pack(pady=(10, 10), padx=(10, 10))
 
         self.info_panel.pack(expand=True, fill="both", pady=(27, 27), padx=(0, 27))
 
-    def save_new_expense(self, price_entry, category_entry, date_entry, photo_entry):
+    def save_new_expense(self, price_entry, category_entry, date_entry, payment_entry):
         new_price = price_entry.get()
         new_category = category_entry.get()
-        new_date = date_entry.get()
-        new_photo = photo_entry.get()
-        new_expense = Expense(new_price, new_category, new_date, new_photo)
+        new_date = self.date_entry.get()
+        new_payment = payment_entry.get()
+
+        path = self.photo_path if self.photo_path else None
+        new_expense = Expense(amount=new_price, category=new_category, payment_method=new_payment, date=new_date , photo_path=path)
 
         self.user_expenses.add_expense(new_expense)
         self.user_expenses_list = self.user_expenses.get_expenses()
         self.show_user_expenses()
-        #self.app.update_user_expenses(self.user_expenses)
         self.app.define_and_pack_frames()
-        #self.info_panel.pack_forget()
 
     def edit_expense(self, row_id):
-        expense_info = self.user_expenses_list[row_id]
+        expense_info = self.user_expenses.get_expenses()[row_id]
 
         edit_dialog = ctk.CTkToplevel(self)
         edit_dialog.title("Edit Expense")
@@ -337,26 +363,29 @@ class ExpensesPage(CTkFrame):
         date_entry = ctk.CTkEntry(edit_dialog, textvariable=StringVar(value=expense_info[3]))
         date_entry.grid(row=3, column=1, pady=10, padx=10, sticky="w")
 
-        ctk.CTkLabel(edit_dialog, text="Recipe:").grid(row=4, column=0, pady=10, padx=10, sticky="e")
-        photo_entry = ctk.CTkEntry(edit_dialog, textvariable=StringVar(value=expense_info[4]))
-        photo_entry.grid(row=4, column=1, pady=10, padx=10, sticky="w")
+        ctk.CTkLabel(edit_dialog, text="Payment method:").grid(row=4, column=0, pady=10, padx=10, sticky="e")
+        payment_entry = ctk.CTkEntry(edit_dialog, textvariable=StringVar(value=expense_info[4]))
+        payment_entry.grid(row=4, column=1, pady=10, padx=10, sticky="w")
 
         save_button = ctk.CTkButton(edit_dialog, text="Save",
                                     fg_color="#2A8C55",
                                     command=lambda: self.save_expense(row_id, price_entry, category_entry, date_entry,
-                                                                      photo_entry, edit_dialog))
+                                                                      payment_entry, edit_dialog))
         save_button.grid(row=5, column=0, columnspan=2, pady=20, padx=10)
 
         edit_dialog.columnconfigure(0, weight=1)
         edit_dialog.columnconfigure(1, weight=3)
-        self.app.update_user_expenses()
+        self.app.update_user_expenses(self.user_expenses)
 
-    def save_expense(self, row_id, price_entry, category_entry, date_entry, photo_entry, edit_dialog):
+    def save_expense(self, row_id, price_entry, category_entry, date_entry, payment_entry, edit_dialog):
         new_price = price_entry.get()
         new_category = category_entry.get()
         new_date = date_entry.get()
-        new_photo = photo_entry.get()
-        new_expense = Expense(new_price, new_category, new_date, new_photo)
+        new_payment = payment_entry.get()
+        self.date_var.set(self.calendar.get_date())
+        self.top.destroy()
+        path = self.photo_path if self.photo_path else None
+        new_expense = Expense(amount=new_price, category=new_category, date=new_date, photo_path=path, payment_method=new_payment)
 
         self.user_expenses.update_user_expense(row_id, new_expense)
         self.user_expenses_list = self.user_expenses.get_expenses()
@@ -365,11 +394,11 @@ class ExpensesPage(CTkFrame):
 
     def delete_expense(self, row_id):
         print(f"Deleting expense at row: {row_id}")
-        self.user_expenses.delete_income(row_id)
+        self.user_expenses.delete_expense(row_id)
         self.user_expenses_list = self.user_expenses.get_expenses()
         self.show_user_expenses()
         self.info_panel.pack_forget()
-        self.app.update_user_expenses()
+        self.app.update_user_expenses(self.user_expenses)
 
     def show_photo(self):
         print(self.selected_row)
@@ -407,3 +436,36 @@ class ExpensesPage(CTkFrame):
 
     def get_user_expenses(self):
         return self.user_expenses
+
+    def upload_photo(self):
+
+        file_path = filedialog.askopenfilename(
+            filetypes=[("Image Files", "*.png"), ("Image Files", "*.jpg"), ("Image Files", "*.jpeg"),
+                       ("Image Files", "*.bmp")])
+        if file_path:
+            self.photo_path = file_path
+
+    def open_calendar(self, event):
+        if hasattr(self, 'top') and self.top.winfo_exists():
+            self.top.lift()
+            return
+
+        # Create a top-level window for the calendar
+        self.top = tk.Toplevel(self)
+        self.top.geometry("+%d+%d" % (self.date_entry.winfo_rootx(), self.date_entry.winfo_rooty() + self.date_entry.winfo_height()))
+        self.top.overrideredirect(True)  # Remove window decorations
+        self.top.grab_set()
+        self.top.lift()  # Bring the calendar window to the front
+
+        self.calendar = Calendar(self.top, selectmode='day', date_pattern='yyyy-MM-dd')
+        self.calendar.pack(pady=10, padx=10)
+        select_button = ctk.CTkButton(self.top, text="Select", command=self.select_date)
+        select_button.pack(pady=10)
+
+    def select_date(self):
+        self.date_var.set(self.calendar.get_date())
+        self.top.destroy()
+
+
+
+

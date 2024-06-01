@@ -29,7 +29,7 @@ class IncomesPage(CTkFrame):
         self.database = database
         self.user_expenses_list = self.user_expenses.get_expenses()
         self.user_incomes_list = self.user_incomes.get_incomes()
-        self.controller = HomePageController(database, user, user_expenses)
+        self.controller = HomePageController(database, user, user_expenses, user_incomes)
 
         self.date_filter = None
         self.category_filter = None
@@ -65,7 +65,7 @@ class IncomesPage(CTkFrame):
                   fg_color="#2A8C55",
                   hover_color="#207244",
                   corner_radius=50,
-                  command=self.ahow_add_income_form).pack(
+                  command=self.show_add_income_form).pack(
             anchor="ne",
             side="right")
 
@@ -276,7 +276,7 @@ class IncomesPage(CTkFrame):
 
         self.info_panel.pack(expand=True, fill="both", pady=(27, 27), padx=(0, 27))
 
-    def ahow_add_income_form(self):
+    def show_add_income_form(self):
         for widget in self.info_panel.winfo_children():
             widget.destroy()
 
@@ -311,6 +311,8 @@ class IncomesPage(CTkFrame):
         self.user_incomes.add_income(new_income)
         self.user_incomes_list = self.user_incomes.get_incomes()
         self.show_user_incomes()
+        self.app.define_and_pack_frames()
+
         #self.info_panel.pack_forget()
 
     def edit_income(self, row_id):
@@ -341,6 +343,8 @@ class IncomesPage(CTkFrame):
 
         edit_dialog.columnconfigure(0, weight=1)
         edit_dialog.columnconfigure(1, weight=3)
+        self.app.define_and_pack_frames()
+
 
     def save_income(self, row_id, amount_entry, from_entry, date_entry, edit_dialog):
         new_amount = amount_entry.get()
@@ -351,6 +355,8 @@ class IncomesPage(CTkFrame):
         self.user_incomes.update_user_incomes(row_id, new_income)
         self.user_incomes_list = self.user_incomes.get_incomes()
         self.show_user_incomes()
+        self.app.define_and_pack_frames()
+
         edit_dialog.destroy()
 
     def delete_income(self, row_id):
@@ -359,6 +365,8 @@ class IncomesPage(CTkFrame):
         self.user_incomes_list = self.user_incomes.get_incomes()
         self.show_user_incomes()
         self.info_panel.pack_forget()
+        self.app.define_and_pack_frames()
+
 
     def get_filtered_incomes(self):
         date = self.date_filter.get()
@@ -375,3 +383,6 @@ class IncomesPage(CTkFrame):
         for row_data in self.user_incomes_list:
             self.table.add_row(row_data)
         self.table.edit_row(0, text_color="#fff", hover_color="#2A8C55")
+
+
+
