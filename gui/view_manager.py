@@ -9,6 +9,7 @@ from gui.export_page import ExportPage
 from gui.add_income import IncomePage
 from gui.expense_page import ExpensesPage
 from gui.incomes_page import IncomesPage
+from gui.expenses_page_test import ExpensePageTest
 from financials.user_expenses import UserExpenses
 from gui import const
 from user import User
@@ -41,6 +42,8 @@ class App(CTk):
         self.IncomePage = IncomePage
         self.ExpensesPage = ExpensesPage
         self.IncomesPage = IncomesPage
+
+        self.ExpensePageTest = ExpensePageTest
 
         self.user = None
         self.database = Database('expenses.db')
@@ -92,7 +95,7 @@ class App(CTk):
                                                                                    pady=(16, 0))
 
         CTkButton(master=self.sidebar_frame, image=settings_img, text="Expenses", fg_color="transparent",
-                  font=("Arial Bold", 14), hover_color="#207244", anchor="w", command=lambda: self.show_frame(ExpensesPage)).pack(anchor="center", ipady=5,
+                  font=("Arial Bold", 14), hover_color="#207244", anchor="w", command=lambda: self.show_frame(ExpensePageTest)).pack(anchor="center", ipady=5,
                                                                                    pady=(16, 0))
 
         CTkButton(master=self.sidebar_frame, image=list_img, text="Export", fg_color="transparent",
@@ -118,7 +121,7 @@ class App(CTk):
         self.show_frame(HomePage)
 
     def define_and_pack_frames(self):
-        for F in [HomePage, ExportPage, ChartsPage, ExpensesPage, IncomesPage]:
+        for F in [HomePage, ExportPage, ChartsPage, ExpensePageTest, IncomesPage]:
             frame = F(self.container, self, self.database, self.user, self.user_expenses, self.user_incomes)
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")
