@@ -16,7 +16,7 @@ class IncomesPageTest(FinancialsPage):
         super().__init__(parent=parent, app=app, database=database, user=user, user_items=user_expenses,
                          user_items2=user_incomes)
         self.sort_filter = None
-        self.category_filter = None
+        self.from_filter = None
         self.date_filter = None
         self.user_items = user_incomes
         self.user_items_list = user_incomes.get_incomes()
@@ -65,20 +65,16 @@ class IncomesPageTest(FinancialsPage):
             padx=(13, 0),
             pady=15)
 
-        self.category_filter = CTkComboBox(master=self.search_container,
-                                           width=155,
-                                           values=['Category', Categories.TRANSPORT.value, Categories.FOOD.value,
-                                                   Categories.ENTERTAINMENT.value,
-                                                   Categories.HOME.value, Categories.PERSONAL.value, ],
-                                           button_color="#2A8C55",
-                                           border_color="#2A8C55",
-                                           border_width=2,
-                                           button_hover_color="#207244",
-                                           dropdown_hover_color="#207244",
-                                           dropdown_fg_color="#2A8C55",
-                                           dropdown_text_color="#fff")
+        self.from_filter = CTkEntry(master=self.search_container,
+                                    width=155,
 
-        self.category_filter.pack(
+                                    border_color="#2A8C55",
+                                    border_width=2,
+
+                                    placeholder_text='From',
+                                    )
+
+        self.from_filter.pack(
             side="left",
             padx=(13, 0),
             pady=15)
@@ -210,10 +206,11 @@ class IncomesPageTest(FinancialsPage):
 
     def get_filtered_incomes(self):
         date = self.date_filter.get()
-        category = self.category_filter.get()
+        from_who = self.from_filter.get()
         sort = self.sort_filter.get()
+        print(self.user_items)
 
-        self.user_items_list = self.controller.get_filtered_incomes(date, category, sort)
+        self.user_items_list = self.controller.get_filtered_incomes(date, from_who, sort)
         print(self.user_items_list)
         self.get_filtered_items()
 

@@ -46,7 +46,7 @@ class FinancialsPage(CTkFrame, ABC):
         self.user = user
         self.database = database
         self.user_items_list = self.user_items.get_items()
-        self.controller = ItemPageController(database, user, user_items, user_items)
+        self.controller = ItemPageController(database, user, user_items, user_items2)
 
         # dupa dupa dupa
         self.title = ''

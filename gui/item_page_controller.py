@@ -1,23 +1,8 @@
-from abc import ABC, abstractmethod
-import os
-from datetime import datetime
-from tkinter import messagebox
-import tkinter as tk
-from tkinter.ttk import Style
+from abc import abstractmethod
 
-import customtkinter as ctk
-from CTkTable import CTkTable
-from PIL import Image, ImageTk
-from customtkinter import *
-from tkcalendar import DateEntry, Calendar
-
-from categories import Categories
-from financials.expense import Expense
 from financials.user_expenses import UserExpenses
 from financials.user_incomes import UserIncomes
-from gui.add_expense import ExpensePage
-from home_page_controller import HomePageController
-from gui.add_income import IncomePage
+
 
 class ItemPageController:
     def __init__(self, database, user, user_expenses: UserExpenses, user_incomes: UserIncomes):
@@ -25,6 +10,7 @@ class ItemPageController:
         self.user_incomes = user_incomes
         self.user = user
         self.database = database
+
     @abstractmethod
     def get_filtered_expenses(self, date_filter=None, category_filter=None, sort_order=None):
         return self.user_expenses.get_expenses(date_filter, category_filter, sort_order)
@@ -36,5 +22,3 @@ class ItemPageController:
     @abstractmethod
     def get_filtered_incomes(self, date=None, from_who=None, sort=None):
         return self.user_incomes.get_incomes(date, from_who, sort)
-
-

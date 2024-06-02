@@ -19,15 +19,15 @@ class UserIncomes(UserFinancials):
     def get_income(self, autonumbered_id):
         self.get_item(autonumbered_id, self.database.get_income)
 
-    def get_incomes(self, date_filter=None, category_filter=None, sort_order=None):
+    def get_incomes(self, date_filter=None, from_filter=None, sort_order=None):
         filtered_incomes = self.items[:]
         print('filtered_incomes: ', filtered_incomes)
 
         if date_filter:
             filtered_incomes = self.filter_by_date(filtered_incomes, date_filter)
 
-        if category_filter and category_filter != "From":
-            filtered_incomes = [income for income in filtered_incomes if income[2] == category_filter]
+        if from_filter and from_filter != "From":
+            filtered_incomes = [income for income in filtered_incomes if income[2] == from_filter]
 
         if sort_order:
             reverse = sort_order.split()[0] == "⬇"
