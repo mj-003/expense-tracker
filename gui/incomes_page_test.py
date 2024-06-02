@@ -108,9 +108,14 @@ class IncomesPageTest(FinancialsPage):
             pady=15)
 
     def get_more_income_info(self):
-        self.selected_row = int(self.row_id.get()) if self.row_id.get() else 0
-        self.item_info = self.user_items.get_incomes()[self.selected_row]
-        self.get_more_info()
+        if (not self.row_id.get().isdigit()) or int(self.row_id.get()) < 1 or int(self.row_id.get()) > len(
+                self.user_items.get_expenses()):
+            messagebox.showwarning("Warning", "Invalid ID.")
+            return
+        else:
+            self.selected_row = int(self.row_id.get())
+            self.item_info = self.user_items.get_expenses()[self.selected_row]
+            self.get_more_info()
 
     def show_add_income_form(self):
         self.show_add_item_form()

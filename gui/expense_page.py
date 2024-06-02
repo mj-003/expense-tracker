@@ -13,7 +13,7 @@ from tkcalendar import DateEntry, Calendar
 from categories import Categories
 from financials.expense import Expense
 from gui.add_expense import ExpensePage
-from home_page_controller import HomePageController
+from item_controller import ItemController
 from gui.add_income import IncomePage
 
 
@@ -33,7 +33,7 @@ class ExpensesPage(CTkFrame):
         self.database = database
         self.user_expenses_list = self.user_expenses.get_expenses()
         self.user_incomes_list = self.user_incomes.get_incomes()
-        self.controller = HomePageController(database, user, user_expenses, user_incomes)
+        self.controller = ItemController(database, user, user_expenses, user_incomes)
 
         self.date_filter = None
         self.category_filter = None

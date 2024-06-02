@@ -4,9 +4,11 @@ import openpyxl
 
 
 def export_to_excel(filename, data):
+    # remove number of rows
+    data = (row[1:] for row in data)
     workbook = openpyxl.Workbook()
     sheet = workbook.active
-    sheet.title = "Expenses"
+    sheet.title = "Financials"
 
     # Write data
     for row_num, row_data in enumerate(data, 1):

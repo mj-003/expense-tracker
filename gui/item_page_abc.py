@@ -16,7 +16,7 @@ from financials.expense import Expense
 from gui.add_expense import ExpensePage
 from item_page_controller import ItemPageController
 from gui.add_income import IncomePage
-from utils.entry_validators import validate_money
+from utils.entry_validators import validate_money, validate_more_info
 
 
 class FinancialsPage(CTkFrame, ABC):
@@ -51,6 +51,7 @@ class FinancialsPage(CTkFrame, ABC):
         # dupa dupa dupa
         self.title = ''
         self.vcmd_money = (app.register(validate_money), '%P')
+        self.vcmd_more_info = (app.register(validate_more_info), '%d', '%P')
 
 
     def create_title_frame(self, show_add_form_function):
@@ -150,7 +151,8 @@ class FinancialsPage(CTkFrame, ABC):
                                width=150,
                                placeholder_text="More (place ID)",
                                border_color="#2A8C55",
-                               border_width=2, )
+                               border_width=2,
+                               )
         self.row_id.pack(
             side="left",
             padx=(13, 0),

@@ -115,22 +115,24 @@ class ExpensePageTest(FinancialsPage):
             pady=15)
 
     def get_more_expense_info(self):
-        self.selected_row = int(self.row_id.get())
-        self.item_info = self.user_items.get_expenses()[self.selected_row]
 
-        self.get_more_info()
+        if (not self.row_id.get().isdigit()) or int(self.row_id.get()) < 1 or int(self.row_id.get()) > len(
+                self.user_items.get_expenses()):
+            messagebox.showwarning("Warning", "Invalid ID.")
+            return
+        else:
+            self.selected_row = int(self.row_id.get())
+            self.item_info = self.user_items.get_expenses()[self.selected_row]
+            self.get_more_info()
 
         photo_button = CTkButton(self.info_panel, text="Recipe", fg_color='#2A8C55', text_color='white',
                                  command=lambda: self.show_photo())
         photo_button.pack(padx=15, pady=10, fill='both')
 
-
-
-
-
     def show_add_expense_form(self):
         self.show_add_item_form()
-        self.amount_entry = CTkEntry(self.info_panel, placeholder_text="Price", validate='key', validatecommand=self.vcmd_money)
+        self.amount_entry = CTkEntry(self.info_panel, placeholder_text="Price", validate='key',
+                                     validatecommand=self.vcmd_money)
         self.amount_entry.pack(pady=(10, 10), padx=(10, 10))
 
         self.category_entry = CTkComboBox(self.info_panel,
@@ -168,7 +170,6 @@ class ExpensePageTest(FinancialsPage):
 
         self.info_panel.pack(expand=True, fill="both", pady=(27, 27), padx=(0, 27))
 
-
     def validate_and_save(self):
         amount = self.amount_entry.get()
         category = self.category_entry.get()
@@ -204,7 +205,8 @@ class ExpensePageTest(FinancialsPage):
         self.edit_dialog.geometry("330x300")
         self.item_info = self.user_items.get_expenses()[self.selected_row]
         CTkLabel(self.edit_dialog, text="Price:").grid(row=1, column=0, pady=10, padx=10, sticky="e")
-        self.amount_entry = CTkEntry(self.edit_dialog, textvariable=StringVar(value=self.item_info[1]), validate='key', validatecommand=self.vcmd_money)
+        self.amount_entry = CTkEntry(self.edit_dialog, textvariable=StringVar(value=self.item_info[1]), validate='key',
+                                     validatecommand=self.vcmd_money)
         self.amount_entry.grid(row=1, column=1, pady=(20, 10), padx=10, sticky="w")
 
         CTkLabel(self.edit_dialog, text="Category:").grid(row=2, column=0, pady=10, padx=10, sticky="e")
@@ -265,7 +267,8 @@ class ExpensePageTest(FinancialsPage):
         category = self.category_filter.get()
         sort = self.sort_filter.get()
 
-        self.user_items_list = self.controller.get_filtered_expenses(date, category, sort)
+        self.user_items_list = self.controller.get_filtered_expenses(date_filter=date, category_filter=category,
+                                                                     sort_order=sort)
         print(self.user_items_list)
         self.get_filtered_items()
 
@@ -292,5 +295,3 @@ class ExpensePageTest(FinancialsPage):
     def cancel(self):
         self.amount_entry.delete(0, 'end')
         self.category_entry.delete(0, 'end')
-
-

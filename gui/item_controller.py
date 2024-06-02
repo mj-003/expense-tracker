@@ -4,7 +4,7 @@ from utils.exports import export_to_excel, export_to_csv
 from datetime import datetime
 
 
-class HomePageController:
+class ItemController:
     def __init__(self, database, user, user_expenses: UserExpenses, user_incomes: UserIncomes):
         self.user_expenses = user_expenses
         self.user_incomes = user_incomes
@@ -25,10 +25,7 @@ class HomePageController:
             user_items_list.append([len(user_items_list) + 1] + [income[1]] + ['Income'] + [income[3]])
         return user_items_list
 
-    def get_filtered_expenses(self, date_filter=None, category_filter=None, sort_order=None):
-        return self.user_expenses.get_expenses(date_filter, category_filter, sort_order)
-
-    def get_filtered_items(self, items_list, date, category, sort):
+    def get_filtered_items(self, items_list, date=None, category=None, sort=None):
         headers = [items_list[0]]
         filtered_items = items_list[1:]
         print('--------filtered items--------', date, category, sort)
@@ -55,9 +52,6 @@ class HomePageController:
                     filtered_items.sort(key=lambda x: datetime.strptime(x[3], '%Y-%m-%d'), reverse=reverse)
         print(len(filtered_items))
         return headers + filtered_items
-
-    def get_filtered_incomes(self, date, from_who, sort):
-        pass
 
     def get_chart_data(self, current_month):
         month_str = current_month.strftime('%Y-%m')
