@@ -14,7 +14,7 @@ class UserFinancials(ABC):
         self.items = []
         self.original_ids = []
 
-        for idx, item in enumerate(items_from_db):
+        for idx, item in enumerate(items_from_db[::-1]):
             self.original_ids.append(item[0])
             autonumbered_item = [idx + 1] + list(item[2:])
             self.items.append(autonumbered_item)

@@ -67,6 +67,8 @@ class ChartsPage(CTkFrame):
         chart_canvas.get_tk_widget().pack(fill='both', expand=True)
 
         self.add_back_button()
+        self.add_prev_next_month_button()
+        self.add_export_chart_button()
 
     def show_monthly_expenses_bar_chart(self):
         self.switch_to_chart_frame()
@@ -77,6 +79,8 @@ class ChartsPage(CTkFrame):
         chart_canvas.get_tk_widget().pack(fill='both', expand=True)
 
         self.add_back_button()
+        self.add_prev_next_month_button()
+        self.add_export_chart_button()
 
     def show_expenses_over_time_line_chart(self):
         self.switch_to_chart_frame()
@@ -87,6 +91,8 @@ class ChartsPage(CTkFrame):
         chart_canvas.get_tk_widget().pack(fill='both', expand=True)
 
         self.add_back_button()
+        self.add_prev_next_month_button()
+        self.add_export_chart_button()
 
     def show_comparison_chart(self):
         self.switch_to_chart_frame()
@@ -97,7 +103,14 @@ class ChartsPage(CTkFrame):
         chart_canvas.get_tk_widget().pack(fill='both', expand=True)
 
         self.add_back_button()
+        self.add_prev_next_month_button()
+        self.add_export_chart_button()
 
+    def add_prev_next_month_button(self):
+        pass
+
+    def add_export_chart_button(self):
+        pass
     def switch_to_chart_frame(self):
         self.thumbnail_frame.pack_forget()
         self.title_label.pack_forget()

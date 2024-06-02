@@ -16,6 +16,7 @@ from financials.expense import Expense
 from gui.add_expense import ExpensePage
 from item_page_controller import ItemPageController
 from gui.add_income import IncomePage
+from utils.entry_validators import validate_money
 
 
 class FinancialsPage(CTkFrame, ABC):
@@ -49,6 +50,8 @@ class FinancialsPage(CTkFrame, ABC):
 
         # dupa dupa dupa
         self.title = ''
+        self.vcmd_money = (app.register(validate_money), '%P')
+
 
     def create_title_frame(self, show_add_form_function):
         title_frame = CTkFrame(master=self, fg_color="transparent")
@@ -88,7 +91,7 @@ class FinancialsPage(CTkFrame, ABC):
 
         total_sum_metric = CTkFrame(master=metrics_frame,
                                     fg_color="#2A8C55",
-                                    width=350,
+                                    width=400,
                                     height=60,
                                     corner_radius=30)
 
@@ -110,7 +113,7 @@ class FinancialsPage(CTkFrame, ABC):
             pady=10)
 
         CTkLabel(master=total_sum_metric,
-                 text="Total financials: 1929,99 zł",
+                 text=f"Total {self.title} this month: 1929,99 zł",
                  text_color="#fff",
                  font=("Aptos", 18)).grid(
             row=0,
@@ -192,18 +195,18 @@ class FinancialsPage(CTkFrame, ABC):
         label.pack(pady=(27, 27), padx=(27, 27), fill='both')
 
         edit_button = CTkButton(self.info_panel, text="Edit", fg_color='#2A8C55', text_color='white', font=('Aptos', 12),
-                                corner_radius=30,
                                 command=lambda: self.edit_item())
+
         edit_button.pack(padx=(15, 15), pady=10, fill='both')
 
         delete_button = CTkButton(self.info_panel, text="Delete", font=('Aptos', 12),fg_color='#2A8C55', text_color='white',
-                                  corner_radius=30, command=lambda: self.delete_item())
+                                  command=lambda: self.delete_item())
         delete_button.pack(padx=15, pady=10, fill='both')
 
         back_button = CTkButton(self.info_panel, text="Back", font=('Aptos', 12), fg_color='#2A8C55',
-                                text_color='white', corner_radius=30,
+                                text_color='white',
                                 command=lambda: self.go_back())
-        back_button.pack(padx=15, pady=10, fill='both')
+        back_button.pack(padx=15, pady=15, fill='both', side='bottom')
 
         self.info_panel.pack(expand=True, fill="both", pady=(27, 27), padx=(0, 27))
 
@@ -268,6 +271,10 @@ class FinancialsPage(CTkFrame, ABC):
         self.top.destroy()
 
     def go_back(self):
+        if self.edit_dialog:
+            self.edit_dialog.destroy()
         self.info_panel.pack_forget()
         self.app.define_and_pack_frames()
         self.row_id.delete(0, 'end')
+
+

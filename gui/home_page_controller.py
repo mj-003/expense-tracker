@@ -30,21 +30,21 @@ class HomePageController:
 
     def get_filtered_items(self, items_list, date, category, sort):
         headers = [items_list[0]]
-        print('jeaders: ',headers)
         filtered_items = items_list[1:]
-        print('filtered_items: ', filtered_items)
+        print('--------filtered items--------', date, category, sort)
+        print(len(filtered_items))
         if date:
             if date == 'This month':
                 date = datetime.now().replace(day=1)
-                filtered_items = [item for item in items_list if datetime.strptime(item[3], '%Y-%m-%d') >= date]
+                filtered_items = [item for item in filtered_items if datetime.strptime(item[3], '%Y-%m-%d') >= date]
             elif date == 'This year':
                 date = datetime.now().replace(month=1, day=1)
-                filtered_items = [item for item in items_list if datetime.strptime(item[3], '%Y-%m-%d') >= date]
+                filtered_items = [item for item in filtered_items if datetime.strptime(item[3], '%Y-%m-%d') >= date]
         if category:
             if category == 'Expenses':
-                filtered_items = [item for item in items_list if item[2] == 'Expense']
+                filtered_items = [item for item in filtered_items if item[2] == 'Expense']
             if category == 'Incomes':
-                filtered_items = [item for item in items_list if item[2] == 'Income']
+                filtered_items = [item for item in filtered_items if item[2] == 'Income']
         if sort:
             reverse = sort.split()[0] == "⬇"
             if sort != 'Sort':
@@ -53,6 +53,7 @@ class HomePageController:
                     filtered_items.sort(key=lambda x: x[1], reverse=reverse)
                 elif sort.split()[1] == "Time":
                     filtered_items.sort(key=lambda x: datetime.strptime(x[3], '%Y-%m-%d'), reverse=reverse)
+        print(len(filtered_items))
         return headers + filtered_items
 
     def get_filtered_incomes(self, date, from_who, sort):

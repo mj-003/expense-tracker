@@ -147,6 +147,8 @@ class App(CTk):
         self.user_expenses = UserExpenses(self.database, self.user)
         self.user_incomes = UserIncomes(self.database, self.user)
 
+        self.LoginPage.grid_remove()
+
         # print(self.user.username)
         self.container.grid_rowconfigure(0, weight=1)
         self.container.grid_columnconfigure(0, weight=1)

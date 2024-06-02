@@ -18,9 +18,7 @@ from gui.add_expense import ExpensePage
 from home_page_controller import HomePageController
 from gui.add_income import IncomePage
 from plots import MyPlotter
-
-
-
+from utils.entry_validators import validate_money
 
 
 class HomePage(CTkFrame):
@@ -92,7 +90,7 @@ class HomePage(CTkFrame):
 
         total_sum_metric = CTkFrame(master=metrics_frame,
                                     fg_color="#2A8C55",
-                                    width=350,
+                                    width=400,
                                     height=60,
                                     corner_radius=30)
 
@@ -114,7 +112,7 @@ class HomePage(CTkFrame):
             pady=10)
 
         CTkLabel(master=total_sum_metric,
-                 text="Total financials: 1929,99 zł",
+                 text="Total balance this month: 1929,99 zł",
                  text_color="#fff",
                  font=("Aptos", 18)).grid(
             row=0,
@@ -141,7 +139,7 @@ class HomePage(CTkFrame):
                               padx=27)
 
         self.date_filter = CTkComboBox(master=search_container,
-                                       width=160,
+                                       width=185,
                                        values=["Date", "This month", "This year"],
                                        button_color="#2A8C55",
                                        border_color="#2A8C55",
@@ -157,7 +155,7 @@ class HomePage(CTkFrame):
             pady=15)
 
         self.category_filter = CTkComboBox(master=search_container,
-                                           width=160,
+                                           width=185,
                                            values=['Both', 'Incomes', 'Expenses'],
                                            button_color="#2A8C55",
                                            border_color="#2A8C55",
@@ -173,7 +171,7 @@ class HomePage(CTkFrame):
             pady=15)
 
         self.sort_filter = CTkComboBox(master=search_container,
-                                       width=160,
+                                       width=185,
                                        values=['Sort', '⬆ Amount', '⬇ Amount', '⬆ Time', '⬇ Time'],
                                        button_color="#2A8C55",
                                        border_color="#2A8C55",
@@ -200,18 +198,19 @@ class HomePage(CTkFrame):
             padx=(13, 0),
             pady=15)
 
-        self.is_chart = CTkCheckBox(master=search_container, text="Show chart", font=('Aptos', 12), variable=self.var_show_chart, onvalue="on", offvalue="off", command=self.if_show_chart, fg_color="#2A8C55")
+        self.is_chart = CTkCheckBox(master=search_container, text="Chart", font=('Aptos',15), variable=self.var_show_chart, onvalue="on", offvalue="off", command=self.if_show_chart, fg_color="#2A8C55", width=30, height=30)
         self.is_chart.pack(pady=20)
 
     def show_user_items(self):
         if self.table_frame is None:
-
             self.table_frame = CTkScrollableFrame(master=self, fg_color="transparent")
             self.table_frame.pack(expand=True, fill="both", padx=27, pady=21, side='left')
 
+            formatted_values = [[row[0], f"{row[1]} zł", row[2]] if len(row) > 1 else row for row in self.user_items_list]
+
             # Tworzenie nowej tabeli
             self.table = CTkTable(master=self.table_frame,
-                                  values=self.user_items_list,
+                                  values=formatted_values,
                                   colors=["#E6E6E6", "#EEEEEE"],
                                   header_color="#2A8C55",
                                   hover_color="#B4B4B4")
@@ -224,11 +223,13 @@ class HomePage(CTkFrame):
             indicates_to_remove = list(range(len(self.table.values)))
             self.table.delete_rows(indicates_to_remove)
 
-            # Dodawanie nowych wierszy
+            # Dodawanie nowych wierszy z aktualizacją drugiej kolumny
             for row_data in self.user_items_list:
+                if len(row_data) > 1:
+                    row_data[1] = f"{row_data[1]} zł"
                 self.table.add_row(row_data)
 
-            # Edytowanie pierwszego wiersza (zakładam, że chcesz to zrobić po każdej aktualizacji)
+        # Edytowanie pierwszego wiersza (zakładam, że chcesz to zrobić po każdej aktualizacji)
         if self.table.rows > 0:
             self.table.edit_row(0, text_color="#fff", hover_color="#2A8C55")
 

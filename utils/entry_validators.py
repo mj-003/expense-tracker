@@ -1,7 +1,4 @@
-import tkinter as tk
-from tkinter import ttk
-
-def on_validate(P):
+def validate_money(P):
     if P == "":
         return True
     try:
@@ -13,12 +10,3 @@ def on_validate(P):
         return True
     except ValueError:
         return False
-
-root = tk.Tk()
-
-vcmd = (root.register(on_validate), '%P')
-
-money_entry = ttk.Entry(root, validate='key', validatecommand=vcmd)
-money_entry.pack(pady=20, padx=20)
-
-root.mainloop()

@@ -15,7 +15,7 @@ class LoginPage(CTkFrame):
         self.parent = parent
         self.database = database
 
-
+        set_appearance_mode("light")
 
         self.user = None
         self.user_expenses = None
@@ -33,14 +33,14 @@ class LoginPage(CTkFrame):
 
     def add_image(self):
         side_img_data = Image.open("images/green_background3.jpeg")
-        side_img = CTkImage(dark_image=side_img_data, light_image=side_img_data, size=(430, 745))
+        side_img = CTkImage(dark_image=side_img_data, light_image=side_img_data, size=(450, 745))
 
         CTkLabel(master=self, text="", image=side_img).pack(expand=True, side="left")
 
     def add_log_pass(self):
         self.frame = CTkFrame(master=self, width=556, height=745)
         self.frame.pack_propagate(False)
-        self.frame.pack(expand=True, fill="both", padx=(70,50))
+        self.frame.pack(expand=True, fill="both", padx=(70, 50))
 
         CTkLabel(master=self.frame, text="Welcome Back!", text_color="#4b6053", anchor="w", justify="left",
                  font=("Aptos", 35, 'bold')).pack(anchor="w", pady=(100, 5), padx=(25, 0))
@@ -50,7 +50,7 @@ class LoginPage(CTkFrame):
 
         CTkLabel(master=self.frame, text="  Username:", text_color="#658354", anchor="w", justify="left",
                  font=("Aptos", 14), image=self.email_icon, compound="left").pack(anchor="w", pady=(38, 0),
-                                                                                       padx=(25, 0))
+                                                                                  padx=(25, 0))
 
         self.username_entry = CTkEntry(master=self.frame, width=255, fg_color="#EEEEEE", border_color="#4b6053",
                                        border_width=1, text_color="#000000", placeholder_text='Your username')
@@ -58,7 +58,7 @@ class LoginPage(CTkFrame):
 
         CTkLabel(master=self.frame, text="  Password:", text_color="#658354", anchor="w", justify="left",
                  font=("Aptos", 14), image=self.password_icon, compound="left").pack(anchor="w", pady=(21, 0),
-                                                                                          padx=(25, 0))
+                                                                                     padx=(25, 0))
 
         self.password_entry = CTkEntry(master=self.frame, width=255, fg_color="#EEEEEE", border_color="#4b6053",
                                        border_width=1, text_color="#000000", show="*")

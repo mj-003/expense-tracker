@@ -32,11 +32,11 @@ class ExportPage(CTkFrame):
 
     def add_title(self):
         title_frame = CTkFrame(master=self, fg_color="transparent")
-        title_frame.pack(fill="both", padx=27, pady=(15, 0))
+        title_frame.pack(fill="both", padx=27, pady=(25, 0))
 
         CTkLabel(master=title_frame,
-                 text="Export Expenses",
-                 font=("Arial Black", 25),
+                 text="Export Financials",
+                 font=("Aptos", 40, 'bold'),
                  text_color="#2A8C55").pack(
             anchor="nw",
             side="left")

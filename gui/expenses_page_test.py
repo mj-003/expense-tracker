@@ -49,11 +49,11 @@ class ExpensePageTest(FinancialsPage):
                   hover_color="#207244",
                   command=self.get_more_expense_info).pack(
             side="left",
-            padx=(13, 70),
+            padx=(13, 0),
             pady=15)
 
         self.date_filter = CTkComboBox(master=self.search_container,
-                                       width=130,
+                                       width=155,
                                        values=["Date", "This month", "This year"],
                                        button_color="#2A8C55",
                                        border_color="#2A8C55",
@@ -69,7 +69,7 @@ class ExpensePageTest(FinancialsPage):
             pady=15)
 
         self.category_filter = CTkComboBox(master=self.search_container,
-                                           width=130,
+                                           width=155,
                                            values=['Category', Categories.TRANSPORT.value, Categories.FOOD.value,
                                                    Categories.ENTERTAINMENT.value,
                                                    Categories.HOME.value, Categories.PERSONAL.value, ],
@@ -87,7 +87,7 @@ class ExpensePageTest(FinancialsPage):
             pady=15)
 
         self.sort_filter = CTkComboBox(master=self.search_container,
-                                       width=130,
+                                       width=155,
                                        values=['Sort', '⬆ Amount', '⬇ Amount', '⬆ Time', '⬇ Time'],
                                        button_color="#2A8C55",
                                        border_color="#2A8C55",
@@ -120,14 +120,17 @@ class ExpensePageTest(FinancialsPage):
 
         self.get_more_info()
 
-        photo_button = CTkButton(self.info_panel, text="📷", fg_color='#2A8C55', text_color='black',
-                                 corner_radius=50, width=60,
-                                 height=60, command=lambda: self.show_photo())
-        photo_button.pack(padx=10, pady=10, fill='both')
+        photo_button = CTkButton(self.info_panel, text="Recipe", fg_color='#2A8C55', text_color='white',
+                                 command=lambda: self.show_photo())
+        photo_button.pack(padx=15, pady=10, fill='both')
+
+
+
+
 
     def show_add_expense_form(self):
         self.show_add_item_form()
-        self.amount_entry = CTkEntry(self.info_panel, placeholder_text="Price")
+        self.amount_entry = CTkEntry(self.info_panel, placeholder_text="Price", validate='key', validatecommand=self.vcmd_money)
         self.amount_entry.pack(pady=(10, 10), padx=(10, 10))
 
         self.category_entry = CTkComboBox(self.info_panel,
@@ -154,12 +157,28 @@ class ExpensePageTest(FinancialsPage):
                   text_color_disabled="white",
                   command=self.upload_photo).pack(pady=(10, 10), padx=(10, 10))
 
-        save_button = CTkButton(self.info_panel, text="Save",
-                                fg_color="#2A8C55",
-                                command=lambda: self.save_new_item())
-        save_button.pack(pady=(10, 10), padx=(10, 10))
+        save_button = CTkButton(self.info_panel, text="✔", fg_color="#2A8C55", command=self.validate_and_save, width=40)
+        save_button.pack(pady=(10, 10), padx=(38, 3), side='left')
+
+        back_button = CTkButton(self.info_panel, text="✗", fg_color="#2A8C55", command=self.cancel, width=40)
+        back_button.pack(pady=(10, 10), padx=(3, 3), side='left')
+
+        cancel_button = CTkButton(self.info_panel, text="↩︎", fg_color="#2A8C55", command=self.go_back, width=40)
+        cancel_button.pack(pady=(10, 10), padx=(3, 10), side='left')
 
         self.info_panel.pack(expand=True, fill="both", pady=(27, 27), padx=(0, 27))
+
+
+    def validate_and_save(self):
+        amount = self.amount_entry.get()
+        category = self.category_entry.get()
+        payment = self.payment_method_entry.get()
+        date = self.date_entry.get()
+
+        if not amount or not category or not payment or not date:
+            messagebox.showwarning("Warning", "Please fill in all fields.")
+        else:
+            self.save_new_item()
 
     def save_new_item(self):
         new_price = self.amount_entry.get()
@@ -182,10 +201,10 @@ class ExpensePageTest(FinancialsPage):
     def edit_item(self):
         self.edit_dialog = ctk.CTkToplevel(self)
         self.edit_dialog.title(f"Edit {self.title}")
-        self.edit_dialog.geometry("400x300")
+        self.edit_dialog.geometry("330x300")
         self.item_info = self.user_items.get_expenses()[self.selected_row]
         CTkLabel(self.edit_dialog, text="Price:").grid(row=1, column=0, pady=10, padx=10, sticky="e")
-        self.amount_entry = CTkEntry(self.edit_dialog, textvariable=StringVar(value=self.item_info[1]))
+        self.amount_entry = CTkEntry(self.edit_dialog, textvariable=StringVar(value=self.item_info[1]), validate='key', validatecommand=self.vcmd_money)
         self.amount_entry.grid(row=1, column=1, pady=(20, 10), padx=10, sticky="w")
 
         CTkLabel(self.edit_dialog, text="Category:").grid(row=2, column=0, pady=10, padx=10, sticky="e")
@@ -201,12 +220,17 @@ class ExpensePageTest(FinancialsPage):
 
         CTkLabel(self.edit_dialog, text="Payment method:").grid(row=4, column=0, pady=10, padx=10, sticky="e")
         self.payment_method_entry = CTkComboBox(self.edit_dialog, values=['Online', 'Card', 'Cash', 'Other'])
-        self.payment_method_entry.grid(row=4, column=1, pady=10, padx=10, sticky="w")
+        self.payment_method_entry.grid(row=4, column=1, pady=10, padx=10, sticky='w')
 
         save_button = ctk.CTkButton(self.edit_dialog, text="Save",
                                     fg_color="#2A8C55",
                                     command=lambda: self.save_edited_expense())
-        save_button.grid(row=5, column=0, columnspan=2, pady=20, padx=10)
+        save_button.grid(row=5, column=0, columnspan=2, pady=20, padx=20, sticky='w')
+
+        cancel_button = ctk.CTkButton(self.edit_dialog, text="Cancel",
+                                      fg_color="#2A8C55",
+                                      command=lambda: self.go_back())
+        cancel_button.grid(row=5, column=1, columnspan=2, pady=20, padx=20, sticky='e')
 
         self.edit_dialog.columnconfigure(0, weight=1)
         self.edit_dialog.columnconfigure(1, weight=3)
@@ -264,5 +288,9 @@ class ExpensePageTest(FinancialsPage):
         self.user_items_list = self.user_items.get_expenses()
         self.show_user_expenses()
         self.edit_dialog.destroy()
+
+    def cancel(self):
+        self.amount_entry.delete(0, 'end')
+        self.category_entry.delete(0, 'end')
 
 

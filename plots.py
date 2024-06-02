@@ -153,3 +153,44 @@ class MyPlotter:
         ax.set_title('Month: ' + month)
 
         return fig, ax
+
+
+# import matplotlib.pyplot as plt
+#
+# # Dane do wykresu
+# labels = ['Net tuition and fees', 'Self-supporting Operations', 'Private gifts', 'Taxes', 'Loan repayment', 'Promotions', 'All other']
+# sizes = [21, 21, 4, 8, 21, 16, 8]
+# colors = ['#5DADE2', '#AF7AC5', '#F1948A', '#F7DC6F', '#76D7C4', '#7FB3D5', '#A569BD']
+# explode = (0, 0, 0, 0, 0, 0, 0)  # eksplozja wszystkich części (jeśli wymagane)
+#
+# # Tworzenie wykresu
+# fig, ax = plt.subplots(figsize=(8, 6))  # zmniejszenie rozmiaru wykresu
+#
+# # Wykres pierścieniowy
+# wedges, texts, autotexts = ax.pie(sizes, explode=explode, colors=colors, autopct='%1.0f%%',
+#                                   shadow=False, startangle=140, wedgeprops=dict(width=0.5), pctdistance=0.85)
+#
+# # Rysowanie środka wykresu kołowego, aby stworzyć wykres pierścieniowy
+# centre_circle = plt.Circle((0,0),0.01,fc='white')
+# fig.gca().add_artist(centre_circle)
+#
+# # Dodanie tekstu "Expense" w środku koła
+# plt.text(0, 0, 'Expenses', ha='center', va='center', fontsize=12)
+#
+# # Upewnienie się, że wykres jest okrągły
+# ax.axis('equal')
+#
+# # Dodanie tytułu
+#
+# # Usunięcie opisów z wykresu
+# for text in texts:
+#     text.set_text('')
+#
+# plt.subplots_adjust(top=1)
+#
+#
+# # Umieszczenie legendy wyżej, aby była lepiej widoczna, w trzech kolumnach
+# plt.legend(wedges, labels, loc="upper center", bbox_to_anchor=(0.5, 0.03), ncol=3)
+#
+# # Wyświetlenie wykresu
+# plt.show()
