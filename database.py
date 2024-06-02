@@ -75,6 +75,7 @@ class Database:
         return self.cursor.fetchone()[0]
 
     def add_expense(self, user_id, expense: Expense):
+        print('===============================================')
         self.cursor.execute('''
             INSERT INTO financials (user_id, amount, category, payment_method, date, photo_path)
             VALUES (?, ?, ?, ?, ?, ?)
@@ -95,6 +96,7 @@ class Database:
         return self.cursor.fetchone()
 
     def update_expense(self, expense_id, expense: Expense):
+        print(expense_id, expense.amount, expense.category, expense.payment_method, expense.date, expense.photo_path)
         self.cursor.execute('''
             UPDATE financials
             SET amount = ?, category = ?, payment_method = ?, date = ?, photo_path = ?
