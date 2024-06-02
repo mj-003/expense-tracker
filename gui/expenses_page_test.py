@@ -1,29 +1,13 @@
-from abc import abstractmethod
-from datetime import datetime
-
-from financials.expense import Expense
-from item_page_abc import FinancialsPage
-from customtkinter import *
-from categories import Categories
-import customtkinter as ctk
-
-import os
 from datetime import datetime
 from tkinter import messagebox
-import tkinter as tk
-from tkinter.ttk import Style
 
 import customtkinter as ctk
-from CTkTable import CTkTable
 from PIL import Image, ImageTk
 from customtkinter import *
-from tkcalendar import DateEntry, Calendar
 
 from categories import Categories
 from financials.expense import Expense
-from gui.add_expense import ExpensePage
-from home_page_controller import HomePageController
-from gui.add_income import IncomePage
+from item_page_abc import FinancialsPage
 
 
 class ExpensePageTest(FinancialsPage):
@@ -131,7 +115,11 @@ class ExpensePageTest(FinancialsPage):
             pady=15)
 
     def get_more_expense_info(self):
+        self.selected_row = int(self.row_id.get())
+        self.item_info = self.user_items.get_expenses()[self.selected_row]
+
         self.get_more_info()
+
         photo_button = CTkButton(self.info_panel, text="📷", fg_color='#2A8C55', text_color='black',
                                  corner_radius=50, width=60,
                                  height=60, command=lambda: self.show_photo())
@@ -174,12 +162,10 @@ class ExpensePageTest(FinancialsPage):
         self.info_panel.pack(expand=True, fill="both", pady=(27, 27), padx=(0, 27))
 
     def save_new_item(self):
-        print('save_new_expense')
         new_price = self.amount_entry.get()
         new_category = self.category_entry.get()
         new_date = self.date_entry.get()
         new_payment = self.payment_method_entry.get()
-        print(new_price, new_category, new_date, new_payment)
 
         path = self.recipe_entry if self.recipe_entry else None
         self.new_item = Expense(amount=new_price, category=new_category, payment_method=new_payment, date=new_date,
@@ -203,15 +189,18 @@ class ExpensePageTest(FinancialsPage):
         self.amount_entry.grid(row=1, column=1, pady=(20, 10), padx=10, sticky="w")
 
         CTkLabel(self.edit_dialog, text="Category:").grid(row=2, column=0, pady=10, padx=10, sticky="e")
-        self.category_entry = CTkEntry(self.edit_dialog, textvariable=StringVar(value=self.item_info[2]))
+        self.category_entry = CTkComboBox(self.edit_dialog,
+                                          values=['Personal', 'Transport', 'Food', 'Entertainment', 'Home', 'Other'])
         self.category_entry.grid(row=2, column=1, pady=10, padx=10, sticky="w")
 
         CTkLabel(self.edit_dialog, text="Date:").grid(row=3, column=0, pady=10, padx=10, sticky="e")
-        self.date_entry = CTkEntry(self.edit_dialog, textvariable=StringVar(value=self.item_info[3]))
+        self.date_entry = CTkEntry(self.edit_dialog, textvariable=self.date_var, state='readonly',
+                                   fg_color="white")
+        self.date_entry.bind("<Button-1>", self.open_calendar)
         self.date_entry.grid(row=3, column=1, pady=10, padx=10, sticky="w")
 
         CTkLabel(self.edit_dialog, text="Payment method:").grid(row=4, column=0, pady=10, padx=10, sticky="e")
-        self.payment_method_entry = CTkEntry(self.edit_dialog, textvariable=StringVar(value=self.item_info[4]))
+        self.payment_method_entry = CTkComboBox(self.edit_dialog, values=['Online', 'Card', 'Cash', 'Other'])
         self.payment_method_entry.grid(row=4, column=1, pady=10, padx=10, sticky="w")
 
         save_button = ctk.CTkButton(self.edit_dialog, text="Save",
@@ -224,11 +213,8 @@ class ExpensePageTest(FinancialsPage):
         self.app.update_user_expenses(self.user_items)
 
     def delete_item(self):
-        print(f"Deleting item at row: {self.selected_row}")
         self.user_items.delete_expense(self.selected_row)
-        print('dupa dupa dupa')
         self.user_items_list = self.user_items.get_expenses()
-        print(self.user_items_list)
         self.show_user_items()
         self.info_panel.pack_forget()
         self.app.update_user_expenses(self.user_items)
@@ -237,7 +223,6 @@ class ExpensePageTest(FinancialsPage):
         print(self.row_id)
         print(self.user_items.get_expense(self.selected_row)[6])
         file_path = self.user_items.get_expense(self.selected_row)[6]
-        print('dupsko')
 
         if file_path and os.path.exists(file_path):
             photo_dialog = CTkToplevel(self)
@@ -257,6 +242,7 @@ class ExpensePageTest(FinancialsPage):
         sort = self.sort_filter.get()
 
         self.user_items_list = self.controller.get_filtered_expenses(date, category, sort)
+        print(self.user_items_list)
         self.get_filtered_items()
 
     def upload_photo(self):

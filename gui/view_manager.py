@@ -10,6 +10,8 @@ from gui.add_income import IncomePage
 from gui.expense_page import ExpensesPage
 from gui.incomes_page import IncomesPage
 from gui.expenses_page_test import ExpensePageTest
+from gui.expenses_page_test import ExpensePageTest
+from gui.incomes_page_test import IncomesPageTest
 from financials.user_expenses import UserExpenses
 from gui import const
 from user import User
@@ -91,7 +93,7 @@ class App(CTk):
         settings_img_data = Image.open("images/settings_icon.png")
         settings_img = CTkImage(dark_image=settings_img_data, light_image=settings_img_data)
         CTkButton(master=self.sidebar_frame, image=settings_img, text="Incomes", fg_color="transparent",
-                  font=("Arial Bold", 14), hover_color="#207244", anchor="w", command=lambda: self.show_frame(IncomesPage)).pack(anchor="center", ipady=5,
+                  font=("Arial Bold", 14), hover_color="#207244", anchor="w", command=lambda: self.show_frame(IncomesPageTest)).pack(anchor="center", ipady=5,
                                                                                    pady=(16, 0))
 
         CTkButton(master=self.sidebar_frame, image=settings_img, text="Expenses", fg_color="transparent",
@@ -121,7 +123,7 @@ class App(CTk):
         self.show_frame(HomePage)
 
     def define_and_pack_frames(self):
-        for F in [HomePage, ExportPage, ChartsPage, ExpensePageTest, IncomesPage]:
+        for F in [HomePage, ExportPage, ChartsPage, ExpensePageTest, IncomesPageTest]:
             frame = F(self.container, self, self.database, self.user, self.user_expenses, self.user_incomes)
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")
@@ -155,6 +157,11 @@ class App(CTk):
         for frame in self.frames:
             print('frame: ', frame)
             self.frames[frame].user_expenses = new_expenses
+
+    def update_user_incomes(self, new_incomes):
+        for frame in self.frames:
+            print('frame: ', frame)
+            self.frames[frame].user_incomes = new_incomes
 
 
 if __name__ == "__main__":

@@ -183,13 +183,6 @@ class FinancialsPage(CTkFrame, ABC):
             self.table.edit_row(0, text_color="#fff", hover_color="#2A8C55")
 
     def get_more_info(self):
-        self.selected_row = int(self.row_id.get())
-
-        print("Row ID: ", self.selected_row)
-        print("User items: ", self.user_items.get_items())
-        item_info = self.user_items_list[self.selected_row]
-        print("Getting more info on row: ", self.selected_row)
-        print(item_info)
 
         for widget in self.info_panel.winfo_children():
             widget.destroy()
@@ -198,20 +191,19 @@ class FinancialsPage(CTkFrame, ABC):
                          width=30, height=2, text_color='#2A8C55')
         label.pack(pady=(27, 27), padx=(27, 27), fill='both')
 
-        edit_button = CTkButton(self.info_panel, text="✍︎", fg_color='#2A8C55', text_color='black',
-                                corner_radius=100, width=40, height=60,
+        edit_button = CTkButton(self.info_panel, text="Edit", fg_color='#2A8C55', text_color='white', font=('Aptos', 12),
+                                corner_radius=30,
                                 command=lambda: self.edit_item())
-        edit_button.pack(padx=(10, 27), pady=10, fill='both')
+        edit_button.pack(padx=(15, 15), pady=10, fill='both')
 
-        delete_button = CTkButton(self.info_panel, text="✕️", fg_color='#2A8C55', text_color='black',
-                                  corner_radius=50, width=60,
-                                  height=60, command=lambda: self.delete_item())
-        delete_button.pack(padx=10, pady=10, fill='both')
+        delete_button = CTkButton(self.info_panel, text="Delete", font=('Aptos', 12),fg_color='#2A8C55', text_color='white',
+                                  corner_radius=30, command=lambda: self.delete_item())
+        delete_button.pack(padx=15, pady=10, fill='both')
 
-        back_button = CTkButton(self.info_panel, text="↩︎", font=('Aptos', 25), fg_color='#2A8C55',
-                                text_color='white', corner_radius=50, width=60, height=60,
-                                command=lambda: self.app.define_and_pack_frames())
-        back_button.pack(padx=10, pady=10, fill='both')
+        back_button = CTkButton(self.info_panel, text="Back", font=('Aptos', 12), fg_color='#2A8C55',
+                                text_color='white', corner_radius=30,
+                                command=lambda: self.go_back())
+        back_button.pack(padx=15, pady=10, fill='both')
 
         self.info_panel.pack(expand=True, fill="both", pady=(27, 27), padx=(0, 27))
 
@@ -226,11 +218,7 @@ class FinancialsPage(CTkFrame, ABC):
     @abstractmethod
     def save_new_item(self):
         pass
-        # print("Saving new item")
-        #
-        # print("User items: ", self.user_items_list)
-        # self.show_user_items()
-        # self.app.define_and_pack_frames()
+
 
     @abstractmethod
     def edit_item(self):
@@ -278,3 +266,8 @@ class FinancialsPage(CTkFrame, ABC):
     def select_date(self):
         self.date_var.set(self.calendar.get_date())
         self.top.destroy()
+
+    def go_back(self):
+        self.info_panel.pack_forget()
+        self.app.define_and_pack_frames()
+        self.row_id.delete(0, 'end')

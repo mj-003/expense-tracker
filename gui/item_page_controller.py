@@ -27,13 +27,14 @@ class ItemPageController:
         self.database = database
     @abstractmethod
     def get_filtered_expenses(self, date_filter=None, category_filter=None, sort_order=None):
-        pass
+        return self.user_expenses.get_expenses(date_filter, category_filter, sort_order)
 
     @abstractmethod
     def get_filtered_items(self, items_list, date, category, sort):
         pass
 
     @abstractmethod
-    def get_filtered_incomes(self, date, from_who, sort):
-        pass
+    def get_filtered_incomes(self, date=None, from_who=None, sort=None):
+        return self.user_incomes.get_incomes(date, from_who, sort)
+
 
