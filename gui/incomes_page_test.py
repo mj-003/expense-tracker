@@ -109,12 +109,12 @@ class IncomesPageTest(FinancialsPage):
 
     def get_more_income_info(self):
         if (not self.row_id.get().isdigit()) or int(self.row_id.get()) < 1 or int(self.row_id.get()) > len(
-                self.user_items.get_expenses()):
+                self.user_items.get_incomes()):
             messagebox.showwarning("Warning", "Invalid ID.")
             return
         else:
             self.selected_row = int(self.row_id.get())
-            self.item_info = self.user_items.get_expenses()[self.selected_row]
+            self.item_info = self.user_items.get_incomes()[self.selected_row]
             self.get_more_info()
 
     def show_add_income_form(self):
@@ -213,10 +213,8 @@ class IncomesPageTest(FinancialsPage):
         date = self.date_filter.get()
         from_who = self.from_filter.get()
         sort = self.sort_filter.get()
-        print(self.user_items)
 
         self.user_items_list = self.controller.get_filtered_incomes(date, from_who, sort)
-        print(self.user_items_list)
         self.get_filtered_items()
 
     def save_edited_income(self):

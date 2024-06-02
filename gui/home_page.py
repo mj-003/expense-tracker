@@ -1,24 +1,13 @@
 import datetime
-import os
-from tkinter import messagebox
-
-import matplotlib.pyplot as plt
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-import datetime
-import numpy as np
 
 import customtkinter as ctk
 from CTkTable import CTkTable
-from PIL import Image, ImageTk
+from PIL import Image
 from customtkinter import *
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
-from categories import Categories
-from financials.expense import Expense
-from gui.add_expense import ExpensePage
 from item_controller import ItemController
-from gui.add_income import IncomePage
 from plots import MyPlotter
-from utils.entry_validators import validate_money
 
 
 class HomePage(CTkFrame):
@@ -40,7 +29,7 @@ class HomePage(CTkFrame):
         self.controller = ItemController(database, user, user_expenses, user_incomes)
         self.user_items_list = self.controller.create_user_items_list()
 
-        self.plotter = MyPlotter(user_expenses)
+        self.plotter = MyPlotter(user_expenses, user_incomes)
 
         self.date_filter = None
         self.category_filter = None
@@ -53,8 +42,6 @@ class HomePage(CTkFrame):
         self.show_user_items()
         self.create_chart_panel()
         self.if_show_chart()
-
-
 
     def create_title_frame(self):
         title_frame = CTkFrame(master=self, fg_color="transparent")
@@ -78,7 +65,6 @@ class HomePage(CTkFrame):
             anchor='nw',
             side='right',
             pady=5)
-
 
     def create_metrics_frame(self):
         metrics_frame = CTkFrame(master=self, fg_color="transparent")
@@ -126,8 +112,6 @@ class HomePage(CTkFrame):
 
         date_frame.grid_propagate(False)
         date_frame.pack(side="right")
-
-
 
     def create_search_container(self):
         search_container = CTkFrame(master=self,
@@ -198,7 +182,9 @@ class HomePage(CTkFrame):
             padx=(13, 0),
             pady=15)
 
-        self.is_chart = CTkCheckBox(master=search_container, text="Chart", font=('Aptos',15), variable=self.var_show_chart, onvalue="on", offvalue="off", command=self.if_show_chart, fg_color="#2A8C55", width=30, height=30)
+        self.is_chart = CTkCheckBox(master=search_container, text="Chart", font=('Aptos', 15),
+                                    variable=self.var_show_chart, onvalue="on", offvalue="off",
+                                    command=self.if_show_chart, fg_color="#2A8C55", width=30, height=30)
         self.is_chart.pack(pady=20)
 
     def show_user_items(self):
@@ -206,7 +192,8 @@ class HomePage(CTkFrame):
             self.table_frame = CTkScrollableFrame(master=self, fg_color="transparent")
             self.table_frame.pack(expand=True, fill="both", padx=27, pady=21, side='left')
 
-            formatted_values = [[row[0], f"{row[1]} zł", row[2]] if len(row) > 1 else row for row in self.user_items_list]
+            formatted_values = [[row[0], f"{row[1]} zł", row[2]] if len(row) > 1 else row for row in
+                                self.user_items_list]
 
             # Tworzenie nowej tabeli
             self.table = CTkTable(master=self.table_frame,
@@ -252,7 +239,7 @@ class HomePage(CTkFrame):
 
     def if_show_chart(self):
         if self.var_show_chart.get() == "on":
-            self.info_panel.pack(expand=True, fill="both", pady=27, padx=(0,27))
+            self.info_panel.pack(expand=True, fill="both", pady=27, padx=(0, 27))
         else:
             self.info_panel.pack_forget()
 
@@ -263,7 +250,6 @@ class HomePage(CTkFrame):
         self.info_panel.pack_forget()
         self.update_chart()
 
-
     def update_chart(self):
         # Clear the previous chart if it exists
         for widget in self.info_panel.winfo_children():
@@ -271,7 +257,7 @@ class HomePage(CTkFrame):
 
         month_str, self.user_incomes_list, self.user_expenses_list = self.controller.get_chart_data(self.current_month)
         fig, ax = self.plotter.plot_incomes_expenses_per_month(month_str, self.user_incomes_list,
-                                                       self.user_expenses_list)
+                                                               self.user_expenses_list)
 
         chart_canvas = FigureCanvasTkAgg(fig, master=self.info_panel)
         chart_canvas.draw()
@@ -280,10 +266,11 @@ class HomePage(CTkFrame):
         button_frame = ctk.CTkFrame(master=self.info_panel, fg_color="transparent")
         button_frame.pack(side='bottom', pady=10)
 
-        prev_button = ctk.CTkButton(master=button_frame, text="Previous", fg_color='#2A8C55', command=self.show_prev_month)
+        prev_button = ctk.CTkButton(master=button_frame, text="Previous", fg_color='#2A8C55',
+                                    command=self.show_prev_month)
         prev_button.pack(side='left', padx=5)
 
-        next_button = ctk.CTkButton(master=button_frame, text="Next", fg_color='#2A8C55',command=self.show_next_month)
+        next_button = ctk.CTkButton(master=button_frame, text="Next", fg_color='#2A8C55', command=self.show_next_month)
         next_button.pack(side='right', padx=5)
 
     def show_prev_month(self):
@@ -295,6 +282,3 @@ class HomePage(CTkFrame):
         next_month = self.current_month + datetime.timedelta(days=31)
         self.current_month = next_month.replace(day=1)
         self.update_chart()
-
-
-

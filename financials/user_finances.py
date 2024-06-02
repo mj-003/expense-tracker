@@ -19,9 +19,6 @@ class UserFinancials(ABC):
             autonumbered_item = [idx + 1] + list(item[2:])
             self.items.append(autonumbered_item)
 
-        print('--------start--------')
-        print(self.items)
-        print('--------stop--------')
 
     def add_item(self, item, add_function, get_function):
         add_function(self.user.id, item)

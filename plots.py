@@ -2,21 +2,30 @@ from datetime import datetime
 
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import matplotlib.dates as mdates
+
 
 from financials.user_expenses import UserExpenses
 import pandas as pd
 
+from financials.user_incomes import UserIncomes
+
 
 class MyPlotter:
-    def __init__(self, user_expenses: UserExpenses):
+    def __init__(self, user_expenses: UserExpenses, user_incomes: UserIncomes):
         self.user_expenses_list = user_expenses.get_expenses()[1:]
+        self.user_incomes_list = user_incomes.get_incomes()[1:]
         self.amount_column = 1
         self.category_column = 2
         self.date_column = 4
 
-    def plot_category_pie_chart(self):
+    def plot_category_pie_chart(self, month, year=None):
+        colors = ['#5DADE2', '#AF7AC5', '#F1948A', '#F7DC6F', '#76D7C4', '#7FB3D5', '#A569BD']
+
+        filtered_expenses = self.get_expenses_by_month(month)
+
         categories = {}
-        for expense in self.user_expenses_list:
+        for expense in filtered_expenses:
             category = expense[self.category_column]
             amount = float(expense[self.amount_column])
             if category in categories:
@@ -27,12 +36,30 @@ class MyPlotter:
         labels = list(categories.keys())
         sizes = list(categories.values())
 
-        fig, ax = plt.subplots()
-        ax.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=90)
+        fig, ax = plt.subplots()  # zmniejszenie rozmiaru wykresu
+
+        # Wykres pierścieniowy
+        wedges, texts, autotexts = ax.pie(sizes, colors=colors, autopct='%1.0f%%',
+                                          shadow=False, startangle=140, wedgeprops=dict(width=0.5), pctdistance=0.85)
+
+        centre_circle = plt.Circle((0, 0), 0.01, fc='white')
+        fig.gca().add_artist(centre_circle)
+
+        # Dodanie tekstu "Expense" w środku koła
+        plt.text(0, 0, 'Expenses', ha='center', va='center', fontsize=12)
+
+        # Upewnienie się, że wykres jest okrągły
         ax.axis('equal')
 
-        return fig, ax
+        for text in texts:
+            text.set_text('')
 
+        plt.subplots_adjust(right=0.7)
+        plt.legend(wedges, labels, bbox_to_anchor=(1, 0.5), ncol=1, loc='center left', fontsize='small', frameon=False)
+        plt.title(f'{month}', loc='right')
+
+
+        return fig, ax
 
     def plot_monthly_expenses_bar_chart(self):
         monthly_expenses = {}
@@ -71,8 +98,6 @@ class MyPlotter:
         plt.title('Expenses Over Time')
 
         return fig, ax
-
-
 
     def plot_comparison_chart(self):
         current_year = datetime.now().year
@@ -143,7 +168,6 @@ class MyPlotter:
         ax.spines['top'].set_visible(False)
         ax.spines['right'].set_visible(False)
 
-
         # Set limits and labels
         ax.set_xlim(-0.5, len(categories) - 0.5)
         ax.set_ylim(0, max(amounts) * 1.1)
@@ -154,43 +178,62 @@ class MyPlotter:
 
         return fig, ax
 
+    def get_expenses_by_month(self, month):
+        filtered_expenses = []
+        for expense in self.user_expenses_list:
+            if expense[self.date_column][:7] == month:
+                filtered_expenses.append(expense)
 
-# import matplotlib.pyplot as plt
-#
-# # Dane do wykresu
-# labels = ['Net tuition and fees', 'Self-supporting Operations', 'Private gifts', 'Taxes', 'Loan repayment', 'Promotions', 'All other']
-# sizes = [21, 21, 4, 8, 21, 16, 8]
-# colors = ['#5DADE2', '#AF7AC5', '#F1948A', '#F7DC6F', '#76D7C4', '#7FB3D5', '#A569BD']
-# explode = (0, 0, 0, 0, 0, 0, 0)  # eksplozja wszystkich części (jeśli wymagane)
-#
-# # Tworzenie wykresu
-# fig, ax = plt.subplots(figsize=(8, 6))  # zmniejszenie rozmiaru wykresu
-#
-# # Wykres pierścieniowy
-# wedges, texts, autotexts = ax.pie(sizes, explode=explode, colors=colors, autopct='%1.0f%%',
-#                                   shadow=False, startangle=140, wedgeprops=dict(width=0.5), pctdistance=0.85)
-#
-# # Rysowanie środka wykresu kołowego, aby stworzyć wykres pierścieniowy
-# centre_circle = plt.Circle((0,0),0.01,fc='white')
-# fig.gca().add_artist(centre_circle)
-#
-# # Dodanie tekstu "Expense" w środku koła
-# plt.text(0, 0, 'Expenses', ha='center', va='center', fontsize=12)
-#
-# # Upewnienie się, że wykres jest okrągły
-# ax.axis('equal')
-#
-# # Dodanie tytułu
-#
-# # Usunięcie opisów z wykresu
-# for text in texts:
-#     text.set_text('')
-#
-# plt.subplots_adjust(top=1)
-#
-#
-# # Umieszczenie legendy wyżej, aby była lepiej widoczna, w trzech kolumnach
-# plt.legend(wedges, labels, loc="upper center", bbox_to_anchor=(0.5, 0.03), ncol=3)
-#
-# # Wyświetlenie wykresu
-# plt.show()
+        return filtered_expenses
+
+    def plot_expenses_incomes(self, year, month=None):
+        # Create DataFrames with the given data
+        expense_df = pd.DataFrame(self.user_expenses_list, columns=['ID', 'Amount', 'Category', 'Payment','Date', 'Recipe'])
+        income_df = pd.DataFrame(self.user_incomes_list, columns=['ID','Amount', 'From', 'Date'])
+
+        expense_df = expense_df[['Amount', 'Date']]
+        income_df = income_df[['Amount', 'Date']]
+
+        temp = pd.to_datetime(expense_df['Date'])
+        temp2 = pd.to_datetime(income_df['Date'])
+
+        expense_df['Date'] = temp
+        income_df['Date'] = temp2
+
+        expense_df = expense_df[expense_df['Date'].dt.year == year]
+        income_df = income_df[income_df['Date'].dt.year == year]
+
+        # Group by month and sum the amounts
+        expense_df = expense_df.groupby(expense_df['Date'].dt.to_period('M')).sum(numeric_only=True)
+        income_df = income_df.groupby(income_df['Date'].dt.to_period('M')).sum(numeric_only=True)
+
+        # Plotting
+        fig, ax = plt.subplots()
+
+        # Bar plot for expenses and incomes
+        ax.bar(expense_df.index.to_timestamp() - pd.DateOffset(days=7), expense_df['Amount'], width=14,
+               label='Expenses')
+        ax.bar(income_df.index.to_timestamp() + pd.DateOffset(days=7), income_df['Amount'], width=14, label='Incomes')
+
+        # Calculate the average expenses and incomes
+        avg_expenses = expense_df['Amount'].mean()
+        avg_incomes = income_df['Amount'].mean()
+
+        # Plotting the average lines
+        ax.axhline(avg_expenses, color='red', linestyle='--', linewidth=2, label=f'Avg Expenses: {avg_expenses:.2f}zł')
+        ax.axhline(avg_incomes, color='blue', linestyle='--', linewidth=2, label=f'Avg Incomes: {avg_incomes:.2f}zł')
+
+        ax.xaxis.set_major_locator(mdates.MonthLocator())
+        ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %Y'))
+
+        # Add labels and legend
+        ax.set_title(f'{year}', loc='right')
+        ax.set_ylabel('Amount (zł)')
+        ax.legend()
+
+        plt.grid(True)
+        plt.xticks(rotation=45)
+        plt.tight_layout()
+
+        return fig, ax
+
