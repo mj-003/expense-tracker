@@ -1,5 +1,6 @@
 from datetime import datetime
 
+import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.dates as mdates
@@ -203,6 +204,11 @@ class MyPlotter:
         expense_df = expense_df[expense_df['Date'].dt.year == year]
         income_df = income_df[income_df['Date'].dt.year == year]
 
+        if expense_df.empty or income_df.empty:
+
+            print("No data available for the specified year after filtering.")
+            return
+
         # Group by month and sum the amounts
         expense_df = expense_df.groupby(expense_df['Date'].dt.to_period('M')).sum(numeric_only=True)
         income_df = income_df.groupby(income_df['Date'].dt.to_period('M')).sum(numeric_only=True)
@@ -236,4 +242,102 @@ class MyPlotter:
         plt.tight_layout()
 
         return fig, ax
+
+    def plot_income_expense_trends(self, year, month=None):
+        expense_df = pd.DataFrame(self.user_expenses_list,
+                                  columns=['ID', 'Amount', 'Category', 'Payment', 'Date', 'Recipe'])
+        income_df = pd.DataFrame(self.user_incomes_list, columns=['ID', 'Amount', 'From', 'Date'])
+
+        # Convert the Date columns to datetime, coerce errors to NaT
+        expense_df['Date'] = pd.to_datetime(expense_df['Date'])
+        income_df['Date'] = pd.to_datetime(income_df['Date'])
+
+        # Drop rows with NaT in the 'Date' column
+        expense_df = expense_df.dropna(subset=['Date'])
+        income_df = income_df.dropna(subset=['Date'])
+
+        # Filter the data for the specified year
+        expense_df = expense_df[expense_df['Date'].dt.year == year]
+        income_df = income_df[income_df['Date'].dt.year == year]
+
+        # Group by month and sum the amounts
+        expense_df = expense_df.groupby(expense_df['Date'].dt.to_period('M')).sum(numeric_only=True).sort_index()
+        income_df = income_df.groupby(income_df['Date'].dt.to_period('M')).sum(numeric_only=True).sort_index()
+
+        # Plotting
+        fig, ax = plt.subplots()
+
+        # Line plot for expenses and incomes
+        ax.plot(expense_df.index.to_timestamp(), expense_df['Amount'], label='Expenses', marker='o', linestyle='-', color='red')
+        ax.plot(income_df.index.to_timestamp(), income_df['Amount'], label='Incomes', marker='o', linestyle='-', color='green')
+
+        # Adding a trend line for expenses
+        z_expenses = np.polyfit(expense_df.index.to_timestamp().astype(int) / 10**9, expense_df['Amount'], 1)
+        p_expenses = np.poly1d(z_expenses)
+        ax.plot(expense_df.index.to_timestamp(), p_expenses(expense_df.index.to_timestamp().astype(int) / 10**9), "r--", label='Expenses Trend Line')
+
+        # Adding a trend line for incomes
+        z_incomes = np.polyfit(income_df.index.to_timestamp().astype(int) / 10**9, income_df['Amount'], 1)
+        p_incomes = np.poly1d(z_incomes)
+        ax.plot(income_df.index.to_timestamp(), p_incomes(income_df.index.to_timestamp().astype(int) / 10**9), "g--", label='Incomes Trend Line')
+
+        # Formatting the x-axis
+        ax.xaxis.set_major_locator(mdates.MonthLocator())
+        ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %Y'))
+
+        # Add labels and legend
+        ax.set_title(f'{year}', loc='right')
+        ax.set_ylabel('Amount (zł)')
+        ax.legend()
+
+        plt.grid(True)
+        plt.xticks(rotation=45)
+        plt.tight_layout()
+
+        return fig, ax
+
+    def plot_box_plot_expenses_incomes(self, year, month):
+        expense_df = pd.DataFrame(self.user_expenses_list,
+                                  columns=['ID', 'Amount', 'Category', 'Payment', 'Date', 'Recipe'])
+        income_df = pd.DataFrame(self.user_incomes_list, columns=['ID', 'Amount', 'From', 'Date'])
+
+        # Convert the Date columns to datetime, coerce errors to NaT
+        expense_df['Date'] = pd.to_datetime(expense_df['Date'])
+        income_df['Date'] = pd.to_datetime(income_df['Date'])
+
+        # Drop rows with NaT in the 'Date' column
+        expense_df = expense_df.dropna(subset=['Date'])
+        income_df = income_df.dropna(subset=['Date'])
+
+        # Filter the data for the specified year
+        expense_df = expense_df[expense_df['Date'].dt.year == year]
+        income_df = income_df[income_df['Date'].dt.year == year]
+
+        # Check if DataFrames are empty after filtering
+        if expense_df.empty or income_df.empty:
+            print("No data available for the specified year after filtering.")
+            return
+
+        # Plotting
+        fig, ax = plt.subplots()
+
+        # Combine expenses and incomes into a single DataFrame for plotting
+        combined_df = pd.DataFrame({
+            'Expenses': expense_df['Amount'],
+            'Incomes': income_df['Amount']
+        })
+
+        # Plotting box plot
+        combined_df.plot.box(ax=ax)
+
+        # Add labels and title
+        ax.set_title(f'{year}', loc='right')
+        ax.set_ylabel('Amount (zł)')
+
+        plt.grid(True)
+        plt.tight_layout()
+
+        # Save the plot as an image file
+        return fig, ax
+
 
