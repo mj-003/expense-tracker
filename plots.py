@@ -18,6 +18,12 @@ class MyPlotter:
         self.date_column = 4
 
     def plot_category_pie_chart(self, month, year=None):
+        """
+        Function to plot a pie chart of expenses by category for a given month
+        :param month:
+        :param year:
+        :return:
+        """
         colors = ['#5DADE2', '#AF7AC5', '#F1948A', '#F7DC6F', '#76D7C4', '#7FB3D5', '#A569BD']
 
         filtered_expenses = self.get_expenses_by_month(month)
@@ -61,6 +67,13 @@ class MyPlotter:
 
 
     def plot_incomes_expenses_per_month(self, month, incomes_list, expenses_list):
+        """
+        Function to plot a bar chart of total incomes and expenses for a given month
+        :param month:
+        :param incomes_list:
+        :param expenses_list:
+        :return:
+        """
 
         incomes_pd = pd.DataFrame(incomes_list, columns=["ID", "Amount", "From", "Date"])
         expenses_pd = pd.DataFrame(expenses_list,
@@ -101,7 +114,12 @@ class MyPlotter:
 
         return fig, ax
 
-    def get_expenses_by_month(self, month):
+    def get_expenses_by_month(self, month) -> list:
+        """
+        Function to filter expenses by month
+        :param month:
+        :return:
+        """
         filtered_expenses = []
         for expense in self.user_expenses_list:
             if expense[self.date_column][:7] == month:
@@ -110,6 +128,12 @@ class MyPlotter:
         return filtered_expenses
 
     def plot_expenses_incomes(self, year, month=None):
+        """
+        Function to plot a bar chart of total expenses and incomes for a given month
+        :param year:
+        :param month:
+        :return:
+        """
         # Create DataFrames with the given data
         expense_df = pd.DataFrame(self.user_expenses_list, columns=['ID', 'Amount', 'Category', 'Payment','Date', 'Recipe'])
         income_df = pd.DataFrame(self.user_incomes_list, columns=['ID','Amount', 'From', 'Date'])
@@ -166,6 +190,12 @@ class MyPlotter:
         return fig, ax
 
     def plot_income_expense_trends(self, year, month=None):
+        """
+        Function to plot a line chart of total expenses and incomes for a given year
+        :param year:
+        :param month:
+        :return:
+        """
         expense_df = pd.DataFrame(self.user_expenses_list,
                                   columns=['ID', 'Amount', 'Category', 'Payment', 'Date', 'Recipe'])
         income_df = pd.DataFrame(self.user_incomes_list, columns=['ID', 'Amount', 'From', 'Date'])
@@ -219,6 +249,12 @@ class MyPlotter:
         return fig, ax
 
     def plot_box_plot_expenses_incomes(self, year, month):
+        """
+        Function to plot a box plot of expenses and incomes for a given year
+        :param year:
+        :param month:
+        :return:
+        """
         expense_df = pd.DataFrame(self.user_expenses_list,
                                   columns=['ID', 'Amount', 'Category', 'Payment', 'Date', 'Recipe'])
         income_df = pd.DataFrame(self.user_incomes_list, columns=['ID', 'Amount', 'From', 'Date'])

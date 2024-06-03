@@ -4,6 +4,12 @@ import openpyxl
 
 
 def export_to_excel(filename, data):
+    """
+    Export data to excel file
+    :param filename:
+    :param data:
+    :return:
+    """
     # remove number of rows
     data = (row[1:] for row in data)
     workbook = openpyxl.Workbook()
@@ -20,6 +26,12 @@ def export_to_excel(filename, data):
 
 
 def export_to_csv(filename, data):
+    """
+    Export data to csv file
+    :param filename:
+    :param data:
+    :return:
+    """
     with open(filename, mode='w', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
         writer.writerows(data)

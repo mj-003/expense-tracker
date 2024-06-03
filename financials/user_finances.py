@@ -9,6 +9,11 @@ class UserFinancials(ABC):
         self.original_ids = []
 
     def load_items(self, get_function):
+        """
+        Load items from the database
+        :param get_function:
+        :return:
+        """
         user_id = self.database.get_user_id(self.user.username)
         items_from_db = get_function(user_id)
         self.items = []
@@ -21,6 +26,13 @@ class UserFinancials(ABC):
 
 
     def add_item(self, item, add_function, get_function):
+        """
+        Add an item to the database
+        :param item:
+        :param add_function:
+        :param get_function:
+        :return:
+        """
         add_function(self.user.id, item)
         self.load_items(get_function)
 
@@ -28,6 +40,12 @@ class UserFinancials(ABC):
         pass
 
     def get_item(self, autonumbered_id, get_function):
+        """
+        Get an item by autonumbered ID
+        :param autonumbered_id:
+        :param get_function:
+        :return:
+        """
         if 0 < autonumbered_id <= len(self.original_ids):
             item_id = self.original_ids[autonumbered_id - 1]
             return get_function(item_id)
@@ -36,6 +54,13 @@ class UserFinancials(ABC):
             return None
 
     def delete_item(self, autonumbered_id, del_function, get_function):
+        """
+        Delete an item by autonumbered ID
+        :param autonumbered_id:
+        :param del_function:
+        :param get_function:
+        :return:
+        """
         if 0 < autonumbered_id <= len(self.original_ids):
             expense_id = self.original_ids[autonumbered_id - 1]
             del_function(expense_id)
@@ -44,6 +69,14 @@ class UserFinancials(ABC):
             print(f"Invalid autonumbered ID: {autonumbered_id}")
 
     def update_item(self, autonumbered_id, updated_item, update_function, get_function):
+        """
+        Update an item by autonumbered ID
+        :param autonumbered_id:
+        :param updated_item:
+        :param update_function:
+        :param get_function:
+        :return:
+        """
         print(updated_item)
         if 0 < autonumbered_id <= len(self.original_ids):
             item_id = self.original_ids[autonumbered_id - 1]

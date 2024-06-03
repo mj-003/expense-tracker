@@ -11,20 +11,23 @@ from plots import MyPlotter
 class ChartsPage(CTkFrame):
     def __init__(self, parent, app, database, user, user_expenses, user_incomes):
         super().__init__(parent)
-        self.button_frame = None
-        self.user_expenses = user_expenses
-        self.user_incomes = user_incomes
         self.app = app
         self.parent = parent
+        self.user_expenses = user_expenses
+        self.user_incomes = user_incomes
+
         self.user_expenses_list = self.user_expenses.get_expenses()
         self.user_incomes_list = self.user_incomes.get_incomes()
         self.plotter = MyPlotter(user_expenses, user_incomes)
 
-        self.create_widgets()
         self.curr_month = datetime.datetime.now().replace(day=1)
         self.curr_month_str = self.curr_month.strftime('%Y-%m')
         self.curr_year = self.curr_month.year
+
         self.current_chart_function = None
+        self.button_frame = None
+
+        self.create_widgets()
 
     def create_widgets(self):
         self.title_label = CTkLabel(self, text="Charts", font=("Aptos", 40, 'bold'), text_color="#2A8C55")
@@ -42,10 +45,14 @@ class ChartsPage(CTkFrame):
 
     def create_chart_thumbnails(self):
         charts = [
-            {"title": "Category Pie Chart", "image": "images/pie_chart.png", "function": self.plotter.plot_category_pie_chart},
-            {"title": "Monthly Expenses and Incomes", "image": "images/bar_chart.png", "function": self.plotter.plot_expenses_incomes},
-            {"title": "Monthly Expenses and Incomes trends", "image": "images/linear_chart.png", "function": self.plotter.plot_income_expense_trends},
-            {"title": "Yearly Box Plot of Expenses and Incomes", "image": "images/box_chart.png", "function": self.plotter.plot_box_plot_expenses_incomes}
+            {"title": "Category Pie Chart", "image": "images/pie_chart.png",
+             "function": self.plotter.plot_category_pie_chart},
+            {"title": "Monthly Expenses and Incomes", "image": "images/bar_chart.png",
+             "function": self.plotter.plot_expenses_incomes},
+            {"title": "Monthly Expenses and Incomes trends", "image": "images/linear_chart.png",
+             "function": self.plotter.plot_income_expense_trends},
+            {"title": "Yearly Box Plot of Expenses and Incomes", "image": "images/box_chart.png",
+             "function": self.plotter.plot_box_plot_expenses_incomes}
         ]
 
         row = 0
@@ -55,8 +62,11 @@ class ChartsPage(CTkFrame):
             chart_image = chart_image.resize((150, 150))  # Zmieniony rozmiar obrazu
             chart_image = CTkImage(light_image=chart_image, dark_image=chart_image, size=(150, 150))
 
-            chart_button = CTkButton(self.thumbnail_frame, image=chart_image, text=chart["title"], font=('Aptos', 14, 'bold'), compound="top", fg_color='#2A8C55',
-                                     command=lambda chart_func=chart["function"]: self.show_chart(chart_func, month=self.curr_month_str, year=self.curr_year))
+            chart_button = CTkButton(self.thumbnail_frame, image=chart_image, text=chart["title"],
+                                     font=('Aptos', 14, 'bold'), compound="top", fg_color='#2A8C55',
+                                     command=lambda chart_func=chart["function"]: self.show_chart(chart_func,
+                                                                                                  month=self.curr_month_str,
+                                                                                                  year=self.curr_year))
             chart_button.grid(row=row, column=column, pady=20, padx=20, sticky="nsew")
 
             column += 1
@@ -78,7 +88,9 @@ class ChartsPage(CTkFrame):
         self.current_chart_function = chart_function
         self.switch_to_chart_frame()
 
-        if (self.current_chart_function == self.plotter.plot_category_pie_chart and self.check_if_available_month(month)) or (self.current_chart_function != self.plotter.plot_category_pie_chart and self.check_if_available(year)):
+        if (self.current_chart_function == self.plotter.plot_category_pie_chart and self.check_if_available_month(
+                month)) or (
+                self.current_chart_function != self.plotter.plot_category_pie_chart and self.check_if_available(year)):
             fig, ax = chart_function(month=month, year=year)
             chart_canvas = FigureCanvasTkAgg(fig, master=self.chart_frame)
             chart_canvas.draw()
@@ -105,10 +117,9 @@ class ChartsPage(CTkFrame):
         self.thumbnail_frame.pack(pady=10, padx=10, fill='both', expand=True)
 
     def add_buttons(self):
-        back_button = CTkButton(self.button_frame, text="Back", fg_color='#2A8C55', command=self.switch_to_thumbnail_frame)
+        back_button = CTkButton(self.button_frame, text="Back", fg_color='#2A8C55',
+                                command=self.switch_to_thumbnail_frame)
         back_button.pack(side='left', padx=27, pady=15)
-
-
 
         next_button = ctk.CTkButton(master=self.button_frame, text="Next", fg_color='#2A8C55', command=self.show_next)
         next_button.pack(side='right', padx=(20, 27), pady=15)

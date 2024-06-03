@@ -27,7 +27,6 @@ class ExpensesPage(FinancialsPage):
         self.title = 'Expenses'
 
         self.create_title_frame(self.show_add_expense_form)
-
         self.create_metrics_frame()
         self.create_search_container_expense()
         self.create_info_panel()

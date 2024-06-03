@@ -214,7 +214,6 @@ class HomePage(CTkFrame):
                     row_data[1] = f"{row_data[1]} zł"
                 self.table.add_row(row_data)
 
-        # Edytowanie pierwszego wiersza (zakładam, że chcesz to zrobić po każdej aktualizacji)
         if self.table.rows > 0:
             self.table.edit_row(0, text_color="#fff", hover_color="#2A8C55")
 
@@ -249,7 +248,6 @@ class HomePage(CTkFrame):
         self.update_chart()
 
     def update_chart(self):
-        # Clear the previous chart if it exists
         for widget in self.info_panel.winfo_children():
             widget.destroy()
 

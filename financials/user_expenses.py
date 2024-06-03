@@ -10,12 +10,28 @@ class UserExpenses(UserFinancials):
         self.load_expenses()
 
     def load_expenses(self):
+        """
+        Load expenses from the database
+        :return:
+        """
         self.load_items(self.database.get_expenses)
 
     def add_expense(self, expense):
+        """
+        Add an expense to the database
+        :param expense:
+        :return:
+        """
         self.add_item(expense, self.database.add_expense, self.database.get_expenses)
 
     def get_expenses(self, date_filter=None, category_filter=None, sort_order=None):
+        """
+        Get expenses from the database
+        :param date_filter:
+        :param category_filter:
+        :param sort_order:
+        :return:
+        """
         filtered_expenses = self.items[:]
 
         if date_filter:
@@ -36,6 +52,11 @@ class UserExpenses(UserFinancials):
         return headers + filtered_expenses
 
     def get_expense(self, autonumbered_id):
+        """
+        Get an expense by autonumbered ID
+        :param autonumbered_id:
+        :return:
+        """
         if 0 < autonumbered_id <= len(self.original_ids):
             item_id = self.original_ids[autonumbered_id - 1]
             return self.database.get_expense(item_id)
@@ -44,6 +65,12 @@ class UserExpenses(UserFinancials):
             return None
 
     def filter_by_date(self, expenses, date_filter):
+        """
+        Filter expenses by date
+        :param expenses:
+        :param date_filter:
+        :return:
+        """
         if date_filter == "This month":
             start_date = datetime.now().replace(day=1)
         elif date_filter == "This year":
@@ -54,10 +81,25 @@ class UserExpenses(UserFinancials):
         return [expense for expense in expenses if datetime.strptime(expense[4], '%Y-%m-%d') >= start_date]
 
     def delete_expense(self, autonumbered_id):
+        """
+        Delete an expense by autonumbered ID
+        :param autonumbered_id:
+        :return:
+        """
         self.delete_item(autonumbered_id, self.database.del_expense, self.database.get_expenses)
 
     def update_user_expense(self, autonumbered_id, updated_expense):
+        """
+        Update an expense by autonumbered ID
+        :param autonumbered_id:
+        :param updated_expense:
+        :return:
+        """
         self.update_item(autonumbered_id, updated_expense, self.database.update_expense, self.database.get_expenses)
 
     def get_sum(self):
+        """
+        Get the sum of expenses for the current month
+        :return:
+        """
         return sum([expense[1] for expense in self.items if datetime.strptime(expense[4], '%Y-%m-%d').month == datetime.today().month])

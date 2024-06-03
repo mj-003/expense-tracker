@@ -1,4 +1,9 @@
 def validate_money(P):
+    """
+    Validate money input
+    :param P:
+    :return:
+    """
     if P == "":
         return True
     try:
@@ -13,6 +18,12 @@ def validate_money(P):
 
 
 def validate_more_info(action, value_if_allowed):
+    """
+    Validate more info input
+    :param action:
+    :param value_if_allowed:
+    :return:
+    """
     if action == '1':  # Insert
         if value_if_allowed.isdigit():
             return True
