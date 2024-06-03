@@ -24,9 +24,7 @@ class ChartsPage(CTkFrame):
         self.create_widgets()
         self.curr_month = datetime.datetime.now().replace(day=1)
         self.curr_month_str = self.curr_month.strftime('%Y-%m')
-        self.curr_year = datetime.datetime.now().year
-        print(self.curr_year)
-        #self.curr_year_str = str(self.curr_year)
+        self.curr_year = self.curr_month.year
         self.current_chart_function = None
 
     def create_widgets(self):
@@ -39,7 +37,7 @@ class ChartsPage(CTkFrame):
         self.chart_frame = CTkFrame(self)
         self.chart_frame.pack(pady=10, padx=10, fill='both', expand=True)
 
-        self.chart_frame.pack_forget()  # Ukryj początkowo wykres
+        self.chart_frame.pack_forget()
 
         self.create_chart_thumbnails()
 
@@ -80,19 +78,16 @@ class ChartsPage(CTkFrame):
             widget.destroy()
         self.current_chart_function = chart_function
         self.switch_to_chart_frame()
-        #self.check_if_available(month, year)
-        fig, ax = chart_function(month=month, year=year)
-        chart_canvas = FigureCanvasTkAgg(fig, master=self.chart_frame)
-        chart_canvas.draw()
-        chart_canvas.get_tk_widget().pack(fill='both', expand=True)
 
-        self.add_buttons()
+        if (self.current_chart_function == self.plotter.plot_category_pie_chart and self.check_if_available_month(month)) or (self.current_chart_function != self.plotter.plot_category_pie_chart and self.check_if_available(year)):
+            fig, ax = chart_function(month=month, year=year)
+            chart_canvas = FigureCanvasTkAgg(fig, master=self.chart_frame)
+            chart_canvas.draw()
+            chart_canvas.get_tk_widget().pack(fill='both', expand=True)
 
-    def add_prev_next_month_button(self):
-        pass
-
-    def add_export_chart_button(self):
-        pass
+            self.add_buttons()
+        else:
+            self.switch_to_thumbnail_frame()
 
     def switch_to_chart_frame(self):
         self.thumbnail_frame.pack_forget()
@@ -114,49 +109,44 @@ class ChartsPage(CTkFrame):
         back_button = CTkButton(self.button_frame, text="Back", fg_color='#2A8C55', command=self.switch_to_thumbnail_frame)
         back_button.pack(side='left', padx=27, pady=15)
 
-        prev_button = ctk.CTkButton(master=self.button_frame, text="Previous", fg_color='#2A8C55', command=self.show_prev_month)
-        prev_button.pack(side='right', padx=(20,27), pady=15)
-
-        next_button = ctk.CTkButton(master=self.button_frame, text="Next", fg_color='#2A8C55', command=self.show_next_month)
-        next_button.pack(side='right', padx=(0,0), pady=15)
 
 
+        next_button = ctk.CTkButton(master=self.button_frame, text="Next", fg_color='#2A8C55', command=self.show_next)
+        next_button.pack(side='right', padx=(20, 27), pady=15)
 
-    def show_prev_month(self):
+        prev_button = ctk.CTkButton(master=self.button_frame, text="Previous", fg_color='#2A8C55',
+                                    command=self.show_prev)
+        prev_button.pack(side='right', padx=(0, 0), pady=15)
+
+    def show_prev(self):
         self.curr_month = (self.curr_month - datetime.timedelta(days=1)).replace(day=1)
-        self.curr_year = self.curr_year - 1
-        print(self.curr_year)
         prev_month = self.curr_month.strftime('%Y-%m')
-        prev_year = self.curr_year
+        prev_year = self.curr_month.year - 1
         if self.current_chart_function:
             self.show_chart(self.current_chart_function, month=prev_month, year=prev_year)
 
-    def show_next_month(self):
-
+    def show_next(self):
         if self.current_chart_function:
             self.curr_month = (self.curr_month + datetime.timedelta(days=31)).replace(day=1)
-            self.curr_year = self.curr_year + 1
             next_month_str = self.curr_month.strftime('%Y-%m')
-            next_year = self.curr_year
+            next_year = self.curr_month.year + 1
             self.show_chart(self.current_chart_function, month=next_month_str, year=next_year)
 
-    def export_current_chart(self):
-        # Implementacja eksportu bieżącego wykresu
-        pass
-
-    def check_if_available(self, month, year):
-        is_available = False
+    def check_if_available(self, year):
         for item in self.user_expenses_list:
-            if item[4][:4] == year:
-                is_available = True
-                break
+            if item[4][:4] == str(year):
+                print("Available", str(year))
+                return True
         for item in self.user_incomes_list:
-            if item[3][:4] == year:
-                is_available = True
-                break
-        if not is_available:
-            messagebox.showwarning("Warning", "No data available for the specified year after filtering.")
-            self.switch_to_thumbnail_frame()
-            return
+            if item[3][:4] == str(year):
+                return True
+        return False
 
-
+    def check_if_available_month(self, month):
+        for item in self.user_expenses_list:
+            if item[4][:7] == month:
+                return True
+        for item in self.user_incomes_list:
+            if item[3][:7] == month:
+                return True
+        return False
