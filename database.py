@@ -167,3 +167,5 @@ class Database:
             DELETE FROM incomes WHERE id = ?
         ''', (income_id,))
         self.connection.commit()
+
+   

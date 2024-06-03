@@ -1,5 +1,4 @@
 import datetime
-from tkinter import messagebox
 
 import customtkinter as ctk
 from PIL import Image

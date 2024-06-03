@@ -1,7 +1,7 @@
 from datetime import datetime
 from .user_finances import UserFinancials
 
-headers = [['No.', 'Amount', 'Category', 'Payment method', 'Date']]
+headers = [['No.', 'Amount (zł)', 'Category', 'Payment method', 'Date']]
 
 
 class UserExpenses(UserFinancials):
@@ -58,3 +58,6 @@ class UserExpenses(UserFinancials):
 
     def update_user_expense(self, autonumbered_id, updated_expense):
         self.update_item(autonumbered_id, updated_expense, self.database.update_expense, self.database.get_expenses)
+
+    def get_sum(self):
+        return sum([expense[1] for expense in self.items if datetime.strptime(expense[4], '%Y-%m-%d').month == datetime.today().month])

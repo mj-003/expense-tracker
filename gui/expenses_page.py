@@ -10,7 +10,7 @@ from financials.expense import Expense
 from item_page_abc import FinancialsPage
 
 
-class ExpensePageTest(FinancialsPage):
+class ExpensesPage(FinancialsPage):
     def __init__(self, parent, app, database, user, user_expenses, user_incomes):
         super().__init__(parent=parent, app=app, database=database, user=user, user_items=user_expenses,
                          user_items2=user_incomes)
@@ -295,3 +295,6 @@ class ExpensePageTest(FinancialsPage):
     def cancel(self):
         self.amount_entry.delete(0, 'end')
         self.category_entry.delete(0, 'end')
+
+
+

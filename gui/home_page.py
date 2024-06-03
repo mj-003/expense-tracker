@@ -8,12 +8,13 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 from item_controller import ItemController
 from plots import MyPlotter
+from datetime import datetime
 
 
 class HomePage(CTkFrame):
     def __init__(self, parent, app, database, user, user_expenses, user_incomes):
         super().__init__(parent)
-        self.current_month = datetime.datetime.now().replace(day=1)
+        self.current_month = datetime.now().replace(day=1)
         self.financials = None
         self.selected_row = None
         self.table_frame = None
@@ -35,6 +36,7 @@ class HomePage(CTkFrame):
         self.category_filter = None
         self.sort_filter = None
         self.var_show_chart = ctk.StringVar(value="on")
+        self.today = datetime.today().strftime('%a, %-d.%m')
 
         self.create_title_frame()
         self.create_metrics_frame()
@@ -59,7 +61,7 @@ class HomePage(CTkFrame):
             side="left")
 
         CTkLabel(master=title_frame,
-                 text="Thur, 30.05",
+                 text=self.today,
                  text_color="#2A8C55",
                  font=("Aptos", 35)).pack(
             anchor='nw',
@@ -83,7 +85,7 @@ class HomePage(CTkFrame):
         total_sum_metric.grid_propagate(False)
         total_sum_metric.pack(side="left")
 
-        logistics_img_data = Image.open("images/logistics_icon.png")
+        logistics_img_data = Image.open("images/money.png")
         logistics_img = CTkImage(light_image=logistics_img_data,
                                  dark_image=logistics_img_data,
                                  size=(43, 43))
@@ -98,7 +100,7 @@ class HomePage(CTkFrame):
             pady=10)
 
         CTkLabel(master=total_sum_metric,
-                 text="Total balance this month: 1929,99 zł",
+                 text=f"Total balance this month: {self.user_incomes.get_sum()-self.user_expenses.get_sum():.2f} zł",
                  text_color="#fff",
                  font=("Aptos", 18)).grid(
             row=0,
@@ -192,12 +194,8 @@ class HomePage(CTkFrame):
             self.table_frame = CTkScrollableFrame(master=self, fg_color="transparent")
             self.table_frame.pack(expand=True, fill="both", padx=27, pady=21, side='left')
 
-            formatted_values = [[row[0], f"{row[1]} zł", row[2]] if len(row) > 1 else row for row in
-                                self.user_items_list]
-
-            # Tworzenie nowej tabeli
             self.table = CTkTable(master=self.table_frame,
-                                  values=formatted_values,
+                                  values=self.user_items_list,
                                   colors=["#E6E6E6", "#EEEEEE"],
                                   header_color="#2A8C55",
                                   hover_color="#B4B4B4")

@@ -9,7 +9,6 @@ class Income:
         self.income_id = income_id
 
     def add_income(self, database):
-        print('add_income')
         self.income_id = database.add_income(self)
 
     def __str__(self):

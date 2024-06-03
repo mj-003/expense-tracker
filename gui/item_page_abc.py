@@ -1,21 +1,14 @@
-from abc import ABC, abstractmethod
-import os
-from datetime import datetime
-from tkinter import messagebox
 import tkinter as tk
-from tkinter.ttk import Style
+from abc import ABC, abstractmethod
+from datetime import datetime
 
 import customtkinter as ctk
 from CTkTable import CTkTable
-from PIL import Image, ImageTk
+from PIL import Image
 from customtkinter import *
-from tkcalendar import DateEntry, Calendar
+from tkcalendar import Calendar
 
-from categories import Categories
-from financials.expense import Expense
-from gui.add_expense import ExpensePage
-from item_page_controller import ItemPageController
-from gui.add_income import IncomePage
+from gui.item_controller import ItemController
 from utils.entry_validators import validate_money, validate_more_info
 
 
@@ -39,6 +32,7 @@ class FinancialsPage(CTkFrame, ABC):
         self.item_id = None
         self.item_id_entry = None
         self.row_id = None
+        self.today = datetime.today().strftime('%a, %-d.%m')
 
         self.user_items = user_items
         self.app = app
@@ -46,12 +40,12 @@ class FinancialsPage(CTkFrame, ABC):
         self.user = user
         self.database = database
         self.user_items_list = self.user_items.get_items()
-        self.controller = ItemPageController(database, user, user_items, user_items2)
+        self.controller = ItemController(database, user, user_items, user_items2)
 
-        # dupa dupa dupa
         self.title = ''
         self.vcmd_money = (app.register(validate_money), '%P')
         self.vcmd_more_info = (app.register(validate_more_info), '%d', '%P')
+        self.today_sum = self.user_items.get_sum()
 
 
     def create_title_frame(self, show_add_form_function):
@@ -92,14 +86,14 @@ class FinancialsPage(CTkFrame, ABC):
 
         total_sum_metric = CTkFrame(master=metrics_frame,
                                     fg_color="#2A8C55",
-                                    width=400,
+                                    width=420,
                                     height=60,
                                     corner_radius=30)
 
         total_sum_metric.grid_propagate(False)
         total_sum_metric.pack(side="left")
 
-        logistics_img_data = Image.open("images/logistics_icon.png")
+        logistics_img_data = Image.open("images/money.png")
         logistics_img = CTkImage(light_image=logistics_img_data,
                                  dark_image=logistics_img_data,
                                  size=(43, 43))
@@ -114,7 +108,7 @@ class FinancialsPage(CTkFrame, ABC):
             pady=10)
 
         CTkLabel(master=total_sum_metric,
-                 text=f"Total {self.title} this month: 1929,99 zł",
+                 text=f"Total {self.title} this month: {self.today_sum:.2f} zł",
                  text_color="#fff",
                  font=("Aptos", 18)).grid(
             row=0,
@@ -130,12 +124,13 @@ class FinancialsPage(CTkFrame, ABC):
         date_frame.pack(side="right")
 
         CTkLabel(master=date_frame,
-                 text="Thur, 30.05",
+                 text=self.today,
                  text_color="#2A8C55",
                  font=("Aptos", 35)).grid(
             row=0,
-            column=1,
-            sticky="se",
+            column=2,
+            sticky="e",
+            padx=(0, 0),
             pady=(0, 10))
 
     def create_search_container(self):
@@ -158,7 +153,6 @@ class FinancialsPage(CTkFrame, ABC):
             padx=(13, 0),
             pady=15)
 
-
     def create_info_panel(self):
         self.info_panel = CTkFrame(master=self, fg_color="white", border_width=2, border_color="#2A8C55", width=200)
         self.info_panel.pack(expand=True, fill="both", pady=20)
@@ -179,7 +173,6 @@ class FinancialsPage(CTkFrame, ABC):
         else:
             indicates_to_remove = list(range(len(self.table.values)))
             self.table.delete_rows(indicates_to_remove)
-            print("User items: ", self.user_items_list)
 
             for row_data in self.user_items_list:
                 self.table.add_row(row_data)
@@ -196,12 +189,14 @@ class FinancialsPage(CTkFrame, ABC):
                          width=30, height=2, text_color='#2A8C55')
         label.pack(pady=(27, 27), padx=(27, 27), fill='both')
 
-        edit_button = CTkButton(self.info_panel, text="Edit", fg_color='#2A8C55', text_color='white', font=('Aptos', 12),
+        edit_button = CTkButton(self.info_panel, text="Edit", fg_color='#2A8C55', text_color='white',
+                                font=('Aptos', 12),
                                 command=lambda: self.edit_item())
 
         edit_button.pack(padx=(15, 15), pady=10, fill='both')
 
-        delete_button = CTkButton(self.info_panel, text="Delete", font=('Aptos', 12),fg_color='#2A8C55', text_color='white',
+        delete_button = CTkButton(self.info_panel, text="Delete", font=('Aptos', 12), fg_color='#2A8C55',
+                                  text_color='white',
                                   command=lambda: self.delete_item())
         delete_button.pack(padx=15, pady=10, fill='both')
 
@@ -216,26 +211,16 @@ class FinancialsPage(CTkFrame, ABC):
         for widget in self.info_panel.winfo_children():
             widget.destroy()
 
-        label = CTkLabel(self.info_panel, text=f"Add New {self.title}", font=("Aptos", 18),
+        self.label = CTkLabel(self.info_panel, text=f"Add New {self.title}", font=("Aptos", 18),
                          width=30, height=2, text_color='#2A8C55')
-        label.pack(pady=(15, 10), padx=(27, 27))
-
-    @abstractmethod
-    def save_new_item(self):
-        pass
-
-
-    @abstractmethod
-    def edit_item(self):
-        pass
+        self.label.pack(pady=(15, 10), padx=(27, 27))
 
     def save_edited_item(self):
+        self.label.config(text=f'Total {self.title} this month: {self.user_items.get_sum():.2f} zł')
+        self.label.pack(pady=(15, 10), padx=(27, 27))
+
         self.save_new_item()
         self.edit_dialog.destroy()
-
-    @abstractmethod
-    def delete_item(self):
-        pass
 
     def get_filtered_items(self):
         indicates_to_remove = []
@@ -251,21 +236,16 @@ class FinancialsPage(CTkFrame, ABC):
         return self.user_items
 
     def open_calendar(self, event):
-        if hasattr(self, 'top') and self.top.winfo_exists():
-            self.top.lift()
-            return
-
-        # Create a top-level window for the calendar
         self.top = tk.Toplevel(self)
         self.top.geometry("+%d+%d" % (
             self.date_entry.winfo_rootx(), self.date_entry.winfo_rooty() + self.date_entry.winfo_height()))
-        self.top.overrideredirect(True)  # Remove window decorations
+        self.top.overrideredirect(True)
         self.top.grab_set()
-        self.top.lift()  # Bring the calendar window to the front
+        self.top.lift()
 
         self.calendar = Calendar(self.top, selectmode='day', date_pattern='yyyy-MM-dd')
         self.calendar.pack(pady=10, padx=10)
-        select_button = ctk.CTkButton(self.top, text="Select", command=self.select_date)
+        select_button = ctk.CTkButton(self.top, text="Select", command=self.select_date, fg_color='#2A8C55')
         select_button.pack(pady=10)
 
     def select_date(self):
@@ -279,4 +259,14 @@ class FinancialsPage(CTkFrame, ABC):
         self.app.define_and_pack_frames()
         self.row_id.delete(0, 'end')
 
+    @abstractmethod
+    def save_new_item(self):
+        pass
 
+    @abstractmethod
+    def edit_item(self):
+        pass
+
+    @abstractmethod
+    def delete_item(self):
+        pass

@@ -28,11 +28,8 @@ class UserFinancials(ABC):
         pass
 
     def get_item(self, autonumbered_id, get_function):
-        print('get_item')
         if 0 < autonumbered_id <= len(self.original_ids):
             item_id = self.original_ids[autonumbered_id - 1]
-            # print('item id: ', item_id)
-            # print(get_function(item_id))
             return get_function(item_id)
         else:
             print(f"Invalid autonumbered ID: {autonumbered_id}")
@@ -47,7 +44,6 @@ class UserFinancials(ABC):
             print(f"Invalid autonumbered ID: {autonumbered_id}")
 
     def update_item(self, autonumbered_id, updated_item, update_function, get_function):
-        print('update_item')
         print(updated_item)
         if 0 < autonumbered_id <= len(self.original_ids):
             item_id = self.original_ids[autonumbered_id - 1]
@@ -55,3 +51,7 @@ class UserFinancials(ABC):
             self.load_items(get_function)
         else:
             print(f"Invalid autonumbered ID: {autonumbered_id}")
+
+    @abstractmethod
+    def get_sum(self):
+        pass

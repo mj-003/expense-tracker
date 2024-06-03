@@ -1,9 +1,8 @@
 from PIL import Image
 from customtkinter import *
+
 from registration_window import RegistrationWindow
 from user import User
-from financials.user_expenses import UserExpenses
-from financials.user_incomes import UserIncomes
 
 
 class LoginPage(CTkFrame):
@@ -23,8 +22,8 @@ class LoginPage(CTkFrame):
         self.password_entry = None
 
         self.frame = None
-        self.email_icon = CTkImage(dark_image=Image.open("images/email-icon.png"), size=(20, 20))
-        self.password_icon = CTkImage(dark_image=Image.open("images/password-icon.png"), size=(17, 17))
+        self.email_icon = CTkImage(dark_image=Image.open("images/login.png"), size=(20, 20))
+        self.password_icon = CTkImage(dark_image=Image.open("images/password.png"), size=(20, 20))
 
         self.add_image()
         self.add_log_pass()
@@ -40,34 +39,34 @@ class LoginPage(CTkFrame):
     def add_log_pass(self):
         self.frame = CTkFrame(master=self, width=556, height=745)
         self.frame.pack_propagate(False)
-        self.frame.pack(expand=True, fill="both", padx=(70, 50))
+        self.frame.pack(expand=True, fill="both", padx=(0, 0))
 
-        CTkLabel(master=self.frame, text="Welcome Back!", text_color="#4b6053", anchor="w", justify="left",
-                 font=("Aptos", 35, 'bold')).pack(anchor="w", pady=(100, 5), padx=(25, 0))
+        CTkLabel(master=self.frame, text="Welcome Back!", text_color="#4b6053", justify="left",
+                 font=("Aptos", 35, 'bold')).pack(anchor="w", pady=(100, 5), padx=(150, 0))
 
         CTkLabel(master=self.frame, text="Sign in to your account", text_color="#75975e", anchor="w", justify="left",
-                 font=("Arial Bold", 15)).pack(anchor="w", padx=(25, 0))
+                 font=("Arial Bold", 15)).pack(anchor="w", padx=(150, 0))
 
         CTkLabel(master=self.frame, text="  Username:", text_color="#658354", anchor="w", justify="left",
                  font=("Aptos", 14), image=self.email_icon, compound="left").pack(anchor="w", pady=(38, 0),
-                                                                                  padx=(25, 0))
+                                                                                  padx=(150, 0))
 
         self.username_entry = CTkEntry(master=self.frame, width=255, fg_color="#EEEEEE", border_color="#4b6053",
                                        border_width=1, text_color="#000000", placeholder_text='Your username')
-        self.username_entry.pack(anchor="w", padx=(25, 0))
+        self.username_entry.pack(anchor="w", padx=(150, 0))
 
         CTkLabel(master=self.frame, text="  Password:", text_color="#658354", anchor="w", justify="left",
                  font=("Aptos", 14), image=self.password_icon, compound="left").pack(anchor="w", pady=(21, 0),
-                                                                                     padx=(25, 0))
+                                                                                     padx=(150, 0))
 
         self.password_entry = CTkEntry(master=self.frame, width=255, fg_color="#EEEEEE", border_color="#4b6053",
                                        border_width=1, text_color="#000000", show="*")
-        self.password_entry.pack(anchor="w", padx=(25, 0))
+        self.password_entry.pack(anchor="w", padx=(150, 0))
 
     def login(self):
         CTkButton(master=self.frame, text="Login", fg_color="#658354", hover_color="#E44982", font=("Aptos", 12),
                   text_color="#ffffff", width=255, command=self.perform_login).pack(anchor="w", pady=(40, 0),
-                                                                                    padx=(25, 0))
+                                                                                    padx=(150, 0))
 
     def perform_login(self):
         username = self.username_entry.get()
@@ -81,7 +80,7 @@ class LoginPage(CTkFrame):
         CTkButton(master=self.frame, text="Register", fg_color="#658354", hover_color="#E44982",
                   font=("Aptos", 12),
                   text_color="#ffffff", width=255, command=self.show_register_window).pack(anchor="w", pady=(15, 0),
-                                                                                           padx=(25, 0))
+                                                                                           padx=(150, 0))
 
     def show_register_window(self):
         register_window = RegistrationWindow(self, self.database)

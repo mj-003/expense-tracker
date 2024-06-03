@@ -1,7 +1,7 @@
 from datetime import datetime
 from .user_finances import UserFinancials
 
-headers = [['No.', 'Amount', 'From', 'Date']]
+headers = [['No.', 'Amount (zł)', 'From', 'Date']]
 
 
 class UserIncomes(UserFinancials):
@@ -11,7 +11,6 @@ class UserIncomes(UserFinancials):
 
     def load_incomes(self):
         self.load_items(self.database.get_incomes)
-        print('loaded incomes: ', self.items)
 
     def add_income(self, income):
         self.add_item(income, self.database.add_income, self.database.get_incomes)
@@ -21,7 +20,6 @@ class UserIncomes(UserFinancials):
 
     def get_incomes(self, date_filter=None, from_filter=None, sort_order=None):
         filtered_incomes = self.items[:]
-        print('filtered_incomes: ', filtered_incomes)
 
         if date_filter:
             filtered_incomes = self.filter_by_date(filtered_incomes, date_filter)
@@ -58,3 +56,6 @@ class UserIncomes(UserFinancials):
 
     def update_user_incomes(self, autonumbered_id, updated_income):
         self.update_item(autonumbered_id, updated_income, self.database.update_income, self.database.get_incomes)
+
+    def get_sum(self):
+        return sum([income[1] for income in self.items if datetime.strptime(income[3], '%Y-%m-%d').month == datetime.today().month])

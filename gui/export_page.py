@@ -3,10 +3,8 @@ from datetime import datetime
 from CTkTable import CTkTable
 from customtkinter import *
 
-from categories import Categories
-from utils.exports import export_to_excel, export_to_csv
-from export_page_controller import ExpensePageController
 from item_controller import ItemController
+from utils.exports import export_to_excel, export_to_csv
 
 
 class ExportPage(CTkFrame):
@@ -125,8 +123,6 @@ class ExportPage(CTkFrame):
     def add_table(self):
         self.table_frame = CTkScrollableFrame(master=self, fg_color="transparent")
         self.table_frame.pack(expand=True, fill="both", padx=27, pady=21)
-
-        #self.items_list = self.select_items()
 
         self.table = CTkTable(master=self.table_frame,
                               values=self.items_list,

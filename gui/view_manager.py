@@ -1,24 +1,16 @@
-from customtkinter import *
 from PIL import Image
+from customtkinter import *
 
-from gui import const
-from gui.home_page import HomePage
-from gui.add_expense import ExpensePage
-from gui.login_page import LoginPage
-from gui.export_page import ExportPage
-from gui.add_income import IncomePage
-from gui.expense_page import ExpensesPage
-from gui.incomes_page import IncomesPage
-from gui.expenses_page_test import ExpensePageTest
-from gui.expenses_page_test import ExpensePageTest
-from gui.incomes_page_test import IncomesPageTest
-from financials.user_expenses import UserExpenses
-from gui import const
-from user import User
-from database import Database
 from charts_page import ChartsPage
+from database import Database
 from financials.user_expenses import UserExpenses
 from financials.user_incomes import UserIncomes
+from gui.expenses_page import ExpensesPage
+from gui.export_page import ExportPage
+from gui.home_page import HomePage
+from gui.incomes_page import IncomesPage
+from gui.login_page import LoginPage
+from user import User
 
 
 class App(CTk):
@@ -37,15 +29,11 @@ class App(CTk):
 
         self.frames = {}
         self.HomePage = HomePage
-        self.ExpensePage = ExpensePage
         self.LoginPage = LoginPage
         self.ExportPage = ExportPage
         self.ChartsPage = ChartsPage
-        self.IncomePage = IncomePage
-        self.ExpensesPage = ExpensesPage
-        self.IncomesPage = IncomesPage
-
-        self.ExpensePageTest = ExpensePageTest
+        self.IncomesPageTest = IncomesPage
+        self.ExpensePageTest = ExpensesPage
 
         self.user = None
         self.database = Database('expenses.db')
@@ -57,8 +45,6 @@ class App(CTk):
         self.LoginPage.grid(row=0, column=0, sticky="nsew")
         self.LoginPage.tkraise()
 
-        # self.show_frame(LoginPage)
-
     def create_sidebar(self):
         print("Creating sidebar")
         self.container.pack_forget()
@@ -66,7 +52,7 @@ class App(CTk):
         self.sidebar_frame.pack_propagate(False)
         self.sidebar_frame.pack(fill="y", anchor="w", side="left")
 
-        logo_img_data = Image.open("images/logo.png")
+        logo_img_data = Image.open("images/money.png")
         logo_img = CTkImage(dark_image=logo_img_data, light_image=logo_img_data, size=(78, 85))
 
         CTkLabel(master=self.sidebar_frame, text="", image=logo_img).pack(pady=(38, 0), anchor="center")
@@ -77,7 +63,7 @@ class App(CTk):
         CTkButton(master=self.sidebar_frame, image=analytics_img, text="Analytics", fg_color="transparent",
                   font=("Arial Bold", 14), hover_color="#207244", anchor="w",
                   command=lambda: self.show_frame(ChartsPage)).pack(anchor="center", ipady=5,
-                                                                     pady=(60, 0))
+                                                                    pady=(60, 0))
 
         package_img_data = Image.open("images/package_icon.png")
         package_img = CTkImage(dark_image=package_img_data, light_image=package_img_data)
@@ -93,12 +79,14 @@ class App(CTk):
         settings_img_data = Image.open("images/settings_icon.png")
         settings_img = CTkImage(dark_image=settings_img_data, light_image=settings_img_data)
         CTkButton(master=self.sidebar_frame, image=settings_img, text="Incomes", fg_color="transparent",
-                  font=("Arial Bold", 14), hover_color="#207244", anchor="w", command=lambda: self.show_frame(IncomesPageTest)).pack(anchor="center", ipady=5,
-                                                                                   pady=(16, 0))
+                  font=("Arial Bold", 14), hover_color="#207244", anchor="w",
+                  command=lambda: self.show_frame(IncomesPage)).pack(anchor="center", ipady=5,
+                                                                     pady=(16, 0))
 
         CTkButton(master=self.sidebar_frame, image=settings_img, text="Expenses", fg_color="transparent",
-                  font=("Arial Bold", 14), hover_color="#207244", anchor="w", command=lambda: self.show_frame(ExpensePageTest)).pack(anchor="center", ipady=5,
-                                                                                   pady=(16, 0))
+                  font=("Arial Bold", 14), hover_color="#207244", anchor="w",
+                  command=lambda: self.show_frame(ExpensesPage)).pack(anchor="center", ipady=5,
+                                                                      pady=(16, 0))
 
         CTkButton(master=self.sidebar_frame, image=list_img, text="Export", fg_color="transparent",
                   font=("Arial Bold", 14),
@@ -108,9 +96,10 @@ class App(CTk):
 
         person_img_data = Image.open("images/person_icon.png")
         person_img = CTkImage(dark_image=person_img_data, light_image=person_img_data)
-        CTkButton(master=self.sidebar_frame, image=person_img, text="Account", fg_color="transparent",
+        CTkButton(master=self.sidebar_frame, image=person_img, text="Log out", fg_color="transparent",
+                  command=self.log_out(),
                   font=("Arial Bold", 14), hover_color="#207244", anchor="w").pack(anchor="s", ipady=5,
-                                                                                   pady=(170, 0))
+                                                                                   pady=(170, 5))
         self.container.pack(side="right", fill="both", expand=True)
 
     # def show_frame(self, cont):
@@ -123,7 +112,7 @@ class App(CTk):
         self.show_frame(HomePage)
 
     def define_and_pack_frames(self):
-        for F in [HomePage, ExportPage, ChartsPage, ExpensePageTest, IncomesPageTest]:
+        for F in [HomePage, ExportPage, ChartsPage, ExpensesPage, IncomesPage]:
             frame = F(self.container, self, self.database, self.user, self.user_expenses, self.user_incomes)
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")
@@ -141,7 +130,7 @@ class App(CTk):
     def after_logged_in(self, user: User):
         print("Logged in")
         print('user: ', user)
-        #print('user_expenses: ', user_expenses)
+        # print('user_expenses: ', user_expenses)
         self.create_sidebar()
         self.user = user
         self.user_expenses = UserExpenses(self.database, self.user)
@@ -164,6 +153,9 @@ class App(CTk):
         for frame in self.frames:
             print('frame: ', frame)
             self.frames[frame].user_incomes = new_incomes
+
+    def log_out(self):
+        pass
 
 
 if __name__ == "__main__":
