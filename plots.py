@@ -88,8 +88,11 @@ class MyPlotter:
 
         fig, ax = plt.subplots(figsize=(3, 2))
 
-        fig.patch.set_alpha(0.0)
-        ax.patch.set_alpha(0.0)
+        fig.patch.set_facecolor('#eeeeee')  # kolor tła dla figury
+        ax.set_facecolor('#eeeeee')
+
+    # fig.patch.set_alpha(0.0)
+    #     ax.patch.set_alpha(0.0)
 
         categories = ['Income', 'Expenses']
         amounts = [total_income, total_expenses]
@@ -103,14 +106,15 @@ class MyPlotter:
         # Remove the spines
         ax.spines['top'].set_visible(False)
         ax.spines['right'].set_visible(False)
+        ax.spines['left'].set_visible(False)
 
         # Set limits and labels
         ax.set_xlim(-0.5, len(categories) - 0.5)
-        ax.set_ylim(0, max(amounts) * 1.1)
+        #ax.set_ylim(0, max(amounts) * 1.1)
         ax.set_xticks(range(len(categories)))
         ax.set_xticklabels(categories)
-
-        ax.set_title('Month: ' + month)
+        ax.set_yticklabels([])
+        #ax.set_title(month, loc='right')
 
         return fig, ax
 

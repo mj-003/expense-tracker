@@ -1,11 +1,11 @@
-from financials.user_expenses import UserExpenses
-from financials.user_incomes import UserIncomes
-from utils.exports import export_to_excel, export_to_csv
 from datetime import datetime
 
+from financials.user_expenses import UserExpenses
+from financials.user_incomes import UserIncomes
 
-class ItemController:
-    def __init__(self, database, user, user_expenses: UserExpenses, user_incomes: UserIncomes):
+
+class HomePageController:
+    def __init__(self, user_expenses: UserExpenses, user_incomes: UserIncomes):
         self.user_expenses = user_expenses
         self.user_incomes = user_incomes
 

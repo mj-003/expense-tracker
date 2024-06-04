@@ -16,3 +16,6 @@ class ItemPageController:
 
     def get_filtered_incomes(self, date=None, from_who=None, sort=None):
         return self.user_incomes.get_incomes(date, from_who, sort)
+
+
+

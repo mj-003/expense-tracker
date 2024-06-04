@@ -17,8 +17,8 @@ class RegistrationWindow(CTkToplevel):
         self.database = database
         self.parent = parent
 
-        self.email_icon = CTkImage(dark_image=Image.open("images/email-icon.png"), size=(20, 20))
-        self.password_icon = CTkImage(dark_image=Image.open("images/password-icon.png"), size=(17, 17))
+        self.email_icon = CTkImage(dark_image=Image.open("images/login.png"), size=(20, 20))
+        self.password_icon = CTkImage(dark_image=Image.open("images/password.png"), size=(17, 17))
 
         self.add_register_fields()
         self.add_register_button()
@@ -27,27 +27,27 @@ class RegistrationWindow(CTkToplevel):
         register_frame = CTkFrame(master=self, fg_color="transparent")
         register_frame.pack(anchor="center", pady=(50, 0))
 
-        CTkLabel(master=register_frame, text="Email:", text_color="#601E88", anchor="w", justify="left",
-                 font=("Arial Bold", 14), image=self.email_icon, compound="left").pack(
+        CTkLabel(master=register_frame, text="Username:", text_color="#4b6053", anchor="w", justify="left",
+                 font=("Aptos", 14), image=self.email_icon, compound="left").pack(
             anchor="w", padx=(0, 0))
 
         self.username_entry = CTkEntry(master=register_frame, width=225, fg_color="#EEEEEE",
-                                       border_color="#601E88",
+                                       border_color="#4b6053",
                                        border_width=1, text_color="#000000")
         self.username_entry.pack(anchor="w", pady=(5, 0))
 
-        CTkLabel(master=register_frame, text="Password:", text_color="#601E88", anchor="w", justify="left",
-                 font=("Arial Bold", 14), image=self.password_icon, compound="left").pack(
+        CTkLabel(master=register_frame, text="Password:", text_color="#4b6053", anchor="w", justify="left",
+                 font=("Aptos", 14), image=self.password_icon, compound="left").pack(
             anchor="w", padx=(0, 0))
 
         self.password_entry = CTkEntry(master=register_frame, width=225, fg_color="#EEEEEE",
-                                       border_color="#601E88",
+                                       border_color="#4b6053",
                                        border_width=1, text_color="#000000", show="*")
         self.password_entry.pack(anchor="w", pady=(5, 0))
 
     def add_register_button(self):
-        CTkButton(master=self, text="Register", fg_color="#601E88", hover_color="#E44982",
-                  font=("Arial Bold", 12),
+        CTkButton(master=self, text="Register", fg_color="#658354", hover_color="#4b6053",
+                  font=("Aptos", 12),
                   text_color="#ffffff", width=225, command=self.perform_register).pack(anchor='center', pady=(15, 0))
 
     def perform_register(self):

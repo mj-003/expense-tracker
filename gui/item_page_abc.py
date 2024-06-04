@@ -8,14 +8,16 @@ from PIL import Image
 from customtkinter import *
 from tkcalendar import Calendar
 
-from gui.item_controller import ItemController
+from gui.home_page_controller import HomePageController
 from utils.entry_validators import validate_money, validate_more_info
+from widgets_and_buttons import *
 
 
 class FinancialsPage(CTkFrame, ABC):
-    def __init__(self, parent, app, database, user, user_items, user_items2):
+    def __init__(self, parent, app, user_items, user_items2):
         super().__init__(parent)
 
+        self.date_filter = None
         self.item_info = None
         self.edit_dialog = None
         self.search_container = None
@@ -37,10 +39,8 @@ class FinancialsPage(CTkFrame, ABC):
         self.user_items = user_items
         self.app = app
         self.parent = parent
-        self.user = user
-        self.database = database
         self.user_items_list = self.user_items.get_items()
-        self.controller = ItemController(database, user, user_items, user_items2)
+        self.controller = HomePageController(user_items, user_items2)
 
         self.title = ''
         self.vcmd_money = (app.register(validate_money), '%P')
@@ -48,7 +48,7 @@ class FinancialsPage(CTkFrame, ABC):
         self.today_sum = self.user_items.get_sum()
 
 
-    def create_title_frame(self, show_add_form_function):
+    def create_title_frame(self):
         title_frame = CTkFrame(master=self, fg_color="transparent")
         title_frame.pack(
             anchor="n",
@@ -63,20 +63,15 @@ class FinancialsPage(CTkFrame, ABC):
             anchor="nw",
             side="left")
 
-        CTkButton(master=title_frame,
-                  text="✚ New",
-                  width=100,
-                  height=50,
-                  font=("Aptos", 16),
-                  text_color="#fff",
-                  fg_color="#2A8C55",
-                  hover_color="#207244",
-                  corner_radius=50,
-                  command=show_add_form_function).pack(
+        CTkLabel(master=title_frame,
+                 text=self.today,
+                 text_color="#2A8C55",
+                 font=("Aptos", 35)).pack(
             anchor="ne",
             side="right")
 
-    def create_metrics_frame(self):
+
+    def create_metrics_frame(self, show_add_form_function):
         metrics_frame = CTkFrame(master=self, fg_color="transparent")
         metrics_frame.pack(
             anchor="n",
@@ -93,10 +88,10 @@ class FinancialsPage(CTkFrame, ABC):
         total_sum_metric.grid_propagate(False)
         total_sum_metric.pack(side="left")
 
-        logistics_img_data = Image.open("images/money.png")
+        logistics_img_data = Image.open("images/money2.png")
         logistics_img = CTkImage(light_image=logistics_img_data,
                                  dark_image=logistics_img_data,
-                                 size=(43, 43))
+                                 size=(30, 30))
 
         CTkLabel(master=total_sum_metric,
                  image=logistics_img,
@@ -110,30 +105,34 @@ class FinancialsPage(CTkFrame, ABC):
         CTkLabel(master=total_sum_metric,
                  text=f"Total {self.title} this month: {self.today_sum:.2f} zł",
                  text_color="#fff",
-                 font=("Aptos", 18)).grid(
+                 font=("Aptos", 16)).grid(
             row=0,
             column=1,
-            sticky="sw")
+            sticky="sw",
+            pady=(10, 0))
 
         date_frame = CTkFrame(master=metrics_frame,
                               fg_color="transparent",
-                              width=200,
                               height=60)
 
         date_frame.grid_propagate(False)
         date_frame.pack(side="right")
 
-        CTkLabel(master=date_frame,
-                 text=self.today,
-                 text_color="#2A8C55",
-                 font=("Aptos", 35)).grid(
-            row=0,
-            column=2,
-            sticky="e",
-            padx=(0, 0),
-            pady=(0, 10))
+        CTkButton(master=date_frame,
+                  text="✚ New",
+                  width=100,
+                  height=60,
+                  font=("Aptos", 16),
+                  text_color="#fff",
+                  fg_color="#2A8C55",
+                  hover_color="#207244",
+                  corner_radius=50,
+                  command=show_add_form_function).pack(
+            anchor="ne",
+            side="right")
 
-    def create_search_container(self):
+
+    def create_search_container(self, more_info_function):
         self.search_container = CTkFrame(master=self,
                                          height=50,
                                          fg_color="#F0F0F0")
@@ -152,6 +151,12 @@ class FinancialsPage(CTkFrame, ABC):
             side="left",
             padx=(13, 0),
             pady=15)
+
+        check_button = get_check_button(self.search_container, more_info_function, 30)
+        check_button.pack(side="left", padx=(13, 0), pady=15)
+
+        self.date_filter = get_date_combo_box(self.search_container, 155)
+        self.date_filter.pack(side="left", padx=(13, 0), pady=15)
 
     def create_info_panel(self):
         self.info_panel = CTkFrame(master=self, fg_color="white", border_width=2, border_color="#2A8C55", width=200)
@@ -256,7 +261,7 @@ class FinancialsPage(CTkFrame, ABC):
         if self.edit_dialog:
             self.edit_dialog.destroy()
         self.info_panel.pack_forget()
-        self.app.define_and_pack_frames()
+        #self.app.define_and_pack_frames()
         self.row_id.delete(0, 'end')
 
     @abstractmethod
@@ -270,3 +275,27 @@ class FinancialsPage(CTkFrame, ABC):
     @abstractmethod
     def delete_item(self):
         pass
+
+    @abstractmethod
+    def validate_and_save(self):
+        pass
+
+    @abstractmethod
+    def cancel(self):
+        pass
+
+    def add_buttons(self):
+        save_button = get_check_button(self.info_panel, self.validate_and_save)
+        save_button.pack(pady=(10, 10), padx=(35, 2), side='left')
+
+        back_button = get_back_button(self.info_panel, self.go_back)
+        back_button.pack(pady=(10, 10), padx=(2, 2), side='left')
+
+        cancel_button = get_cancel_button(self.info_panel, self.cancel)
+        cancel_button.pack(pady=(10, 10), padx=(2, 10), side='left')
+
+    def add_date_entry(self, my_master, my_row=3, my_column=1, my_pady=10, my_padx=12, my_sticky="w"):
+        self.date_var = StringVar(value=datetime.now().strftime('%Y-%m-%d'))
+        self.date_entry = CTkEntry(my_master, textvariable=self.date_var, state='readonly', fg_color="white")
+        self.date_entry.grid(row=my_row, column=my_column, pady=my_pady, padx=my_padx, sticky=my_sticky)
+        self.date_entry.bind("<Button-1>", self.open_calendar)

@@ -1,15 +1,17 @@
 import datetime
+import tkinter.messagebox as messagebox
 
 import customtkinter as ctk
 from PIL import Image
 from customtkinter import *
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
+from gui.charts_page_controller import ChartPageController
 from plots import MyPlotter
 
 
 class ChartsPage(CTkFrame):
-    def __init__(self, parent, app, database, user, user_expenses, user_incomes):
+    def __init__(self, parent, app, user_expenses, user_incomes):
         super().__init__(parent)
         self.app = app
         self.parent = parent
@@ -18,7 +20,9 @@ class ChartsPage(CTkFrame):
 
         self.user_expenses_list = self.user_expenses.get_expenses()
         self.user_incomes_list = self.user_incomes.get_incomes()
+
         self.plotter = MyPlotter(user_expenses, user_incomes)
+        self.chart_controller = ChartPageController(self.plotter, self.user_expenses, self.user_incomes)
 
         self.curr_month = datetime.datetime.now().replace(day=1)
         self.curr_month_str = self.curr_month.strftime('%Y-%m')
@@ -40,7 +44,6 @@ class ChartsPage(CTkFrame):
         self.chart_frame.pack(pady=10, padx=10, fill='both', expand=True)
 
         self.chart_frame.pack_forget()
-
         self.create_chart_thumbnails()
 
     def create_chart_thumbnails(self):
@@ -57,9 +60,10 @@ class ChartsPage(CTkFrame):
 
         row = 0
         column = 0
+
         for chart in charts:
             chart_image = Image.open(chart["image"])
-            chart_image = chart_image.resize((150, 150))  # Zmieniony rozmiar obrazu
+            chart_image = chart_image.resize((150, 150))
             chart_image = CTkImage(light_image=chart_image, dark_image=chart_image, size=(150, 150))
 
             chart_button = CTkButton(self.thumbnail_frame, image=chart_image, text=chart["title"],
@@ -74,31 +78,31 @@ class ChartsPage(CTkFrame):
                 column = 0
                 row += 1
 
-        # Konfiguracja proporcji w siatce, aby wypełniała dostępną przestrzeń
-        for i in range(2):  # 2 kolumny
+        for i in range(2):
             self.thumbnail_frame.columnconfigure(i, weight=1)
-        for i in range(row + 1):  # liczba rzędów
+        for i in range(row + 1):
             self.thumbnail_frame.rowconfigure(i, weight=1)
 
     def show_chart(self, chart_function, month, year):
         if self.button_frame:
             self.button_frame.destroy()
+
         for widget in self.chart_frame.winfo_children():
             widget.destroy()
+
         self.current_chart_function = chart_function
         self.switch_to_chart_frame()
 
-        if (self.current_chart_function == self.plotter.plot_category_pie_chart and self.check_if_available_month(
-                month)) or (
-                self.current_chart_function != self.plotter.plot_category_pie_chart and self.check_if_available(year)):
-            fig, ax = chart_function(month=month, year=year)
-            chart_canvas = FigureCanvasTkAgg(fig, master=self.chart_frame)
-            chart_canvas.draw()
-            chart_canvas.get_tk_widget().pack(fill='both', expand=True)
-
-            self.add_buttons()
+        if self.chart_controller.check_available_data(chart_function, month, year):
+            fig, ax = self.chart_controller.show_chart(chart_function, month, year)
+            if fig and ax:
+                chart_canvas = FigureCanvasTkAgg(fig, master=self.chart_frame)
+                chart_canvas.draw()
+                chart_canvas.get_tk_widget().pack(fill='both', expand=True)
+                self.add_buttons()
         else:
             self.switch_to_thumbnail_frame()
+            messagebox.showinfo("No Data", "No data available for the selected period.")
 
     def switch_to_chart_frame(self):
         self.thumbnail_frame.pack_forget()
@@ -129,34 +133,12 @@ class ChartsPage(CTkFrame):
         prev_button.pack(side='right', padx=(0, 0), pady=15)
 
     def show_prev(self):
-        self.curr_month = (self.curr_month - datetime.timedelta(days=1)).replace(day=1)
-        prev_month = self.curr_month.strftime('%Y-%m')
-        prev_year = self.curr_month.year - 1
+        prev_month, prev_year = self.chart_controller.show_prev_month()
         if self.current_chart_function:
             self.show_chart(self.current_chart_function, month=prev_month, year=prev_year)
 
     def show_next(self):
+        next_month_str, next_year = self.chart_controller.show_next_month()
         if self.current_chart_function:
-            self.curr_month = (self.curr_month + datetime.timedelta(days=31)).replace(day=1)
-            next_month_str = self.curr_month.strftime('%Y-%m')
-            next_year = self.curr_month.year + 1
             self.show_chart(self.current_chart_function, month=next_month_str, year=next_year)
 
-    def check_if_available(self, year):
-        for item in self.user_expenses_list:
-            if item[4][:4] == str(year):
-                print("Available", str(year))
-                return True
-        for item in self.user_incomes_list:
-            if item[3][:4] == str(year):
-                return True
-        return False
-
-    def check_if_available_month(self, month):
-        for item in self.user_expenses_list:
-            if item[4][:7] == month:
-                return True
-        for item in self.user_incomes_list:
-            if item[3][:7] == month:
-                return True
-        return False

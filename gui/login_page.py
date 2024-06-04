@@ -64,7 +64,7 @@ class LoginPage(CTkFrame):
         self.password_entry.pack(anchor="w", padx=(150, 0))
 
     def login(self):
-        CTkButton(master=self.frame, text="Login", fg_color="#658354", hover_color="#E44982", font=("Aptos", 12),
+        CTkButton(master=self.frame, text="Login", fg_color="#658354", hover_color="#4b6053", font=("Aptos", 12),
                   text_color="#ffffff", width=255, command=self.perform_login).pack(anchor="w", pady=(40, 0),
                                                                                     padx=(150, 0))
 
@@ -77,7 +77,7 @@ class LoginPage(CTkFrame):
             self.app.after_logged_in(self.user)
 
     def add_register(self):
-        CTkButton(master=self.frame, text="Register", fg_color="#658354", hover_color="#E44982",
+        CTkButton(master=self.frame, text="Register", fg_color="#658354", hover_color="#4b6053",
                   font=("Aptos", 12),
                   text_color="#ffffff", width=255, command=self.show_register_window).pack(anchor="w", pady=(15, 0),
                                                                                            padx=(150, 0))

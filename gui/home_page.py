@@ -6,15 +6,15 @@ from PIL import Image
 from customtkinter import *
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
+from gui.home_page_controller import HomePageController
 from item_controller import ItemController
 from plots import MyPlotter
-from datetime import datetime
 
 
 class HomePage(CTkFrame):
-    def __init__(self, parent, app, database, user, user_expenses, user_incomes):
+    def __init__(self, parent, app, user, user_expenses, user_incomes):
         super().__init__(parent)
-        self.current_month = datetime.now().replace(day=1)
+        self.current_month = datetime.datetime.now().replace(day=1)
         self.financials = None
         self.selected_row = None
         self.table_frame = None
@@ -24,10 +24,9 @@ class HomePage(CTkFrame):
         self.app = app
         self.parent = parent
         self.user = user
-        self.database = database
         self.user_expenses_list = self.user_expenses.get_expenses()
         self.user_incomes_list = self.user_incomes.get_incomes()
-        self.controller = ItemController(database, user, user_expenses, user_incomes)
+        self.controller = HomePageController(user_expenses, user_incomes)
         self.user_items_list = self.controller.create_user_items_list()
 
         self.plotter = MyPlotter(user_expenses, user_incomes)
@@ -36,7 +35,7 @@ class HomePage(CTkFrame):
         self.category_filter = None
         self.sort_filter = None
         self.var_show_chart = ctk.StringVar(value="on")
-        self.today = datetime.today().strftime('%a, %-d.%m')
+        self.today = datetime.datetime.today().strftime('%a, %-d.%m')
 
         self.create_title_frame()
         self.create_metrics_frame()
@@ -74,7 +73,7 @@ class HomePage(CTkFrame):
             anchor="n",
             fill="x",
             padx=27,
-            pady=(27, 0))
+            pady=(25, 0))
 
         total_sum_metric = CTkFrame(master=metrics_frame,
                                     fg_color="#2A8C55",
@@ -102,7 +101,7 @@ class HomePage(CTkFrame):
         CTkLabel(master=total_sum_metric,
                  text=f"Total balance this month: {self.user_incomes.get_sum()-self.user_expenses.get_sum():.2f} zł",
                  text_color="#fff",
-                 font=("Aptos", 18)).grid(
+                 font=("Aptos", 15)).grid(
             row=0,
             column=1,
             sticky="sw")
@@ -129,48 +128,51 @@ class HomePage(CTkFrame):
                                        values=["Date", "This month", "This year"],
                                        button_color="#2A8C55",
                                        border_color="#2A8C55",
-                                       border_width=2,
+                                       border_width=1,
                                        button_hover_color="#207244",
                                        dropdown_hover_color="#207244",
                                        dropdown_fg_color="#2A8C55",
-                                       dropdown_text_color="#fff")
+                                       dropdown_text_color="#fff",
+                                       fg_color='#eeeeee')
 
         self.date_filter.pack(
             side="left",
             padx=(13, 0),
-            pady=15)
+            pady=13)
 
         self.category_filter = CTkComboBox(master=search_container,
                                            width=185,
                                            values=['Both', 'Incomes', 'Expenses'],
                                            button_color="#2A8C55",
                                            border_color="#2A8C55",
-                                           border_width=2,
+                                           border_width=1,
                                            button_hover_color="#207244",
                                            dropdown_hover_color="#207244",
                                            dropdown_fg_color="#2A8C55",
-                                           dropdown_text_color="#fff")
+                                           dropdown_text_color="#fff",
+                                           fg_color='#eeeeee')
 
         self.category_filter.pack(
             side="left",
             padx=(13, 0),
-            pady=15)
+            pady=13)
 
         self.sort_filter = CTkComboBox(master=search_container,
                                        width=185,
                                        values=['Sort', '⬆ Amount', '⬇ Amount', '⬆ Time', '⬇ Time'],
                                        button_color="#2A8C55",
                                        border_color="#2A8C55",
-                                       border_width=2,
+                                       border_width=1,
                                        button_hover_color="#207244",
                                        dropdown_hover_color="#207244",
                                        dropdown_fg_color="#2A8C55",
-                                       dropdown_text_color="#fff")
+                                       dropdown_text_color="#fff",
+                                       fg_color='#eeeeee')
 
         self.sort_filter.pack(
             side="left",
             padx=(13, 0),
-            pady=15)
+            pady=13)
 
         CTkButton(master=search_container,
                   text='✔',
@@ -182,12 +184,12 @@ class HomePage(CTkFrame):
                   command=self.get_filtered_items).pack(
             side="left",
             padx=(13, 0),
-            pady=15)
+            pady=13)
 
         self.is_chart = CTkCheckBox(master=search_container, text="Chart", font=('Aptos', 15),
                                     variable=self.var_show_chart, onvalue="on", offvalue="off",
                                     command=self.if_show_chart, fg_color="#2A8C55", width=30, height=30)
-        self.is_chart.pack(pady=20)
+        self.is_chart.pack(pady=15)
 
     def show_user_items(self):
         if self.table_frame is None:
@@ -202,13 +204,10 @@ class HomePage(CTkFrame):
 
             self.table.pack(expand=True, fill='both')
 
-        # Aktualizacja istniejącej tabeli
         else:
-            # Usuwanie wszystkich istniejących wierszy
             indicates_to_remove = list(range(len(self.table.values)))
             self.table.delete_rows(indicates_to_remove)
 
-            # Dodawanie nowych wierszy z aktualizacją drugiej kolumny
             for row_data in self.user_items_list:
                 if len(row_data) > 1:
                     row_data[1] = f"{row_data[1]} zł"
@@ -242,7 +241,7 @@ class HomePage(CTkFrame):
 
     def create_chart_panel(self):
         print('create chart panel')
-        self.info_panel = ctk.CTkFrame(master=self, fg_color="white", border_width=2, border_color="#2A8C55",
+        self.info_panel = ctk.CTkFrame(master=self, fg_color="#eeeeee", border_width=0, border_color="#2A8C55",
                                        corner_radius=10, width=200)
         self.info_panel.pack_forget()
         self.update_chart()
@@ -270,11 +269,13 @@ class HomePage(CTkFrame):
         next_button.pack(side='right', padx=5)
 
     def show_prev_month(self):
-        self.current_month = self.current_month - datetime.timedelta(days=1)
-        self.current_month = self.current_month.replace(day=1)
-        self.update_chart()
+        if self.controller.check_if_available_month(self.current_month):
+            self.current_month = self.current_month - datetime.timedelta(days=1)
+            self.current_month = self.current_month.replace(day=1)
+            self.update_chart()
 
     def show_next_month(self):
-        next_month = self.current_month + datetime.timedelta(days=31)
-        self.current_month = next_month.replace(day=1)
-        self.update_chart()
+        if self.controller.check_if_available_month(self.current_month):
+            next_month = self.current_month + datetime.timedelta(days=31)
+            self.current_month = next_month.replace(day=1)
+            self.update_chart()
