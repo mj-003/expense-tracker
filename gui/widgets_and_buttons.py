@@ -60,6 +60,13 @@ def get_sort_combo_box(my_master, my_width: int) -> CTkComboBox:
 def get_categories_combo_box(my_master, my_width: int) -> CTkComboBox:
     return get_combo_box(my_master, categories_values, my_width)
 
+def get_how_often_combo_box(my_master, my_width: int) -> CTkComboBox:
+    return get_combo_box(my_master, ['How often', 'Daily', 'Weekly', 'Monthly', 'Yearly', 'Single'], my_width)
+
+
+def get_upcoming_combo_box(my_master, my_width: int) -> CTkComboBox:
+    return get_combo_box(my_master, ['All', 'Upcoming', 'This month', 'This year'], my_width)
+
 
 def get_validate_entry(my_master, my_width: int, my_placeholder: str, my_validate: str, my_validate_command: str,
                        my_text_variable) -> CTkEntry:

@@ -1,6 +1,7 @@
 import tkinter as tk
 from abc import ABC, abstractmethod
 from datetime import datetime
+from tkinter import messagebox
 
 import customtkinter as ctk
 from CTkTable import CTkTable
@@ -8,13 +9,12 @@ from PIL import Image
 from customtkinter import *
 from tkcalendar import Calendar
 
-from gui.home_page_controller import HomePageController
 from utils.entry_validators import validate_money, validate_more_info
 from widgets_and_buttons import *
 
 
 class FinancialsPage(CTkFrame, ABC):
-    def __init__(self, parent, app, user_items, user_items2):
+    def __init__(self, parent, app, user_items):
         super().__init__(parent)
 
         self.date_filter = None
@@ -40,13 +40,11 @@ class FinancialsPage(CTkFrame, ABC):
         self.app = app
         self.parent = parent
         self.user_items_list = self.user_items.get_items()
-        self.controller = HomePageController(user_items, user_items2)
 
         self.title = ''
         self.vcmd_money = (app.register(validate_money), '%P')
         self.vcmd_more_info = (app.register(validate_more_info), '%d', '%P')
         self.today_sum = self.user_items.get_sum()
-
 
     def create_title_frame(self):
         title_frame = CTkFrame(master=self, fg_color="transparent")
@@ -69,7 +67,6 @@ class FinancialsPage(CTkFrame, ABC):
                  font=("Aptos", 35)).pack(
             anchor="ne",
             side="right")
-
 
     def create_metrics_frame(self, show_add_form_function):
         metrics_frame = CTkFrame(master=self, fg_color="transparent")
@@ -131,7 +128,6 @@ class FinancialsPage(CTkFrame, ABC):
             anchor="ne",
             side="right")
 
-
     def create_search_container(self, more_info_function):
         self.search_container = CTkFrame(master=self,
                                          height=50,
@@ -155,8 +151,6 @@ class FinancialsPage(CTkFrame, ABC):
         check_button = get_check_button(self.search_container, more_info_function, 30)
         check_button.pack(side="left", padx=(13, 0), pady=15)
 
-        self.date_filter = get_date_combo_box(self.search_container, 155)
-        self.date_filter.pack(side="left", padx=(13, 0), pady=15)
 
     def create_info_panel(self):
         self.info_panel = CTkFrame(master=self, fg_color="white", border_width=2, border_color="#2A8C55", width=200)
@@ -185,8 +179,17 @@ class FinancialsPage(CTkFrame, ABC):
         if self.table.rows > 0:
             self.table.edit_row(0, text_color="#fff", hover_color="#2A8C55")
 
-    def get_more_info(self):
+    def validate_id(self, items):
+        if (not self.row_id.get().isdigit()) or int(self.row_id.get()) < 1 or int(self.row_id.get()) > len(
+                items):
+            messagebox.showwarning("Warning", "Invalid ID.")
+            return
+        else:
+            self.selected_row = int(self.row_id.get())
+            self.item_info = items[self.selected_row]
+            self.get_more_info()
 
+    def get_more_info(self):
         for widget in self.info_panel.winfo_children():
             widget.destroy()
 
@@ -217,7 +220,7 @@ class FinancialsPage(CTkFrame, ABC):
             widget.destroy()
 
         self.label = CTkLabel(self.info_panel, text=f"Add New {self.title}", font=("Aptos", 18),
-                         width=30, height=2, text_color='#2A8C55')
+                              width=30, height=2, text_color='#2A8C55')
         self.label.pack(pady=(15, 10), padx=(27, 27))
 
     def save_edited_item(self):
@@ -261,7 +264,6 @@ class FinancialsPage(CTkFrame, ABC):
         if self.edit_dialog:
             self.edit_dialog.destroy()
         self.info_panel.pack_forget()
-        #self.app.define_and_pack_frames()
         self.row_id.delete(0, 'end')
 
     @abstractmethod

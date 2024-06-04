@@ -8,6 +8,8 @@ class HomePageController:
     def __init__(self, user_expenses: UserExpenses, user_incomes: UserIncomes):
         self.user_expenses = user_expenses
         self.user_incomes = user_incomes
+        print(self.user_expenses.get_expenses())
+        print(self.user_incomes.get_incomes())
 
     def create_user_items_list(self):
         cat_names = ['No.', 'Amount (zł)', 'Category', 'Date']
@@ -57,6 +59,7 @@ class HomePageController:
         return self.user_expenses.get_expenses(date_filter, category_filter, sort_order)
 
     def get_filtered_incomes(self, date=None, from_who=None, sort=None):
+        print(self.user_incomes.get_incomes())
         return self.user_incomes.get_incomes(date, from_who, sort)
 
     def check_if_available(self, year):

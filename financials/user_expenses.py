@@ -37,7 +37,7 @@ class UserExpenses(UserFinancials):
         if date_filter:
             filtered_expenses = self.filter_by_date(filtered_expenses, date_filter)
 
-        if category_filter and category_filter != "Category":
+        if category_filter and category_filter != "Categories":
             filtered_expenses = [expense for expense in filtered_expenses if expense[2] == category_filter]
 
         if sort_order:

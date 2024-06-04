@@ -68,7 +68,7 @@ class UserIncomes(UserFinancials):
         self.delete_item(autonumbered_id, self.database.del_income, self.database.get_incomes)
 
     def update_user_income(self, autonumbered_id, updated_income):
-        self.update_item(autonumbered_id, updated_income, self.database.update_income)
+        self.update_item(autonumbered_id, updated_income, self.database.update_income, self.database.get_incomes)
 
     def filter_by_date(self, incomes, date_filter):
         """
