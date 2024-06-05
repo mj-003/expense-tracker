@@ -1,4 +1,6 @@
 import sqlite3
+from datetime import datetime
+
 from financials.expense import Expense
 
 
@@ -13,7 +15,8 @@ class Database:
             CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 username TEXT NOT NULL UNIQUE,
-                password TEXT NOT NULL
+                password TEXT NOT NULL,
+                email TEXT NOT NULL UNIQUE
             )
         ''')
         self.cursor.execute('''
@@ -58,11 +61,11 @@ class Database:
         self.connection.commit()
         self.connection.commit()
 
-    def add_user(self, username, password):
+    def add_user(self, username, password, email):
         try:
             self.cursor.execute('''
-                INSERT INTO users (username, password) VALUES (?, ?)
-            ''', (username, password))
+                INSERT INTO users (username, password, email) VALUES (?, ?, ?)
+            ''', (username, password, email))
             self.connection.commit()
             return self.cursor.lastrowid  # Return the id of the newly inserted user
         except sqlite3.IntegrityError:
@@ -214,4 +217,41 @@ class Database:
         ''', (payment_id,))
         self.connection.commit()
 
-   
+
+    def get_upcoming_payments(self):
+        today = datetime.now().date()  # używamy tylko daty, bez czasu
+        self.cursor.execute('''
+               SELECT p.*, u.username, u.email FROM payments p
+               JOIN users u ON p.user_id = u.id
+               WHERE p.date <= ?
+           ''', (today,))
+        return self.cursor.fetchall()
+
+    def update_payment_date(self, payment_id, how_often):
+        from datetime import timedelta
+        current_date = self.get_payment(payment_id)['date']
+        new_date = current_date
+
+        if how_often == 'daily':
+            new_date += timedelta(days=1)
+        elif how_often == 'weekly':
+            new_date += timedelta(weeks=1)
+        elif how_often == 'monthly':
+            month = current_date.month % 12 + 1
+            year = current_date.year if month > 1 else current_date.year + 1
+            day = min(current_date.day,
+                      [31, 29 if year % 4 == 0 and not year % 400 == 0 else 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][
+                          month - 1])
+            new_date = current_date.replace(year=year, month=month, day=day)
+        elif how_often == 'yearly':
+            new_date += timedelta(days=365)
+        else:
+            self.del_payment(payment_id)    # delete single payment
+
+        self.cursor.execute('''
+            UPDATE payments
+            SET date = ?
+            WHERE id = ?
+        ''', (new_date, payment_id))
+        self.connection.commit()
+

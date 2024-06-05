@@ -1,8 +1,10 @@
+from CTkTable import CTkTable
 from customtkinter import *
 
 date_values = ['Date', 'This month', 'This year']
 sort_values = ['Sort', '⬆ Amount', '⬇ Amount', '⬆ Time', '⬇ Time']
 categories_values = ['Categories', 'Food', 'Transport', 'Entertainment', 'Home', 'Personal', 'Other']
+items_values = ['Items', 'Incomes', 'Expenses']
 
 
 def get_button(my_master, on_command: callable, my_text, my_width=30) -> CTkButton:
@@ -60,12 +62,42 @@ def get_sort_combo_box(my_master, my_width: int) -> CTkComboBox:
 def get_categories_combo_box(my_master, my_width: int) -> CTkComboBox:
     return get_combo_box(my_master, categories_values, my_width)
 
+
 def get_how_often_combo_box(my_master, my_width: int) -> CTkComboBox:
     return get_combo_box(my_master, ['How often', 'Daily', 'Weekly', 'Monthly', 'Yearly', 'Single'], my_width)
 
 
 def get_upcoming_combo_box(my_master, my_width: int) -> CTkComboBox:
     return get_combo_box(my_master, ['All', 'Upcoming', 'This month', 'This year'], my_width)
+
+
+def get_items_combo_box(my_master, my_width: int) -> CTkComboBox:
+    return get_combo_box(my_master, items_values, my_width)
+
+def show_user_items(table_frame, my_master, user_items_list, table):
+    if table_frame is None:
+        table_frame = CTkScrollableFrame(master=my_master, fg_color="transparent")
+        table_frame.pack(expand=True, fill="both", padx=27, pady=21, side='left')
+
+        table = CTkTable(master=table_frame,
+                              values=user_items_list,
+                              colors=["#E6E6E6", "#EEEEEE"],
+                              header_color="#2A8C55",
+                              hover_color="#B4B4B4")
+
+        table.pack(expand=True, fill='both')
+
+    else:
+        indicates_to_remove = list(range(len(table.values)))
+        table.delete_rows(indicates_to_remove)
+
+        for row_data in user_items_list:
+            if len(row_data) > 1:
+                row_data[1] = f"{row_data[1]} zł"
+            table.add_row(row_data)
+
+    if table.rows > 0:
+        table.edit_row(0, text_color="#fff", hover_color="#2A8C55")
 
 
 def get_validate_entry(my_master, my_width: int, my_placeholder: str, my_validate: str, my_validate_command: str,
@@ -78,3 +110,24 @@ def get_validate_entry(my_master, my_width: int, my_placeholder: str, my_validat
                     textvariable=my_text_variable,
                     border_color="#2A8C55",
                     border_width=2)
+
+
+def get_today_label(my_master, my_text: str) -> CTkLabel:
+    return CTkLabel(master=my_master,
+                    text=my_text,
+                    font=("Aptos", 35),
+                    text_color="#2A8C55")
+
+
+def get_title_label(my_master, my_text: str) -> CTkLabel:
+    return CTkLabel(master=my_master,
+                    text=my_text,
+                    font=("Aptos", 40, 'bold'),
+                    text_color="#2A8C55")
+
+
+def get_total_this_month_label(my_master, my_text: str) -> CTkLabel:
+    return CTkLabel(master=my_master,
+                    text=my_text,
+                    font=("Aptos", 15),
+                    text_color="#fff")

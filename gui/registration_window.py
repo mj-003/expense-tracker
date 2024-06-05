@@ -11,8 +11,10 @@ class RegistrationWindow(CTkToplevel):
         super().__init__(parent)
         self.password_entry = None
         self.username_entry = None
+        self.email_entry = None
+
         self.title("Register")
-        self.geometry("500x300")
+        self.geometry("500x350")
 
         self.database = database
         self.parent = parent
@@ -27,6 +29,15 @@ class RegistrationWindow(CTkToplevel):
         register_frame = CTkFrame(master=self, fg_color="transparent")
         register_frame.pack(anchor="center", pady=(50, 0))
 
+        CTkLabel(master=register_frame, text="Email:", text_color="#4b6053", anchor="w", justify="left",
+                 font=("Aptos", 14), image=self.email_icon, compound="left").pack(
+            anchor="w", padx=(0, 0))
+
+        self.email_entry = CTkEntry(master=register_frame, width=225, fg_color="#EEEEEE",
+                                    border_color="#4b6053",
+                                    border_width=1, text_color="#000000")
+        self.email_entry.pack(anchor="w", pady=(7, 0))
+
         CTkLabel(master=register_frame, text="Username:", text_color="#4b6053", anchor="w", justify="left",
                  font=("Aptos", 14), image=self.email_icon, compound="left").pack(
             anchor="w", padx=(0, 0))
@@ -34,7 +45,7 @@ class RegistrationWindow(CTkToplevel):
         self.username_entry = CTkEntry(master=register_frame, width=225, fg_color="#EEEEEE",
                                        border_color="#4b6053",
                                        border_width=1, text_color="#000000")
-        self.username_entry.pack(anchor="w", pady=(5, 0))
+        self.username_entry.pack(anchor="w", pady=(7, 0))
 
         CTkLabel(master=register_frame, text="Password:", text_color="#4b6053", anchor="w", justify="left",
                  font=("Aptos", 14), image=self.password_icon, compound="left").pack(
@@ -43,7 +54,7 @@ class RegistrationWindow(CTkToplevel):
         self.password_entry = CTkEntry(master=register_frame, width=225, fg_color="#EEEEEE",
                                        border_color="#4b6053",
                                        border_width=1, text_color="#000000", show="*")
-        self.password_entry.pack(anchor="w", pady=(5, 0))
+        self.password_entry.pack(anchor="w", pady=(7, 0))
 
     def add_register_button(self):
         CTkButton(master=self, text="Register", fg_color="#658354", hover_color="#4b6053",
@@ -53,9 +64,10 @@ class RegistrationWindow(CTkToplevel):
     def perform_register(self):
         username = self.username_entry.get()
         password = self.password_entry.get()
-        user = User(username, password)
+        email = self.email_entry.get()
+        user = User(username, password, email)
 
-        if username and password:
+        if username and password and email:
             user.register(self.database)
             self.destroy()
         else:

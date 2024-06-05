@@ -71,7 +71,9 @@ class LoginPage(CTkFrame):
     def perform_login(self):
         username = self.username_entry.get()
         password = self.password_entry.get()
-        self.user = User(username, password)
+
+        id, us, pas, em = self.database.get_user(username, password)
+        self.user = User(us, pas, em)
 
         if self.user.login(self.database):
             self.app.after_logged_in(self.user)
