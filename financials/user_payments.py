@@ -30,7 +30,12 @@ class UserPayments(UserFinancials):
         :param autonumbered_id:
         :return:
         """
-        self.get_item(autonumbered_id, self.database.get_payment)
+        if 0 < autonumbered_id <= len(self.original_ids):
+            item_id = self.original_ids[autonumbered_id - 1]
+            return self.database.get_payment(item_id)
+        else:
+            print(f"Invalid autonumbered ID: {autonumbered_id}")
+            return None
 
     def get_payments(self, date_filter=None, from_filter=None, sort_order=None) -> list:
         """

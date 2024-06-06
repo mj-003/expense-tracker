@@ -1,5 +1,5 @@
 from datetime import datetime
-from tkinter import messagebox
+from tkinter import messagebox, Toplevel, Text
 
 import customtkinter as ctk
 from PIL import Image, ImageTk
@@ -13,6 +13,7 @@ class ExpensesPage(FinancialsPage):
     def __init__(self, parent, app, user_expenses):
         super().__init__(parent=parent, app=app, user_items=user_expenses)
 
+        self.description = None
         self.title = 'Expenses'
 
         # Filters
@@ -56,7 +57,7 @@ class ExpensesPage(FinancialsPage):
         self.sort_filter = get_sort_combo_box(self.search_container, 155)
         self.sort_filter.pack(side="left", padx=(13, 0), pady=15)
 
-        check_button2 = get_check_button(self.search_container, self.get_filtered_expenses)
+        check_button2 = get_check_button(self.search_container, self.get_filtered_expenses, my_width=30)
         check_button2.pack(side="left", padx=(13, 0), pady=15)
 
     def get_more_expense_info(self):
@@ -65,15 +66,6 @@ class ExpensesPage(FinancialsPage):
         :return:
         """
         self.validate_id(self.user_items.get_expenses())
-        # Get the row id
-        # if (not self.row_id.get().isdigit()) or int(self.row_id.get()) < 1 or int(self.row_id.get()) > len(
-        #         self.user_items.get_expenses()):
-        #     messagebox.showwarning("Warning", "Invalid ID.")
-        #     return
-        # else:
-        #     self.selected_row = int(self.row_id.get())
-        #     self.item_info = self.user_items.get_expenses()[self.selected_row]
-        #     self.get_more_info()
 
         photo_button = CTkButton(self.info_panel, text="Recipe", fg_color='#2A8C55', text_color='white',
                                  command=lambda: self.show_photo())
@@ -90,21 +82,21 @@ class ExpensesPage(FinancialsPage):
         # Create the form
         self.amount_entry = CTkEntry(self.info_panel, placeholder_text="Price", validate='key',
                                      validatecommand=self.vcmd_money)
-        self.amount_entry.pack(pady=(10, 10), padx=(10, 10))
+        self.amount_entry.pack(pady=(10, 5), padx=(10, 10))
 
         self.category_entry = get_categories_combo_box(self.info_panel, 145)
-        self.category_entry.pack(pady=(10, 10), padx=(10, 10))
+        self.category_entry.pack(pady=(5, 5), padx=(10, 10))
 
         self.date_var = StringVar(value=datetime.now().strftime('%Y-%m-%d'))
         self.date_entry = CTkEntry(self.info_panel, textvariable=self.date_var, state='readonly', fg_color="white")
-        self.date_entry.pack(pady=(10, 10), padx=(10, 10))
+        self.date_entry.pack(pady=(5, 5), padx=(10, 10))
         self.date_entry.bind("<Button-1>", self.open_calendar)
 
         self.payment_method_entry = CTkComboBox(self.info_panel, values=['Online', 'Card', 'Cash', 'Other'])
-        self.payment_method_entry.pack(pady=(10, 10), padx=(10, 10))
+        self.payment_method_entry.pack(pady=(5, 5), padx=(10, 10))
 
         CTkButton(master=self.info_panel,
-                  text="Photo",
+                  text="Add Recipe",
                   fg_color="white",
                   hover_color="#207244",
                   font=("Aptos", 12),
@@ -112,7 +104,18 @@ class ExpensesPage(FinancialsPage):
                   border_width=2,
                   text_color="#2A8C55",
                   text_color_disabled="white",
-                  command=self.upload_photo).pack(pady=(10, 10), padx=(10, 10))
+                  command=self.upload_photo).pack(pady=(5, 5), padx=(10, 10))
+
+        CTkButton(master=self.info_panel,
+                  text="Add Description",
+                  fg_color="white",
+                  hover_color="#207244",
+                  font=("Aptos", 12),
+                  border_color="#2A8C55",
+                  border_width=2,
+                  text_color="#2A8C55",
+                  text_color_disabled="white",
+                  command=self.add_description).pack(pady=(5, 5), padx=(10, 10))
 
         self.add_buttons()
         self.info_panel.pack(expand=True, fill="both", pady=(27, 27), padx=(0, 27))
@@ -145,7 +148,7 @@ class ExpensesPage(FinancialsPage):
         # Create the new expense
         path = self.recipe_entry if self.recipe_entry else None
         self.new_item = Expense(amount=new_price, category=new_category, payment_method=new_payment, date=new_date,
-                                photo_path=path)
+                                photo_path=path, description=self.description)
 
         # Clear the form
         self.cancel()
@@ -212,6 +215,8 @@ class ExpensesPage(FinancialsPage):
         :return:
         """
         file_path = self.user_items.get_expense(self.selected_row)[6]
+        description = self.user_items.get_expense(self.selected_row)[7]
+        print(description)
 
         if file_path and os.path.exists(file_path):
             photo_dialog = CTkToplevel(self)
@@ -274,3 +279,11 @@ class ExpensesPage(FinancialsPage):
         """
         self.amount_entry.delete(0, 'end')
         self.recipe_entry = None
+
+    def get_description(self):
+        """
+        Gets the description of the selected expense
+        :return:
+        """
+        # expense[7] is the description
+        return self.user_items.get_expense(self.selected_row)[7]

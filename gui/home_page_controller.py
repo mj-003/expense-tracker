@@ -16,6 +16,7 @@ class HomePageController:
         user_expenses_list = self.user_expenses.get_expenses()
         user_incomes_list = self.user_incomes.get_incomes()
         user_items_list = [cat_names]
+        print('dupa dupa dupa')
 
         for i, expense in enumerate(user_expenses_list[1:]):
             user_items_list.append([i + 1] + [expense[1]] + ['Expense'] + [expense[4]])

@@ -17,6 +17,7 @@ class FinancialsPage(CTkFrame, ABC):
     def __init__(self, parent, app, user_items):
         super().__init__(parent)
 
+        self.description_window = None
         self.date_filter = None
         self.item_info = None
         self.edit_dialog = None
@@ -151,7 +152,6 @@ class FinancialsPage(CTkFrame, ABC):
         check_button = get_check_button(self.search_container, more_info_function, 30)
         check_button.pack(side="left", padx=(13, 0), pady=15)
 
-
     def create_info_panel(self):
         self.info_panel = CTkFrame(master=self, fg_color="white", border_width=2, border_color="#2A8C55", width=200)
         self.info_panel.pack(expand=True, fill="both", pady=20)
@@ -202,6 +202,12 @@ class FinancialsPage(CTkFrame, ABC):
                                 command=lambda: self.edit_item())
 
         edit_button.pack(padx=(15, 15), pady=10, fill='both')
+
+        description_button = CTkButton(self.info_panel, text="Description", fg_color='#2A8C55', text_color='white',
+                                font=('Aptos', 12),
+                                command=lambda: self.show_description())
+
+        description_button.pack(padx=(15, 15), pady=10, fill='both')
 
         delete_button = CTkButton(self.info_panel, text="Delete", font=('Aptos', 12), fg_color='#2A8C55',
                                   text_color='white',
@@ -286,6 +292,10 @@ class FinancialsPage(CTkFrame, ABC):
     def cancel(self):
         pass
 
+    @abstractmethod
+    def get_description(self):
+        pass
+
     def add_buttons(self):
         save_button = get_check_button(self.info_panel, self.validate_and_save)
         save_button.pack(pady=(10, 10), padx=(35, 2), side='left')
@@ -301,3 +311,43 @@ class FinancialsPage(CTkFrame, ABC):
         self.date_entry = CTkEntry(my_master, textvariable=self.date_var, state='readonly', fg_color="white")
         self.date_entry.grid(row=my_row, column=my_column, pady=my_pady, padx=my_padx, sticky=my_sticky)
         self.date_entry.bind("<Button-1>", self.open_calendar)
+
+    def add_description(self):
+        self.description_window = tk.Toplevel(self.info_panel)
+        self.description_window.title("Add Description")
+        self.description_window.geometry("400x300")
+
+        # Widget Text do wprowadzania opisu
+        text = tk.Text(self.description_window, wrap="word", font=("Aptos", 12))  # Używamy zawijania słów
+        text.pack(expand=True, fill="both", padx=10, pady=10)
+
+        # Przycisk do zapisu opisu
+        save_button = CTkButton(self.description_window, text="Save",
+                                command=lambda: self.save_description(text.get("1.0", "end")))
+        save_button.pack(pady=(10, 10))
+
+        # Ustaw focus na okno dialogowe
+        self.description_window.focus_set()
+
+    def save_description(self, description):
+        self.description = description.strip()
+        self.description_window.destroy()
+
+    def show_description(self):
+        description = self.get_description()
+        print(description)
+
+        #description = self.item_info[len(self.item_info) - 1]
+        if description is None:
+            messagebox.showinfo("Description", "No description provided.")
+        else:
+            self.description_window = tk.Toplevel(self.info_panel)
+            self.description_window.title("Description")
+            self.description_window.geometry("400x300")
+
+            # Widget Text do wyświetlania opisu
+            text = tk.Text(self.description_window, wrap="word", font=("Aptos", 12))
+            text.insert("1.0", description)
+            text.pack(expand=True, fill="both")
+
+

@@ -75,9 +75,9 @@ class MyPlotter:
         :return:
         """
 
-        incomes_pd = pd.DataFrame(incomes_list, columns=["ID", "Amount", "From", "Date"])
+        incomes_pd = pd.DataFrame(incomes_list, columns=["ID", "Amount", "From", "Date", "Description"])
         expenses_pd = pd.DataFrame(expenses_list,
-                                   columns=["ID", "Amount", "Category", "Payment method", "Date", "Photo path"])
+                                   columns=["ID", "Amount", "Category", "Payment method", "Date", "Photo path", "Description"])
         incomes_pd['Date'] = pd.to_datetime(incomes_pd['Date'])
         expenses_pd['Date'] = pd.to_datetime(expenses_pd['Date'])
 

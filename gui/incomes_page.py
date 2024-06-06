@@ -86,6 +86,17 @@ class IncomesPage(FinancialsPage):
         self.date_entry.pack(pady=(10, 10), padx=(10, 10))
         self.date_entry.bind("<Button-1>", self.open_calendar)
 
+        CTkButton(master=self.info_panel,
+                  text="Add Description",
+                  fg_color="white",
+                  hover_color="#207244",
+                  font=("Aptos", 12),
+                  border_color="#2A8C55",
+                  border_width=2,
+                  text_color="#2A8C55",
+                  text_color_disabled="white",
+                  command=self.add_description).pack(pady=(5, 5), padx=(10, 10))
+
         self.add_buttons()
         self.info_panel.pack(expand=True, fill="both", pady=(27, 27), padx=(0, 27))
 
@@ -113,7 +124,7 @@ class IncomesPage(FinancialsPage):
         new_date = self.date_entry.get()
 
         # Create the new income
-        self.new_item = Income(amount=new_price, sender=new_from, date=new_date)
+        self.new_item = Income(amount=new_price, sender=new_from, date=new_date, description=self.description)
 
         # Clear the form
         self.cancel()
@@ -182,7 +193,6 @@ class IncomesPage(FinancialsPage):
         sort = self.sort_filter.get()
 
         # Get the filtered incomes from the controller
-        print(self.user_items_list)
         self.user_items_list = self.user_items.get_incomes(date, from_who, sort)
         self.get_filtered_items()
 
@@ -209,3 +219,12 @@ class IncomesPage(FinancialsPage):
         """
         self.amount_entry.delete(0, 'end')
         self.from_entry.delete(0, 'end')
+
+    def get_description(self):
+        """
+        Gets the description of the selected income
+        :return:
+        """
+        # income[5] is the description
+        return self.user_items.get_income(self.selected_row)[5]
+

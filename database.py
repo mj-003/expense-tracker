@@ -28,6 +28,7 @@ class Database:
                 payment_method TEXT,
                 date DATE,
                 photo_path TEXT,
+                description TEXT,
                 FOREIGN KEY (user_id) REFERENCES users (id)
             )
         ''')
@@ -38,6 +39,7 @@ class Database:
                         amount REAL,
                         sender TEXT,
                         date DATE,
+                        description TEXT,
                         FOREIGN KEY (user_id) REFERENCES users (id)
                     )
                 ''')
@@ -55,6 +57,7 @@ class Database:
                         title TEXT,
                         date DATE,
                         how_often TEXT,
+                        description TEXT,
                         FOREIGN KEY (user_id) REFERENCES users (id)
                     )
                 ''')
@@ -90,11 +93,10 @@ class Database:
         return self.cursor.fetchone()[0]
 
     def add_expense(self, user_id, expense: Expense):
-        print('===============================================')
         self.cursor.execute('''
-            INSERT INTO expenses (user_id, amount, category, payment_method, date, photo_path)
-            VALUES (?, ?, ?, ?, ?, ?)
-        ''', (user_id, expense.amount, expense.category, expense.payment_method, expense.date, expense.photo_path))
+            INSERT INTO expenses (user_id, amount, category, payment_method, date, photo_path, description)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        ''', (user_id, expense.amount, expense.category, expense.payment_method, expense.date, expense.photo_path, expense.description))
         self.connection.commit()
         return self.cursor.lastrowid
 
@@ -111,12 +113,11 @@ class Database:
         return self.cursor.fetchone()
 
     def update_expense(self, expense_id, expense: Expense):
-        print(expense_id, expense.amount, expense.category, expense.payment_method, expense.date, expense.photo_path)
         self.cursor.execute('''
             UPDATE expenses
-            SET amount = ?, category = ?, payment_method = ?, date = ?, photo_path = ?
+            SET amount = ?, category = ?, payment_method = ?, date = ?, photo_path = ?, description = ?
             WHERE id = ?
-        ''', (expense.amount, expense.category, expense.payment_method, expense.date, expense.photo_path, expense_id))
+        ''', (expense.amount, expense.category, expense.payment_method, expense.date, expense.photo_path, expense.description, expense_id))
         self.connection.commit()
 
     def del_expense(self, expense_id):
@@ -151,9 +152,9 @@ class Database:
 
     def add_income(self, user_id, income):
         self.cursor.execute('''
-            INSERT INTO incomes (user_id, amount, sender, date)
-            VALUES (?, ?, ?, ?)
-        ''', (user_id, income.amount, income.sender, income.date))
+            INSERT INTO incomes (user_id, amount, sender, date, description)
+            VALUES (?, ?, ?, ?, ?)
+        ''', (user_id, income.amount, income.sender, income.date, income.description))
         self.connection.commit()
         return self.cursor.lastrowid
 
@@ -172,9 +173,9 @@ class Database:
     def update_income(self, income_id, income):
         self.cursor.execute('''
             UPDATE incomes
-            SET amount = ?, sender = ?, date = ?
+            SET amount = ?, sender = ?, date = ?, description = ?
             WHERE id = ?
-        ''', (income.amount, income.sender, income.date, income_id))
+        ''', (income.amount, income.sender, income.date, income.description, income_id))
         self.connection.commit()
 
     def del_income(self, income_id):
@@ -185,9 +186,9 @@ class Database:
 
     def add_payment(self, user_id, payment):
         self.cursor.execute('''
-            INSERT INTO payments (user_id, amount, title, date, how_often)
-            VALUES (?, ?, ?, ?, ?)
-        ''', (user_id, payment.amount, payment.title, payment.date, payment.how_often))
+            INSERT INTO payments (user_id, amount, title, date, how_often, description)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ''', (user_id, payment.amount, payment.title, payment.date, payment.how_often, payment.description))
         self.connection.commit()
         return self.cursor.lastrowid
 
@@ -206,9 +207,9 @@ class Database:
     def update_payment(self, payment_id, payment):
         self.cursor.execute('''
             UPDATE payments
-            SET amount = ?, title = ?, date = ?, how_often = ?
+            SET amount = ?, title = ?, date = ?, how_often = ?, description = ?
             WHERE id = ?
-        ''', (payment.amount, payment.title, payment.date, payment.how_often, payment_id))
+        ''', (payment.amount, payment.title, payment.date, payment.how_often, payment.description, payment_id))
         self.connection.commit()
 
     def del_payment(self, payment_id):

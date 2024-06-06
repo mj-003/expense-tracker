@@ -54,7 +54,7 @@ class PaymentsPage(FinancialsPage):
         self.sort_filter = get_sort_combo_box(self.search_container, 155)
         self.sort_filter.pack(side="left", padx=(13, 0), pady=15)
 
-        check_button2 = get_check_button(self.search_container, self.get_filtered_payments)
+        check_button2 = get_check_button(self.search_container, self.get_filtered_payments, my_width=30)
         check_button2.pack(side="left", padx=(13, 0), pady=15)
 
     def get_more_payment_info(self):
@@ -73,6 +73,9 @@ class PaymentsPage(FinancialsPage):
         self.show_add_item_form()
 
         # Create the form
+        self.title_entry = CTkEntry(self.info_panel, placeholder_text="Title")
+        self.title_entry.pack(pady=(10, 10), padx=(10, 10))
+
         self.amount_entry = CTkEntry(self.info_panel, placeholder_text="Amount", validate='key',
                                      validatecommand=self.vcmd_money)
         self.amount_entry.pack(pady=(10, 10), padx=(10, 10))
@@ -85,8 +88,16 @@ class PaymentsPage(FinancialsPage):
         self.date_entry.pack(pady=(10, 10), padx=(10, 10))
         self.date_entry.bind("<Button-1>", self.open_calendar)
 
-        self.title_entry = CTkEntry(self.info_panel, placeholder_text="From")
-        self.title_entry.pack(pady=(10, 10), padx=(10, 10))
+        CTkButton(master=self.info_panel,
+                  text="Add Description",
+                  fg_color="white",
+                  hover_color="#207244",
+                  font=("Aptos", 12),
+                  border_color="#2A8C55",
+                  border_width=2,
+                  text_color="#2A8C55",
+                  text_color_disabled="white",
+                  command=self.add_description).pack(pady=(5, 5), padx=(10, 10))
 
         self.add_buttons()
         self.info_panel.pack(expand=True, fill="both", pady=(27, 27), padx=(0, 27))
@@ -117,7 +128,7 @@ class PaymentsPage(FinancialsPage):
         new_date = self.date_entry.get()
 
         # Create the new payment
-        self.new_item = Payment(amount=new_amount, title=new_title, date=new_date, how_often=new_how_often)
+        self.new_item = Payment(amount=new_amount, title=new_title, date=new_date, how_often=new_how_often, description=self.description)
 
         # Clear the form
         self.cancel()
@@ -215,5 +226,14 @@ class PaymentsPage(FinancialsPage):
         :return:
         """
         self.amount_entry.delete(0, 'end')
+
+    def get_description(self):
+        """
+        Adds a description to the payment
+        :return:
+        """
+        # payment[6] is the description
+        return self.user_items.get_payment(self.selected_row)[6]
+
 
 

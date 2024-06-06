@@ -9,6 +9,7 @@ from financials.user_payments import UserPayments
 from gui.expenses_page import ExpensesPage
 from gui.export_page import ExportPage
 from gui.home_page import HomePage
+from gui.account_page import AccountPage
 from gui.home_page_controller import HomePageController
 from gui.incomes_page import IncomesPage
 from gui.payments_page import PaymentsPage
@@ -31,13 +32,7 @@ class App(CTk):
         self.container.pack(side="right", fill="both", expand=True)
 
         self.frames = {}
-        # self.HomePage = HomePage
-        # self.LoginPage = LoginPage
-        # self.ExportPage = ExportPage
-        # self.ChartsPage = ChartsPage
-        # self.IncomesPageTest = IncomesPage
-        # self.ExpensePageTest = ExpensesPage
-        # self.LoginPage = LoginPage
+
 
         self.user = None
         self.database = Database('expenses.db')
@@ -111,16 +106,23 @@ class App(CTk):
         person_img_data = Image.open("images/person_icon.png")
         person_img = CTkImage(dark_image=person_img_data, light_image=person_img_data)
         CTkButton(master=self.sidebar_frame, image=person_img, text="Account", fg_color="transparent",
-                  command=self.log_out(),
+                  command=self.show_frame(AccountPage),
                   font=("Aptos", 14, 'bold'), hover_color="#207244", anchor="w").pack(anchor="s", ipady=5,
                                                                                    pady=(100, 5))
         self.container.pack(side="right", fill="both", expand=True)
 
     def define_frame(self, frame_class):
+        if self.user_expenses is not None:
+            self.user_expenses.load_expenses()
+        if self.user_incomes is not None:
+            self.user_incomes.load_incomes()
+        if self.user_payments is not None:
+            self.user_payments.load_payments()
 
-        self.user_incomes.load_incomes()
-        self.user_expenses.load_expenses()
-        self.user_payments.load_payments()
+
+        # self.user_incomes.load_incomes()
+        # self.user_expenses.load_expenses()
+        # self.user_payments.load_payments()
 
         if frame_class == HomePage:
             frame = HomePage(self.container, self, self.user, self.user_expenses, self.user_incomes)
@@ -134,6 +136,9 @@ class App(CTk):
             frame = IncomesPage(self.container, self, self.user_incomes)
         elif frame_class == PaymentsPage:
             frame = PaymentsPage(self.container, self, self.user_payments)
+        elif frame_class == AccountPage:
+            print("Creating account page")
+            frame = AccountPage(self.container, self, self.user)
         return frame
 
     def show_frame(self, cont):
