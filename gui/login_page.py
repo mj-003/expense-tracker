@@ -1,3 +1,5 @@
+from tkinter import messagebox
+
 from PIL import Image
 from customtkinter import *
 
@@ -72,11 +74,16 @@ class LoginPage(CTkFrame):
         username = self.username_entry.get()
         password = self.password_entry.get()
 
-        id, us, pas, em = self.database.get_user(username, password)
-        self.user = User(us, pas, em)
+        if not username or not password:
+            messagebox.showerror("Error", "Please fill in all fields")
+        elif not self.database.get_user(username, password):
+            messagebox.showerror("Error", "Invalid username or password")
+        else:
+            id, us, pas, em, cur = self.database.get_user(username, password)
+            self.user = User(username=username, password=password, email=em, id=id, database=self.database, currency=cur)
 
-        if self.user.login(self.database):
-            self.app.after_logged_in(self.user)
+            if self.user.login():
+                self.app.after_logged_in(self.user)
 
     def add_register(self):
         CTkButton(master=self.frame, text="Register", fg_color="#658354", hover_color="#4b6053",

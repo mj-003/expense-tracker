@@ -8,6 +8,10 @@ class UserIncomes(UserFinancials):
     def __init__(self, database, user):
         super().__init__(database, user)
         self.load_incomes()
+        self.headers = self.get_headers()
+
+    def get_headers(self):
+        return [['No.', f'Amount {self.currency}', 'From', 'Date']]
 
     def load_incomes(self):
         """
@@ -62,7 +66,8 @@ class UserIncomes(UserFinancials):
                 elif sort_order.split()[1] == "Time":
                     filtered_incomes.sort(key=lambda x: datetime.strptime(x[3], '%Y-%m-%d'), reverse=reverse)
 
-        return headers + filtered_incomes
+        self.headers = self.get_headers()
+        return self.headers + filtered_incomes
 
     def delete_income(self, autonumbered_id):
         """

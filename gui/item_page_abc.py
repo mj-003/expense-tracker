@@ -4,9 +4,7 @@ from datetime import datetime
 from tkinter import messagebox
 
 import customtkinter as ctk
-from CTkTable import CTkTable
 from PIL import Image
-from customtkinter import *
 from tkcalendar import Calendar
 
 from utils.entry_validators import validate_money, validate_more_info
@@ -14,7 +12,7 @@ from widgets_and_buttons import *
 
 
 class FinancialsPage(CTkFrame, ABC):
-    def __init__(self, parent, app, user_items):
+    def __init__(self, parent, app, user_items, currency):
         super().__init__(parent)
 
         self.description_window = None
@@ -24,6 +22,7 @@ class FinancialsPage(CTkFrame, ABC):
         self.search_container = None
         self.top = None
         self.date_entry = None
+        self.description = None
         self.calendar = None
         self.date_var = None
         self.new_item = None
@@ -38,6 +37,7 @@ class FinancialsPage(CTkFrame, ABC):
         self.today = datetime.today().strftime('%a, %-d.%m')
 
         self.user_items = user_items
+        self.user_items.update_currency(currency)
         self.app = app
         self.parent = parent
         self.user_items_list = self.user_items.get_items()
@@ -264,6 +264,7 @@ class FinancialsPage(CTkFrame, ABC):
 
     def select_date(self):
         self.date_var.set(self.calendar.get_date())
+        self.top.grab_release()
         self.top.destroy()
 
     def go_back(self):
@@ -337,7 +338,6 @@ class FinancialsPage(CTkFrame, ABC):
         description = self.get_description()
         print(description)
 
-        #description = self.item_info[len(self.item_info) - 1]
         if description is None:
             messagebox.showinfo("Description", "No description provided.")
         else:

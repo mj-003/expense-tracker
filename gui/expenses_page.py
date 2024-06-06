@@ -10,10 +10,9 @@ from widgets_and_buttons import *
 
 
 class ExpensesPage(FinancialsPage):
-    def __init__(self, parent, app, user_expenses):
-        super().__init__(parent=parent, app=app, user_items=user_expenses)
+    def __init__(self, parent, app, user_expenses, currency):
+        super().__init__(parent=parent, app=app, user_items=user_expenses, currency=currency)
 
-        self.description = None
         self.title = 'Expenses'
 
         # Filters
@@ -221,12 +220,14 @@ class ExpensesPage(FinancialsPage):
         if file_path and os.path.exists(file_path):
             photo_dialog = CTkToplevel(self)
             photo_dialog.title("Expense Photo")
+            photo_dialog.geometry("400x400")
 
             image = Image.open(file_path)
+            image = image.resize((400, 400))
             photo = ImageTk.PhotoImage(image)
-            photo_label = CTkLabel(photo_dialog, image=photo)
+            photo_label = CTkLabel(photo_dialog, image=photo, text='')
             photo_label.image = photo
-            photo_label.pack(expand=True, fill='both', padx=20, pady=20)
+            photo_label.pack(expand=True, fill='both')
         else:
             messagebox.showinfo("No photo", "No photo found for this expense")
 
@@ -279,6 +280,7 @@ class ExpensesPage(FinancialsPage):
         """
         self.amount_entry.delete(0, 'end')
         self.recipe_entry = None
+        self.description = None
 
     def get_description(self):
         """

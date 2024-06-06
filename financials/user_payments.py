@@ -1,13 +1,15 @@
 from datetime import datetime
 from .user_finances import UserFinancials
 
-headers = [['No.', 'Amount', 'Title', 'Date', 'How often']]
-
 
 class UserPayments(UserFinancials):
     def __init__(self, database, user):
         super().__init__(database, user)
         self.load_payments()
+        self.headers = self.get_headers()
+
+    def get_headers(self):
+        return [['No.', f'Amount {self.currency}', 'To', 'Date']]
 
     def load_payments(self):
         """
@@ -62,7 +64,8 @@ class UserPayments(UserFinancials):
         #         elif sort_order.split()[1] == "Time":
         #             filtered_incomes.sort(key=lambda x: datetime.strptime(x[3], '%Y-%m-%d'), reverse=reverse)
 
-        return headers + self.items
+        self.headers = self.get_headers()
+        return self.headers + self.items
 
     def delete_payment(self, autonumbered_id):
         """

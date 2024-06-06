@@ -10,8 +10,8 @@ from widgets_and_buttons import *
 
 
 class IncomesPage(FinancialsPage):
-    def __init__(self, parent, app, user_incomes):
-        super().__init__(parent=parent, app=app, user_items=user_incomes)
+    def __init__(self, parent, app, user_incomes, currency):
+        super().__init__(parent=parent, app=app, user_items=user_incomes, currency=currency)
 
         self.title = 'Incomes'
 
@@ -219,6 +219,7 @@ class IncomesPage(FinancialsPage):
         """
         self.amount_entry.delete(0, 'end')
         self.from_entry.delete(0, 'end')
+        self.description = None
 
     def get_description(self):
         """

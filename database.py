@@ -16,7 +16,8 @@ class Database:
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 username TEXT NOT NULL UNIQUE,
                 password TEXT NOT NULL,
-                email TEXT NOT NULL UNIQUE
+                email TEXT NOT NULL UNIQUE,
+                currency TEXT NOT NULL
             )
         ''')
         self.cursor.execute('''
@@ -64,11 +65,11 @@ class Database:
         self.connection.commit()
         self.connection.commit()
 
-    def add_user(self, username, password, email):
+    def add_user(self, username, password, email, currency):
         try:
             self.cursor.execute('''
-                INSERT INTO users (username, password, email) VALUES (?, ?, ?)
-            ''', (username, password, email))
+                INSERT INTO users (username, password, email, currency) VALUES (?, ?, ?, ?)
+            ''', (username, password, email, currency))
             self.connection.commit()
             return self.cursor.lastrowid  # Return the id of the newly inserted user
         except sqlite3.IntegrityError:
@@ -91,6 +92,20 @@ class Database:
             SELECT id FROM users WHERE username = ?
         ''', (username,))
         return self.cursor.fetchone()[0]
+
+    def get_user_currency(self, username):
+        self.cursor.execute('''
+            SELECT currency FROM users WHERE username = ?
+        ''', (username,))
+        return self.cursor.fetchone()[0]
+
+    def change_currency(self, username, currency):
+        self.cursor.execute('''
+            UPDATE users
+            SET currency = ?
+            WHERE username = ?
+        ''', (currency, username))
+        self.connection.commit()
 
     def add_expense(self, user_id, expense: Expense):
         self.cursor.execute('''
@@ -254,5 +269,21 @@ class Database:
             SET date = ?
             WHERE id = ?
         ''', (new_date, payment_id))
+        self.connection.commit()
+
+    def change_email(self, username, new_email):
+        self.cursor.execute('''
+            UPDATE users
+            SET email = ?
+            WHERE username = ?
+        ''', (new_email, username))
+        self.connection.commit()
+
+    def change_password(self, username, new_password):
+        self.cursor.execute('''
+            UPDATE users
+            SET password = ?
+            WHERE username = ?
+        ''', (new_password, username))
         self.connection.commit()
 

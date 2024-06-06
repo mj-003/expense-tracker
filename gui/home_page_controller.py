@@ -5,14 +5,15 @@ from financials.user_incomes import UserIncomes
 
 
 class HomePageController:
-    def __init__(self, user_expenses: UserExpenses, user_incomes: UserIncomes):
+    def __init__(self, user_expenses: UserExpenses, user_incomes: UserIncomes, currency):
         self.user_expenses = user_expenses
         self.user_incomes = user_incomes
+        self.currency = currency
         print(self.user_expenses.get_expenses())
         print(self.user_incomes.get_incomes())
 
     def create_user_items_list(self):
-        cat_names = ['No.', 'Amount (zł)', 'Category', 'Date']
+        cat_names = ['No.', f'Amount {self.currency}', 'Category', 'Date']
         user_expenses_list = self.user_expenses.get_expenses()
         user_incomes_list = self.user_incomes.get_incomes()
         user_items_list = [cat_names]

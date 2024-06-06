@@ -13,14 +13,14 @@ class HomePage(CTkFrame):
     def __init__(self, parent, app, user, user_expenses, user_incomes):
         super().__init__(parent)
 
-        self.controller = HomePageController(user_expenses, user_incomes)
-        self.plotter = MyPlotter(user_expenses, user_incomes)
-        self.current_month = datetime.datetime.now().replace(day=1)
-        self.today = datetime.datetime.today().strftime('%a, %-d.%m')
-
         self.app = app
         self.parent = parent
         self.user = user
+
+        self.controller = HomePageController(user_expenses, user_incomes, self.user.currency)
+        self.plotter = MyPlotter(user_expenses, user_incomes)
+        self.current_month = datetime.datetime.now().replace(day=1)
+        self.today = datetime.datetime.today().strftime('%a, %-d.%m')
 
         self.is_chart = None
         self.selected_row = None

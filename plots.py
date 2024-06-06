@@ -201,7 +201,7 @@ class MyPlotter:
         :return:
         """
         expense_df = pd.DataFrame(self.user_expenses_list,
-                                  columns=['ID', 'Amount', 'Category', 'Payment', 'Date', 'Recipe'])
+                                  columns=['ID', 'Amount', 'Category', 'Payment', 'Date', 'Recipe', 'Description'])
         income_df = pd.DataFrame(self.user_incomes_list, columns=['ID', 'Amount', 'From', 'Date'])
 
         # Convert the Date columns to datetime, coerce errors to NaT

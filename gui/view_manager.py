@@ -48,7 +48,6 @@ class App(CTk):
         self.LoginPage.tkraise()
 
     def create_sidebar(self):
-        print("Creating sidebar")
         self.container.pack_forget()
         self.sidebar_frame = CTkFrame(master=self, fg_color="#2A8C55", width=176, height=650, corner_radius=0)
         self.sidebar_frame.pack_propagate(False)
@@ -106,8 +105,7 @@ class App(CTk):
         person_img_data = Image.open("images/person_icon.png")
         person_img = CTkImage(dark_image=person_img_data, light_image=person_img_data)
         CTkButton(master=self.sidebar_frame, image=person_img, text="Account", fg_color="transparent",
-                  command=self.show_frame(AccountPage),
-                  font=("Aptos", 14, 'bold'), hover_color="#207244", anchor="w").pack(anchor="s", ipady=5,
+                  font=("Aptos", 14, 'bold'), hover_color="#207244", anchor="w", command=lambda: self.show_frame(AccountPage),).pack(anchor="s", ipady=5,
                                                                                    pady=(100, 5))
         self.container.pack(side="right", fill="both", expand=True)
 
@@ -131,14 +129,15 @@ class App(CTk):
         elif frame_class == ChartsPage:
             frame = ChartsPage(self.container, self, self.user_expenses, self.user_incomes)
         elif frame_class == ExpensesPage:
-            frame = ExpensesPage(self.container, self, self.user_expenses)
+            frame = ExpensesPage(self.container, self, self.user_expenses, self.user.currency)
         elif frame_class == IncomesPage:
-            frame = IncomesPage(self.container, self, self.user_incomes)
+            frame = IncomesPage(self.container, self, self.user_incomes, self.user.currency)
         elif frame_class == PaymentsPage:
-            frame = PaymentsPage(self.container, self, self.user_payments)
+            frame = PaymentsPage(self.container, self, self.user_payments, self.user.currency)
         elif frame_class == AccountPage:
-            print("Creating account page")
             frame = AccountPage(self.container, self, self.user)
+        elif frame_class == LoginPage:
+            frame = LoginPage(self.container, self, self.database)
         return frame
 
     def show_frame(self, cont):
@@ -162,7 +161,11 @@ class App(CTk):
         self.show_frame(HomePage)
 
     def log_out(self):
-        pass
+        print("Logging out")
+        self.sidebar_frame.pack_forget()
+        self.container.pack_forget()
+        self.show_login_page()
+        self.container.pack(side="right", fill="both", expand=True)
 
 
 if __name__ == "__main__":

@@ -65,10 +65,10 @@ class RegistrationWindow(CTkToplevel):
         username = self.username_entry.get()
         password = self.password_entry.get()
         email = self.email_entry.get()
-        user = User(username, password, email)
+        user = User(username=username, password=password, email=email, database=self.database)
 
         if username and password and email:
-            user.register(self.database)
+            user.register()
             self.destroy()
         else:
             messagebox.showerror("Error", "Please fill in all fields")

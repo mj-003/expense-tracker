@@ -7,6 +7,7 @@ class UserFinancials(ABC):
         self.user = user
         self.items = []
         self.original_ids = []
+        self.currency = user.currency
 
     def load_items(self, get_function):
         """
@@ -23,7 +24,6 @@ class UserFinancials(ABC):
             self.original_ids.append(item[0])
             autonumbered_item = [idx + 1] + list(item[2:])
             self.items.append(autonumbered_item)
-
 
     def add_item(self, item, add_function, get_function):
         """
@@ -88,3 +88,6 @@ class UserFinancials(ABC):
     @abstractmethod
     def get_sum(self):
         pass
+
+    def update_currency(self, currency):
+        self.currency = currency

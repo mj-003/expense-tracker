@@ -8,9 +8,10 @@ class ItemController:
     def __init__(self, database, user, user_expenses: UserExpenses, user_incomes: UserIncomes):
         self.user_expenses = user_expenses
         self.user_incomes = user_incomes
+        self.user = user
 
     def create_user_items_list(self):
-        cat_names = ['No.', 'Amount (zł)', 'Category', 'Date']
+        cat_names = ['No.', f'Amount {self.user.currency}', 'Category', 'Date']
         user_expenses_list = self.user_expenses.get_expenses()
         user_incomes_list = self.user_incomes.get_incomes()
         user_items_list = [cat_names]

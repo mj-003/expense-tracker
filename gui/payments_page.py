@@ -9,8 +9,8 @@ from widgets_and_buttons import *
 
 
 class PaymentsPage(FinancialsPage):
-    def __init__(self, parent, app, user_payments):
-        super().__init__(parent=parent, app=app, user_items=user_payments)
+    def __init__(self, parent, app, user_payments, currency):
+        super().__init__(parent=parent, app=app, user_items=user_payments, currency=currency)
 
         self.title = 'Payments'
 
@@ -226,6 +226,8 @@ class PaymentsPage(FinancialsPage):
         :return:
         """
         self.amount_entry.delete(0, 'end')
+        self.title_entry.delete(0, 'end')
+        self.description = None
 
     def get_description(self):
         """
