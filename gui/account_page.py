@@ -47,20 +47,21 @@ class AccountPage(CTkFrame):
         self.subtitle_frame = CTkFrame(self, fg_color='transparent')
         self.subtitle_frame.pack(anchor="n", fill="x", padx=27, pady=(5, 0))
 
-        subtitle_label = CTkLabel(self.subtitle_frame, text=f"Welcome {self.user.username}! Choose option!", font=("Aptos", 15),
+        subtitle_label = CTkLabel(self.subtitle_frame, text=f"Welcome {self.user.username}! Choose option!",
+                                  font=("Aptos", 15),
                                   text_color="#2A8C55")
         subtitle_label.pack(anchor='nw', side='left')
 
         logout_button = (CTkButton(master=self.subtitle_frame,
-                  text="Logout",
-                  width=100,
-                  height=60,
-                  font=("Aptos", 16),
-                  text_color="#fff",
-                  fg_color="#2A8C55",
-                  hover_color="#207244",
-                  corner_radius=50,
-                  command=self.app.log_out))
+                                   text="Logout",
+                                   width=100,
+                                   height=60,
+                                   font=("Aptos", 16),
+                                   text_color="#fff",
+                                   fg_color="#2A8C55",
+                                   hover_color="#207244",
+                                   corner_radius=50,
+                                   command=self.app.log_out))
         logout_button.pack(
             anchor="ne",
             side="right",
@@ -77,18 +78,19 @@ class AccountPage(CTkFrame):
         edit_label = CTkLabel(self.options_frame, text="Edit your account", font=("Aptos", 12), text_color="#2A8C55",
                               compound='left')
         edit_label.pack(anchor='nw', side='top', pady=(30, 0), padx=60)
-        edit_button = CTkButton(self.options_frame, text="Edit", fg_color='#2A8C55', hover_color='#207244', compound='left',
+        edit_button = CTkButton(self.options_frame, text="Edit", fg_color='#2A8C55', hover_color='#207244',
+                                compound='left',
                                 command=self.edit_account)
         edit_button.pack(anchor='nw', side='top', pady=(0, 20), padx=60)
 
-        currency_label = CTkLabel(self.options_frame, text="Change your currency", font=("Aptos", 12), text_color="#2A8C55",
-                               compound='left')
+        currency_label = CTkLabel(self.options_frame, text="Change your currency", font=("Aptos", 12),
+                                  text_color="#2A8C55",
+                                  compound='left')
         currency_label.pack(anchor='nw', side='top', pady=(0, 0), padx=60)
-        currency_button = CTkButton(self.options_frame, text="Currency", fg_color='#2A8C55', hover_color='#207244', command=self.change_currency,
-                                 compound='left')
+        currency_button = CTkButton(self.options_frame, text="Currency", fg_color='#2A8C55', hover_color='#207244',
+                                    command=self.change_currency,
+                                    compound='left')
         currency_button.pack(anchor='nw', side='top', pady=(0, 20), padx=60)
-
-
 
     def add_action_frame(self):
         """
@@ -110,36 +112,42 @@ class AccountPage(CTkFrame):
         edit_label = CTkLabel(self.action_frame, text="Edit your account", font=("Aptos", 20), text_color="#2A8C55")
         edit_label.pack(anchor='n', side='top', pady=(30, 0), padx=125)
 
-        comment_label = CTkLabel(self.action_frame, text="You can change your e-mail or password.", font=("Aptos", 12), text_color="#2A8C55")
+        comment_label = CTkLabel(self.action_frame, text="You can change your e-mail or password.", font=("Aptos", 12),
+                                 text_color="#2A8C55")
         comment_label.pack(anchor='n', side='top', pady=(0, 0), padx=125)
 
-        email_change_label = CTkLabel(self.action_frame, text="Change E-mail:", font=("Aptos", 12, 'bold'), text_color="#2A8C55")
+        email_change_label = CTkLabel(self.action_frame, text="Change E-mail:", font=("Aptos", 12, 'bold'),
+                                      text_color="#2A8C55")
         email_change_label.pack(anchor='nw', side='top', pady=(10, 0), padx=125)
         email_label = CTkLabel(self.action_frame, text="E-mail:", font=("Aptos", 12), text_color="#2A8C55")
         email_label.pack(anchor='nw', side='top', pady=(0, 0), padx=125)
 
-        self.email_entry = CTkEntry(self.action_frame, width=225, fg_color="#EEEEEE", border_color="#4b6053", border_width=1, text_color="#000000")
+        self.email_entry = CTkEntry(self.action_frame, width=225, fg_color="#EEEEEE", border_color="#4b6053",
+                                    border_width=1, text_color="#000000")
         self.email_entry.pack(anchor='nw', side='top', pady=(0, 10), padx=125)
         self.email_entry.insert(0, self.user.email)
         self.email_entry.bind("<Return>", self.change_email)
 
         password_change_label = CTkLabel(self.action_frame, text="Change password:", font=("Aptos", 12, 'bold'),
-                                      text_color="#2A8C55")
+                                         text_color="#2A8C55")
         password_change_label.pack(anchor='nw', side='top', pady=(10, 0), padx=125)
         password_label = CTkLabel(self.action_frame, text="Current password:", font=("Aptos", 12), text_color="#2A8C55")
         password_label.pack(anchor='nw', side='top', pady=(0, 0), padx=125)
 
-        self.password_entry = CTkEntry(self.action_frame, width=225, fg_color="#EEEEEE", border_color="#4b6053", border_width=1, text_color="#000000", show='*')
+        self.password_entry = CTkEntry(self.action_frame, width=225, fg_color="#EEEEEE", border_color="#4b6053",
+                                       border_width=1, text_color="#000000", show='*')
         self.password_entry.pack(anchor='nw', side='top', pady=(0, 0), padx=125)
 
         new_password_label = CTkLabel(self.action_frame, text="New password:", font=("Aptos", 12), text_color="#2A8C55")
         new_password_label.pack(anchor='nw', side='top', pady=(0, 0), padx=125)
 
-        self.new_password_entry = CTkEntry(self.action_frame, width=225, fg_color="#EEEEEE", border_color="#4b6053", border_width=1, text_color="#000000")
+        self.new_password_entry = CTkEntry(self.action_frame, width=225, fg_color="#EEEEEE", border_color="#4b6053",
+                                           border_width=1, text_color="#000000")
         self.new_password_entry.pack(anchor='nw', side='top', pady=(0, 0), padx=125)
         self.new_password_entry.bind("<Return>", self.change_password)
 
-        back_button = CTkButton(self.action_frame, text="Back", fg_color='#2A8C55', hover_color='#207244',  width=225, command=self.back_to_options)
+        back_button = CTkButton(self.action_frame, text="Back", fg_color='#2A8C55', hover_color='#207244', width=225,
+                                command=self.back_to_options)
         back_button.pack(anchor='nw', side='bottom', pady=(0, 30), padx=125)
 
         self.action_frame.pack(expand=True, fill="both", pady=20, padx=(0, 27))
@@ -152,10 +160,12 @@ class AccountPage(CTkFrame):
         for widget in self.action_frame.winfo_children():
             widget.destroy()
 
-        title_curr_label = CTkLabel(self.action_frame, text="Change your currency", font=("Aptos", 20), text_color="#2A8C55")
+        title_curr_label = CTkLabel(self.action_frame, text="Change your currency", font=("Aptos", 20),
+                                    text_color="#2A8C55")
         title_curr_label.pack(anchor='n', side='top', pady=(30, 0), padx=130)
 
-        comment_label = CTkLabel(self.action_frame, text="You can change your currency into following ones:", font=("Aptos", 12),
+        comment_label = CTkLabel(self.action_frame, text="You can change your currency into following ones:",
+                                 font=("Aptos", 12),
                                  text_color="#2A8C55")
         comment_label.pack(anchor='n', side='top', pady=(0, 20), padx=80)
 
@@ -163,14 +173,17 @@ class AccountPage(CTkFrame):
         currencies = ["PLN", "USD", "EUR", "JPY", "GBP", "AUD"]
 
         for currency in currencies:
-            radio = CTkRadioButton(self.action_frame, text=currency, variable=self.currency_var, value=currency, font=("Aptos", 14), border_color="#2A8C55", fg_color="#2A8C55")
+            radio = CTkRadioButton(self.action_frame, text=currency, variable=self.currency_var, value=currency,
+                                   font=("Aptos", 14), border_color="#2A8C55", fg_color="#2A8C55")
             radio.pack(anchor='w', padx=40, pady=5)
 
         # buttons for changing currency
-        back_button = CTkButton(self.action_frame, text="Back", fg_color='#2A8C55', hover_color='#207244',  width=225, command=self.back_to_options)
+        back_button = CTkButton(self.action_frame, text="Back", fg_color='#2A8C55', hover_color='#207244', width=225,
+                                command=self.back_to_options)
         back_button.pack(anchor='nw', side='bottom', pady=(0, 25), padx=125)
 
-        save_button = CTkButton(self.action_frame, text="Save Currency", fg_color='#2A8C55', hover_color='#207244', width=225,
+        save_button = CTkButton(self.action_frame, text="Save Currency", fg_color='#2A8C55', hover_color='#207244',
+                                width=225,
                                 command=self.save_currency)
         save_button.pack(anchor='nw', side='bottom', pady=(0, 14), padx=125)
 
@@ -226,6 +239,3 @@ class AccountPage(CTkFrame):
         :return:
         """
         self.action_frame.pack_forget()
-
-
-

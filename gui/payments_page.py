@@ -29,9 +29,12 @@ class PaymentsPage(FinancialsPage):
         self.user_items = user_payments
         self.user_items_list = user_payments.get_payments()
 
+        # title
+        self.new_title = f"Upcoming payments (in 3 days): {self.today_sum:.2f} zł"
+
         # Create the page
         self.create_title_frame()
-        self.create_metrics_frame(self.show_add_payment_form)
+        self.create_metrics_frame(self.show_add_payment_form, self.new_title)
         self.create_search_container_payment()
         self.create_info_panel()
         self.show_user_items()

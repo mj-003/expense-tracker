@@ -14,6 +14,7 @@ class HomePage(CTkFrame):
         super().__init__(parent)
 
         # Initialize the app, parent, and user
+        self.table = None
         self.app = app
         self.parent = parent
         self.user = user
@@ -86,7 +87,8 @@ class HomePage(CTkFrame):
         img_label = CTkLabel(master=total_sum_metric, image=logistics_img, text="")
         img_label.grid(row=0, column=0, rowspan=2, padx=(12, 5), pady=10)
 
-        total_this_month = get_total_this_month_label(my_master=total_sum_metric, my_text=f"Total balance this month: {self.user_incomes.get_sum()-self.user_expenses.get_sum():.2f} zł")
+        total_this_month = get_total_this_month_label(my_master=total_sum_metric,
+                                                      my_text=f"Total balance this month: {self.user_incomes.get_sum() - self.user_expenses.get_sum():.2f} zł")
         total_this_month.grid(row=0, column=1, sticky="sw")
 
     def create_search_container(self):
@@ -111,7 +113,8 @@ class HomePage(CTkFrame):
 
         self.is_chart = CTkCheckBox(master=search_container, text="Chart", font=('Aptos', 15),
                                     variable=self.var_show_chart, onvalue="on", offvalue="off",
-                                    command=self.if_show_chart, fg_color="#2A8C55", width=30, height=30, hover_color='#207244')
+                                    command=self.if_show_chart, fg_color="#2A8C55", width=30, height=30,
+                                    hover_color='#207244')
         self.is_chart.pack(pady=15)
 
     def show_user_items(self):
@@ -119,27 +122,8 @@ class HomePage(CTkFrame):
         Show user items
         :return:
         """
-        if self.table_frame is None:
-            self.table_frame = CTkScrollableFrame(master=self, fg_color="transparent")
-            self.table_frame.pack(expand=True, fill="both", padx=27, pady=21, side='left')
-
-            self.table = CTkTable(master=self.table_frame,
-                                  values=self.user_items_list,
-                                  colors=["#E6E6E6", "#EEEEEE"],
-                                  header_color="#2A8C55",
-                                  hover_color="#B4B4B4")
-
-            self.table.pack(expand=True, fill='both')
-
-        else:
-            indicates_to_remove = list(range(len(self.table.values)))
-            self.table.delete_rows(indicates_to_remove)
-
-            for row_data in self.user_items_list:
-                self.table.add_row(row_data)
-
-        if self.table.rows > 0:
-            self.table.edit_row(0, text_color="#fff", hover_color="#2A8C55")
+        # 'show_user_items' from widgets_and_buttons, returns the table
+        self.table = show_user_items(self.table_frame, self, self.user_items_list, self.table)
 
     def get_filtered_items(self):
         """
@@ -182,7 +166,7 @@ class HomePage(CTkFrame):
         :return:
         """
         self.info_panel = CTkFrame(master=self, fg_color="#eeeeee", border_width=0, border_color="#2A8C55",
-                                       corner_radius=10, width=200)
+                                   corner_radius=10, width=200)
         self.info_panel.pack_forget()
         self.update_chart()
 
@@ -197,8 +181,7 @@ class HomePage(CTkFrame):
 
         # Get the data
         month_str, self.user_incomes_list, self.user_expenses_list = self.controller.get_chart_data(self.current_month)
-        fig, ax = self.plotter.plot_incomes_expenses_per_month(month_str, self.user_incomes_list,
-                                                               self.user_expenses_list)
+        fig, ax = self.plotter.plot_incomes_expenses_per_month(month_str)
 
         # Create the chart
         chart_canvas = FigureCanvasTkAgg(fig, master=self.info_panel)
@@ -213,7 +196,8 @@ class HomePage(CTkFrame):
                                     command=self.show_prev_month)
         prev_button.pack(side='left', padx=5)
 
-        next_button = ctk.CTkButton(master=button_frame, text="Next", fg_color='#2A8C55', hover_color='#207244',command=self.show_next_month)
+        next_button = ctk.CTkButton(master=button_frame, text="Next", fg_color='#2A8C55', hover_color='#207244',
+                                    command=self.show_next_month)
         next_button.pack(side='right', padx=5)
 
     def show_prev_month(self):

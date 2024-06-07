@@ -4,13 +4,13 @@ Expense Tracker is an application designed to help you manage your expenses and 
 
 ## Project overview
 Page after logging in:
-![Example Image](/Users/m_juchiewicz/Desktop/readme_images/home_page.png)
+![Example Image](gui/images/home_page.png)
 
-Adding a new expense:
-![Example Image](/Users/m_juchiewicz/Desktop/readme_images/expense_page.png)
+More info about selected expense:
+![Example Image](gui/images/expense_page.png)
 
-More information about selected income:
-![Example Image](/Users/m_juchiewicz/Desktop/readme_images/income_page.png)
+Adding new income:
+![Example Image](gui/images/income_page.png)
 
 ## Requirements
 
@@ -39,30 +39,29 @@ python3 app.py
 - **database.py**: Script responsible for managing the database.
 - **email_sender.py**: Script for sending email notifications.
 - **financials/**: Directory containing modules related to user finances, such as expenses, incomes, and payments.
-  - `item.py`: Module for the base class `Item`, which is an abstract class for expenses, incomes, and payments.
-  - `expense.py`: Module for handling expense-related functionality. The class inherits from the `Item` class.
+  - `expense.py`: Module for handling expense-related functionality. 
 
-  - `income.py`: Module for handling income-related functionality. The class inherits from the `Item` class.
+  - `income.py`: Module for handling income-related functionality. 
 
-  - `payment.py`: Module for handling payment-related functionality. The class inherits from the `Item` class.
+  - `payment.py`: Module for handling payment-related functionality. 
 
-  - `user_expenses.py`: Module for managing user expenses. 
-  - `user_finances.py`: Module for managing overall user finances.
-  - `user_incomes.py`: Module for managing user incomes.
-  - `user_payments.py`: Module for managing user payments.
+- `user_finances.py`: Abstract base class for user finances (expenses, incomes, payments).
+  - `user_expenses.py`: Module for managing user expenses. It contains the `UserExpenses` class, which inherits from `UserFinances`.
+  - `user_incomes.py`: Module for managing user incomes. It contains the `UserIncomes` class, which inherits from `UserFinances`.
+  - `user_payments.py`: Module for managing user payments. It contains the `UserPayments` class, which inherits from `UserFinances`.
 - **gui/**: Directory containing files related to the user interface, including pages and controllers.
   - `account_page.py`: UI for user account details.
   - `charts_page.py`: UI for displaying financial charts.
   - `charts_page_controller.py`: Controller for charts page.
-  - `expenses_page.py`: UI for managing expenses.
+  - `expenses_page.py`: UI for managing expenses. It contains the `ExpensesPage` class, which inherits from `ItemPageABC`.
   - `export_page.py`: UI for exporting financial data.
   - `home_page.py`: UI for the home page.
-  - `incomes_page.py`: UI for managing incomes.
+  - `incomes_page.py`: UI for managing incomes. It contains the `IncomesPage` class, which inherits from `ItemPageABC`.
   - `item_controller.py`: Controller for items.
   - `item_page_abc.py`: Abstract base class for item pages.
   - `items_controller.py`: Controller for multiple items.
   - `login_page.py`: UI for user login.
-  - `payments_page.py`: UI for managing payments.
+  - `payments_page.py`: UI for managing payments. It contains the `PaymentsPage` class, which inherits from `ItemPageABC`.
   - `registration_window.py`: UI for user registration.
   - `view_manager.py`: Manages the different views in the application.
   - `widgets_and_buttons.py`: Custom widgets and buttons for the UI.
@@ -111,6 +110,7 @@ The project is organized into different modules and directories. Here is an over
 ├── email_sender.py
 ```
 ## Requirements
+- Python==3.6+
 - CTkTable==1.1
 - customtkinter==5.2.2
 - matplotlib==3.8.0

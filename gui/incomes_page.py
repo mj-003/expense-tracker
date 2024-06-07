@@ -28,9 +28,12 @@ class IncomesPage(FinancialsPage):
         self.user_items = user_incomes
         self.user_items_list = user_incomes.get_incomes()
 
+        # title
+        self.new_title = f"Total incomes this month: {self.today_sum:.2f} zł"
+
         # Create the page
         self.create_title_frame()
-        self.create_metrics_frame(self.show_add_income_form)
+        self.create_metrics_frame(self.show_add_income_form, new_title=self.new_title)
         self.create_search_container_income()
         self.create_info_panel()
         self.show_user_items()

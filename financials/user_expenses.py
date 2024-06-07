@@ -43,13 +43,7 @@ class UserExpenses(UserFinancials):
             filtered_expenses = [expense for expense in filtered_expenses if expense[2] == category_filter]
 
         if sort_order:
-            reverse = sort_order.split()[0] == "⬇"
-            if sort_order != 'Sort':
-
-                if sort_order.split()[1] == "Amount":
-                    filtered_expenses.sort(key=lambda x: x[1], reverse=reverse)
-                elif sort_order.split()[1] == "Time":
-                    filtered_expenses.sort(key=lambda x: datetime.strptime(x[4], '%Y-%m-%d'), reverse=reverse)
+            filtered_expenses = self.sort_items(items=filtered_expenses, sort_order=sort_order, date_index=4)
 
         self.headers = self.get_headers()
         return self.headers + filtered_expenses
@@ -60,8 +54,8 @@ class UserExpenses(UserFinancials):
         :param autonumbered_id:
         :return:
         """
-        if 0 < autonumbered_id <= len(self.original_ids):
-            item_id = self.original_ids[autonumbered_id - 1]
+        item_id = self.get_item_id(autonumbered_id, self.database.get_expenses)
+        if item_id:
             return self.database.get_expense(item_id)
         else:
             print(f"Invalid autonumbered ID: {autonumbered_id}")
@@ -80,7 +74,7 @@ class UserExpenses(UserFinancials):
             start_date = datetime.now().replace(month=1, day=1)
         else:
             return expenses
-
+        # expense[4] - date
         return [expense for expense in expenses if datetime.strptime(expense[4], '%Y-%m-%d') >= start_date]
 
     def delete_expense(self, autonumbered_id):
@@ -105,4 +99,6 @@ class UserExpenses(UserFinancials):
         Get the sum of expenses for the current month
         :return:
         """
+        # expense[1] - amount
+        # expense[4] - date
         return sum([expense[1] for expense in self.items if datetime.strptime(expense[4], '%Y-%m-%d').month == datetime.today().month])

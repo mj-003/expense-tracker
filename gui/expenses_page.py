@@ -31,9 +31,12 @@ class ExpensesPage(FinancialsPage):
         self.user_items = user_expenses
         self.user_items_list = user_expenses.get_expenses()
 
+        # title
+        self.new_title = f"Total expenses this month: {self.today_sum:.2f} zł"
+
         # Create the page
         self.create_title_frame()
-        self.create_metrics_frame(self.show_add_expense_form)
+        self.create_metrics_frame(self.show_add_expense_form, new_title=self.new_title)
         self.create_search_container_expense()
         self.create_info_panel()
         self.show_user_items()

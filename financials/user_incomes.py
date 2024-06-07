@@ -34,8 +34,8 @@ class UserIncomes(UserFinancials):
         :param autonumbered_id:
         :return:
         """
-        if 0 < autonumbered_id <= len(self.original_ids):
-            item_id = self.original_ids[autonumbered_id - 1]
+        item_id = self.get_item_id(autonumbered_id, self.database.get_incomes)
+        if item_id:
             return self.database.get_income(item_id)
         else:
             print(f"Invalid autonumbered ID: {autonumbered_id}")
@@ -58,13 +58,7 @@ class UserIncomes(UserFinancials):
             filtered_incomes = [income for income in filtered_incomes if income[2] == from_filter]
 
         if sort_order:
-            reverse = sort_order.split()[0] == "⬇"
-            if sort_order != 'Sort':
-
-                if sort_order.split()[1] == "Amount":
-                    filtered_incomes.sort(key=lambda x: x[1], reverse=reverse)
-                elif sort_order.split()[1] == "Time":
-                    filtered_incomes.sort(key=lambda x: datetime.strptime(x[3], '%Y-%m-%d'), reverse=reverse)
+            filtered_incomes = self.sort_items(items=filtered_incomes, sort_order=sort_order, date_index=3)
 
         self.headers = self.get_headers()
         return self.headers + filtered_incomes
@@ -110,4 +104,6 @@ class UserIncomes(UserFinancials):
         Get the sum of all incomes
         :return:
         """
+        # income[1] - amount
+        # income[3] - date
         return sum([income[1] for income in self.items if datetime.strptime(income[3], '%Y-%m-%d').month == datetime.today().month])

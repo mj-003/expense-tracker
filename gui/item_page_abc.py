@@ -73,7 +73,7 @@ class FinancialsPage(CTkFrame, ABC):
                           font=("Aptos", 35)))
         today.pack(anchor="ne", side="right")
 
-    def create_metrics_frame(self, show_add_form_function):
+    def create_metrics_frame(self, show_add_form_function, new_title):
         """
         Create the metrics frame
         :param show_add_form_function:
@@ -89,7 +89,7 @@ class FinancialsPage(CTkFrame, ABC):
         logistics_img_data = Image.open("images/money2.png")
         logistics_img = CTkImage(light_image=logistics_img_data,
                                  dark_image=logistics_img_data,
-                                 size=(30, 30))
+                                 size=(43, 43))
 
         metric_label = (CTkLabel(master=total_sum_metric,
                                  image=logistics_img,
@@ -97,10 +97,10 @@ class FinancialsPage(CTkFrame, ABC):
         metric_label.grid(row=0, column=0, rowspan=2, padx=(12, 5), pady=10)
 
         sum_total = (CTkLabel(master=total_sum_metric,
-                              text=f"Total {self.title} this month: {self.today_sum:.2f} zł",
+                              text=new_title,
                               text_color="#fff",
                               font=("Aptos", 16)))
-        sum_total.grid(row=0, column=1, sticky="sw", pady=(10, 0))
+        sum_total.grid(row=0, column=1, sticky="sw")
 
         date_frame = CTkFrame(master=metrics_frame, fg_color="transparent", height=60)
         date_frame.grid_propagate(False)
@@ -152,26 +152,8 @@ class FinancialsPage(CTkFrame, ABC):
         Show the user items
         :return:
         """
-        if self.table_frame is None:
-            self.table_frame = CTkScrollableFrame(master=self, fg_color="transparent")
-            self.table_frame.pack(expand=True, fill="both", padx=27, pady=21, side='left')
-
-            self.table = CTkTable(master=self.table_frame,
-                                  values=self.user_items_list,
-                                  colors=["#E6E6E6", "#EEEEEE"],
-                                  header_color="#2A8C55",
-                                  hover_color="#B4B4B4")
-
-            self.table.pack(expand=True, fill='both')
-        else:
-            indicates_to_remove = list(range(len(self.table.values)))
-            self.table.delete_rows(indicates_to_remove)
-
-            for row_data in self.user_items_list:
-                self.table.add_row(row_data)
-
-        if self.table.rows > 0:
-            self.table.edit_row(0, text_color="#fff", hover_color="#2A8C55")
+        # 'show_user_items' is from gui/widgets_and_buttons.py. it returns the table
+        self.table = show_user_items(self.table_frame, self, self.user_items_list, self.table)
 
     def validate_id(self, items):
         """

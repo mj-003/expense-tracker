@@ -4,15 +4,26 @@ from email.message import EmailMessage
 import os
 
 from database import Database
+
+# get email and password from environment variables
 EMAIL_SENDER = os.environ['EMAIL_USER']
 EMAIL_PASSWORD = os.environ['EMAIL_PASSWORD']
 
 
+# create a database instance
 db = Database()
 
 
 def send_notifications():
+    """
+    Send email notifications for upcoming payments
+    :return:
+    """
+
+    # get upcoming payments
     upcoming_payments = db.get_upcoming_payments()
+
+    # send email notifications
     for payment in upcoming_payments:
         msg = EmailMessage()
         msg['From'] = EMAIL_SENDER
@@ -25,10 +36,10 @@ def send_notifications():
             with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=ssl.create_default_context()) as smtp:
                 smtp.login(EMAIL_SENDER, EMAIL_PASSWORD)
                 smtp.send_message(msg)
-                db.update_payment_date(payment['id'], payment['how_often'])
             print(f"Email sent to {payment['email']}")
         except smtplib.SMTPException as e:
             print(f"Failed to send email for {payment['email']}: {e}")
 
+    # update payment dates
     for payment in upcoming_payments:
         db.update_payment_date(payment['id'], payment['how_often'])

@@ -7,6 +7,8 @@ categories_values = ['Categories', 'Food', 'Transport', 'Entertainment', 'Home',
 categories_no_title_values = ['Personal', 'Transport', 'Entertainment', 'Home', 'Food', 'Other']
 items_values = ['Items', 'Incomes', 'Expenses']
 payment_method_values = ['Online', 'Cash', 'Card', 'Other']
+how_often_values = ['Once', 'Daily', 'Weekly', 'Monthly', 'Yearly']
+upcoming_values = ['Upcoming', 'Today', 'Tomorrow', 'This week', 'This month']
 
 
 def get_button(my_master, on_command: callable, my_text, my_width=30) -> CTkButton:
@@ -42,8 +44,7 @@ def get_combo_box(my_master, my_values: list, my_width: int = None) -> CTkComboB
                        button_hover_color="#207244",
                        dropdown_hover_color="#207244",
                        dropdown_fg_color="#2A8C55",
-                       dropdown_text_color="#fff",
-                       )
+                       dropdown_text_color="#fff")
 
 
 def get_entry(my_master, my_width: int, my_placeholder: str) -> CTkEntry:
@@ -75,11 +76,11 @@ def get_payment_method_combo_box(my_master, my_width: int) -> CTkComboBox:
 
 
 def get_how_often_combo_box(my_master, my_width: int) -> CTkComboBox:
-    return get_combo_box(my_master, ['Daily', 'Weekly', 'Monthly', 'Yearly', 'Single'], my_width)
+    return get_combo_box(my_master, how_often_values, my_width)
 
 
 def get_upcoming_combo_box(my_master, my_width: int) -> CTkComboBox:
-    return get_combo_box(my_master, ['All', 'Upcoming', 'This month', 'This year'], my_width)
+    return get_combo_box(my_master, upcoming_values, my_width)
 
 
 def get_items_combo_box(my_master, my_width: int) -> CTkComboBox:
@@ -110,6 +111,7 @@ def show_user_items(table_frame, my_master, user_items_list, table):
 
     if table.rows > 0:
         table.edit_row(0, text_color="#fff", hover_color="#2A8C55")
+    return table
 
 
 def get_validate_entry(my_master, my_width: int, my_placeholder: str, my_validate: str, my_validate_command: str,

@@ -32,8 +32,8 @@ class UserPayments(UserFinancials):
         :param autonumbered_id:
         :return:
         """
-        if 0 < autonumbered_id <= len(self.original_ids):
-            item_id = self.original_ids[autonumbered_id - 1]
+        item_id = self.get_item_id(autonumbered_id, self.database.get_payments)
+        if item_id:
             return self.database.get_payment(item_id)
         else:
             print(f"Invalid autonumbered ID: {autonumbered_id}")
@@ -57,12 +57,7 @@ class UserPayments(UserFinancials):
             filtered_payments = [payment for payment in filtered_payments if payment[2] == title_filter]
 
         if sort_order:
-            reverse = sort_order.split()[0] == "⬇"
-            if sort_order != 'Sort':
-                if sort_order.split()[1] == "Amount":
-                    filtered_payments.sort(key=lambda x: x[1], reverse=reverse)
-                elif sort_order.split()[1] == "Time":
-                    filtered_payments.sort(key=lambda x: datetime.strptime(x[3], '%Y-%m-%d'), reverse=reverse)
+            filtered_payments = self.sort_items(items=filtered_payments, sort_order=sort_order, date_index=3)
 
         self.headers = self.get_headers()
         return self.headers + filtered_payments
@@ -111,5 +106,15 @@ class UserPayments(UserFinancials):
         """
         self.update_item(autonumbered_id, updated_payment, self.database.update_payment, self.database.get_payments)
 
-    def get_sum(self):
-        return 0
+    def get_sum(self) -> float:
+        """
+        Get the sum of all upcoming (3 days) payments
+        :return: float
+        """
+        # payment[1] - amount
+        # payment[3] - date
+        today = datetime.now()
+        in_three_days = today + timedelta(days=3)
+        return sum([payment[1] for payment in self.items if today <= datetime.strptime(payment[3], '%Y-%m-%d') <= in_three_days])
+
+

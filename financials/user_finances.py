@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from datetime import datetime
 
 
 # Abstract class for user financials
@@ -21,9 +22,9 @@ class UserFinancials(ABC):
         self.items = []
         self.original_ids = []
 
-        for idx, item in enumerate(items_from_db[::-1]):
+        for idx, item in enumerate(items_from_db[::-1]):    # from the newest to the oldest
             self.original_ids.append(item[0])
-            autonumbered_item = [idx + 1] + list(item[2:])
+            autonumbered_item = [idx + 1] + list(item[2:])  # skip the user_id and the item_id
             self.items.append(autonumbered_item)
 
     def add_item(self, item, add_function, get_function):
@@ -47,9 +48,9 @@ class UserFinancials(ABC):
         :param get_function:
         :return:
         """
-        if 0 < autonumbered_id <= len(self.original_ids):
-            item_id = self.original_ids[autonumbered_id - 1]
-            return get_function(item_id)
+        item_id = self.get_item_id(autonumbered_id, get_function)
+        if item_id:
+            return item_id
         else:
             print(f"Invalid autonumbered ID: {autonumbered_id}")
             return None
@@ -62,10 +63,9 @@ class UserFinancials(ABC):
         :param get_function:
         :return:
         """
-        if 0 < autonumbered_id <= len(self.original_ids):
-            expense_id = self.original_ids[autonumbered_id - 1]
-            del_function(expense_id)
-            self.load_items(get_function)
+        item_id = self.get_item_id(autonumbered_id, get_function)
+        if item_id:
+            del_function(self.get_item_id(autonumbered_id, get_function))
         else:
             print(f"Invalid autonumbered ID: {autonumbered_id}")
 
@@ -78,9 +78,8 @@ class UserFinancials(ABC):
         :param get_function:
         :return:
         """
-        print(updated_item)
-        if 0 < autonumbered_id <= len(self.original_ids):
-            item_id = self.original_ids[autonumbered_id - 1]
+        item_id = self.get_item_id(autonumbered_id, get_function)
+        if item_id:
             update_function(item_id, updated_item)
             self.load_items(get_function)
         else:
@@ -92,3 +91,33 @@ class UserFinancials(ABC):
 
     def update_currency(self, currency):
         self.currency = currency
+
+    def get_item_id(self, autonumbered_id, get_function):
+        """
+        Get an item by autonumbered ID
+        :param autonumbered_id:
+        :param get_function:
+        :return:
+        """
+        if 0 < autonumbered_id <= len(self.original_ids):
+            item_id = self.original_ids[autonumbered_id - 1]
+            return get_function(item_id)
+
+    def sort_items(self, items, sort_order, date_index):
+        """
+        Sort items by sort_order
+        :param items:
+        :param sort_order:
+        :param date_index:
+        :return:
+        """
+        if sort_order:
+            reverse = sort_order.split()[0] == "⬇"
+            if sort_order != 'Sort':
+                if sort_order.split()[1] == "Amount":
+                    items.sort(key=lambda x: x[1], reverse=reverse)
+                elif sort_order.split()[1] == "Time":
+                    items.sort(key=lambda x: datetime.strptime(x[date_index], '%Y-%m-%d'), reverse=reverse)
+        return items
+
+

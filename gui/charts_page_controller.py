@@ -12,10 +12,10 @@ class ChartPageController:
     def show_chart(self, chart_function, month, year):
         """
         Show a chart
-        :param chart_function:
-        :param month:
-        :param year:
-        :return:
+        :param chart_function: Function to plot the chart
+        :param month: Month
+        :param year: Year
+        :return: Figure and axis
         """
         if (chart_function == self.plotter.plot_category_pie_chart and
             self.check_if_available_month(month)) or (
@@ -29,7 +29,7 @@ class ChartPageController:
     def show_prev_date(self):
         """
         Show the previous month and year
-        :return:
+        :return: Previous month and year
         """
         self.curr_month = (self.curr_month - datetime.timedelta(days=1)).replace(day=1)
         self.curr_year = self.curr_year - 1
@@ -38,7 +38,7 @@ class ChartPageController:
     def show_next_date(self):
         """
         Show the next month and year
-        :return:
+        :return: Next month and year
         """
         self.curr_month = (self.curr_month + datetime.timedelta(days=31)).replace(day=1)
         self.curr_year = self.curr_year + 1
@@ -47,10 +47,10 @@ class ChartPageController:
     def check_available_data(self, chart_function, month, year):
         """
         Check if data is available for the selected period
-        :param chart_function:
-        :param month:
-        :param year:
-        :return:
+        :param chart_function: Function to plot the chart
+        :param month: Month
+        :param year: Year
+        :return: True if data is available, False otherwise
         """
         if (chart_function == self.plotter.plot_category_pie_chart and
             self.check_if_available_month(month)) or (
@@ -63,8 +63,8 @@ class ChartPageController:
     def check_if_available(self, year):
         """
         Check if data is available for the selected year
-        :param year:
-        :return:
+        :param year: Year
+        :return: True if data is available, False otherwise
         """
         expenses_found = False
         incomes_found = False

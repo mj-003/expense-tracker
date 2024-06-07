@@ -8,6 +8,8 @@ from matplotlib import pyplot as plt
 from financials.user_expenses import UserExpenses
 from financials.user_incomes import UserIncomes
 
+incomes_columns = ["ID", "Amount", "From", "Date", "Description"]
+expenses_columns = ["ID", "Amount", "Category", "Payment method", "Date", "Photo path", "Description"]
 
 class MyPlotter:
     def __init__(self, user_expenses: UserExpenses, user_incomes: UserIncomes):
@@ -22,10 +24,10 @@ class MyPlotter:
         Function to get incomes and expenses as pandas dataframes
         :return:
         """
-        incomes_pd = pd.DataFrame(self.user_incomes_list, columns=["ID", "Amount", "From", "Date", "Description"])
-        expenses_pd = pd.DataFrame(self.user_expenses_list,
-                                   columns=["ID", "Amount", "Category", "Payment method", "Date", "Photo path",
-                                            "Description"])
+        incomes_pd = pd.DataFrame(self.user_incomes_list, columns=incomes_columns)
+        expenses_pd = pd.DataFrame(self.user_expenses_list, columns=expenses_columns)
+
+        # Convert the Date column to datetime
         incomes_pd['Date'] = pd.to_datetime(incomes_pd['Date'])
         expenses_pd['Date'] = pd.to_datetime(expenses_pd['Date'])
 
@@ -54,19 +56,16 @@ class MyPlotter:
         labels = list(categories.keys())
         sizes = list(categories.values())
 
-        fig, ax = plt.subplots()  # zmniejszenie rozmiaru wykresu
+        fig, ax = plt.subplots()
 
-        # Wykres pierścieniowy
         wedges, texts, autotexts = ax.pie(sizes, colors=colors, autopct='%1.0f%%',
                                           shadow=False, startangle=140, wedgeprops=dict(width=0.5), pctdistance=0.85)
 
         centre_circle = plt.Circle((0, 0), 0.01, fc='white')
         fig.gca().add_artist(centre_circle)
 
-        # Dodanie tekstu "Expense" w środku koła
         plt.text(0, 0, 'Expenses', ha='center', va='center', fontsize=12)
 
-        # Upewnienie się, że wykres jest okrągły
         ax.axis('equal')
 
         for text in texts:
@@ -78,19 +77,21 @@ class MyPlotter:
 
         return fig, ax
 
-    def plot_incomes_expenses_per_month(self, month, incomes_list, expenses_list):
+    def plot_incomes_expenses_per_month(self, month):
         """
         Function to plot a bar chart of total incomes and expenses for a given month
         :param month:
-        :param incomes_list:
-        :param expenses_list:
         :return:
         """
 
+        # Get the incomes and expenses as pandas dataframes
         incomes_pd, expenses_pd = self.get_incomes_expenses_pd()
 
+        # Filter the data for the specified month
         incomes_pd = incomes_pd[incomes_pd['Date'].dt.strftime('%Y-%m') == month]
         expenses_pd = expenses_pd[expenses_pd['Date'].dt.strftime('%Y-%m') == month]
+
+        # Calculate the total income and expenses
         total_income = incomes_pd['Amount'].sum()
         total_expenses = expenses_pd['Amount'].sum()
 
@@ -144,18 +145,7 @@ class MyPlotter:
         :param month:
         :return:
         """
-        income_df, expense_df = self.get_incomes_expenses_pd()
-
-        expense_df = expense_df[expense_df['Date'].dt.year == year]
-        income_df = income_df[income_df['Date'].dt.year == year]
-
-        if expense_df.empty or income_df.empty:
-            print("No data available for the specified year after filtering.")
-            return
-
-        # Group by month and sum the amounts
-        expense_df = expense_df.groupby(expense_df['Date'].dt.to_period('M')).sum(numeric_only=True)
-        income_df = income_df.groupby(income_df['Date'].dt.to_period('M')).sum(numeric_only=True)
+        income_df, expense_df = self.prepeare_dfs(year)
 
         # Plotting
         fig, ax = plt.subplots()
@@ -163,15 +153,18 @@ class MyPlotter:
         # Bar plot for expenses and incomes
         ax.bar(expense_df.index.to_timestamp() - pd.DateOffset(days=7), expense_df['Amount'], width=14,
                label='Expenses', color='#8fbc8f')
-        ax.bar(income_df.index.to_timestamp() + pd.DateOffset(days=7), income_df['Amount'], width=14, label='Incomes', color='#006400')
+        ax.bar(income_df.index.to_timestamp() + pd.DateOffset(days=7), income_df['Amount'], width=14, label='Incomes',
+               color='#006400')
 
         # Calculate the average expenses and incomes
         avg_expenses = expense_df['Amount'].mean()
         avg_incomes = income_df['Amount'].mean()
 
         # Plotting the average lines
-        ax.axhline(avg_expenses, color='#228b22', linestyle='--', linewidth=2, label=f'Avg Expenses: {avg_expenses:.2f} zł')
-        ax.axhline(avg_incomes, color='#679267', linestyle='--', linewidth=2, label=f'Avg Incomes: {avg_incomes:.2f} zł')
+        ax.axhline(avg_expenses, color='#9b6b43', linestyle='--', linewidth=2,
+                   label=f'Avg Expenses: {avg_expenses:.2f} zł')
+        ax.axhline(avg_incomes, color='#ffd700', linestyle='--', linewidth=2,
+                   label=f'Avg Incomes: {avg_incomes:.2f} zł')
 
         ax.xaxis.set_major_locator(mdates.MonthLocator())
         ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %Y'))
@@ -193,18 +186,7 @@ class MyPlotter:
         :param month:
         :return:
         """
-        income_df, expense_df = self.get_incomes_expenses_pd()
-        # Drop rows with NaT in the 'Date' column
-        expense_df = expense_df.dropna(subset=['Date'])
-        income_df = income_df.dropna(subset=['Date'])
-
-        # Filter the data for the specified year
-        expense_df = expense_df[expense_df['Date'].dt.year == year]
-        income_df = income_df[income_df['Date'].dt.year == year]
-
-        # Group by month and sum the amounts
-        expense_df = expense_df.groupby(expense_df['Date'].dt.to_period('M')).sum(numeric_only=True).sort_index()
-        income_df = income_df.groupby(income_df['Date'].dt.to_period('M')).sum(numeric_only=True).sort_index()
+        income_df, expense_df = self.prepeare_dfs(year)
 
         # Plotting
         fig, ax = plt.subplots()
@@ -219,13 +201,13 @@ class MyPlotter:
         z_expenses = np.polyfit(expense_df.index.to_timestamp().astype(int) / 10 ** 9, expense_df['Amount'], 1)
         p_expenses = np.poly1d(z_expenses)
         ax.plot(expense_df.index.to_timestamp(), p_expenses(expense_df.index.to_timestamp().astype(int) / 10 ** 9),
-                "r--", label='Expenses Trend Line', color='#228b22')
+                "r--", label='Expenses Trend Line', color='#9b6b43')
 
         # Adding a trend line for incomes
         z_incomes = np.polyfit(income_df.index.to_timestamp().astype(int) / 10 ** 9, income_df['Amount'], 1)
         p_incomes = np.poly1d(z_incomes)
         ax.plot(income_df.index.to_timestamp(), p_incomes(income_df.index.to_timestamp().astype(int) / 10 ** 9), "g--",
-                label='Incomes Trend Line', color='#8db600')
+                label='Incomes Trend Line', color='#ffd700')
 
         # Formatting the x-axis
         ax.xaxis.set_major_locator(mdates.MonthLocator())
@@ -248,20 +230,7 @@ class MyPlotter:
         :param month:
         :return:
         """
-        income_df, expense_df = self.get_incomes_expenses_pd()
-
-        # Drop rows with NaT in the 'Date' column
-        expense_df = expense_df.dropna(subset=['Date'])
-        income_df = income_df.dropna(subset=['Date'])
-
-        # Filter the data for the specified year
-        expense_df = expense_df[expense_df['Date'].dt.year == year]
-        income_df = income_df[income_df['Date'].dt.year == year]
-
-        # Check if DataFrames are empty after filtering
-        if expense_df.empty or income_df.empty:
-            print("No data available for the specified year after filtering.")
-            return
+        income_df, expense_df = self.prepeare_dfs(year)
 
         # Plotting
         fig, ax = plt.subplots()
@@ -283,3 +252,19 @@ class MyPlotter:
 
         # Save the plot as an image file
         return fig, ax
+
+    def prepeare_dfs(self, year):
+        income_df, expense_df = self.get_incomes_expenses_pd()
+
+        expense_df = expense_df.dropna(subset=['Date'])
+        income_df = income_df.dropna(subset=['Date'])
+
+        # Filter the data for the specified year
+        expense_df = expense_df[expense_df['Date'].dt.year == year]
+        income_df = income_df[income_df['Date'].dt.year == year]
+
+        # Group by month and sum the amounts
+        expense_df = expense_df.groupby(expense_df['Date'].dt.to_period('M')).sum(numeric_only=True).sort_index()
+        income_df = income_df.groupby(income_df['Date'].dt.to_period('M')).sum(numeric_only=True).sort_index()
+
+        return income_df, expense_df

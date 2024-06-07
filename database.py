@@ -111,7 +111,8 @@ class Database:
         self.cursor.execute('''
             INSERT INTO expenses (user_id, amount, category, payment_method, date, photo_path, description)
             VALUES (?, ?, ?, ?, ?, ?, ?)
-        ''', (user_id, expense.amount, expense.category, expense.payment_method, expense.date, expense.photo_path, expense.description))
+        ''', (user_id, expense.amount, expense.category, expense.payment_method, expense.date, expense.photo_path,
+              expense.description))
         self.connection.commit()
         return self.cursor.lastrowid
 
@@ -132,7 +133,9 @@ class Database:
             UPDATE expenses
             SET amount = ?, category = ?, payment_method = ?, date = ?, photo_path = ?, description = ?
             WHERE id = ?
-        ''', (expense.amount, expense.category, expense.payment_method, expense.date, expense.photo_path, expense.description, expense_id))
+        ''', (
+        expense.amount, expense.category, expense.payment_method, expense.date, expense.photo_path, expense.description,
+        expense_id))
         self.connection.commit()
 
     def del_expense(self, expense_id):
@@ -233,17 +236,26 @@ class Database:
         ''', (payment_id,))
         self.connection.commit()
 
-
     def get_upcoming_payments(self):
+        """
+        Get upcoming payments (payments that are due today)
+        :return:
+        """
         today = datetime.now().date()
         self.cursor.execute('''
                SELECT p.*, u.username, u.email FROM payments p
                JOIN users u ON p.user_id = u.id
-               WHERE p.date <= ?
+               WHERE p.date = ?
            ''', (today,))
         return self.cursor.fetchall()
 
     def update_payment_date(self, payment_id, how_often):
+        """
+        Update the date of the payment
+        :param payment_id:
+        :param how_often:
+        :return:
+        """
         from datetime import timedelta
         current_date = self.get_payment(payment_id)['date']
         new_date = current_date
@@ -262,7 +274,7 @@ class Database:
         elif how_often == 'Yearly':
             new_date += timedelta(days=365)
         else:
-            self.del_payment(payment_id)    # delete single payment
+            self.del_payment(payment_id)  # delete single payment
 
         self.cursor.execute('''
             UPDATE payments
@@ -286,4 +298,3 @@ class Database:
             WHERE username = ?
         ''', (new_password, username))
         self.connection.commit()
-
