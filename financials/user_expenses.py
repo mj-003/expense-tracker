@@ -9,30 +9,33 @@ class UserExpenses(UserFinancials):
         self.headers = self.get_headers()
 
     def get_headers(self):
+        """
+        Get the headers        :return:
+        """
         return [['No.', f'Amount {self.currency}', 'Category', 'Payment method', 'Date']]
 
     def load_expenses(self):
         """
         Load expenses from the database
-        :return:
+        :return: None
         """
         self.load_items(self.database.get_expenses)
 
     def add_expense(self, expense):
         """
         Add an expense to the database
-        :param expense:
-        :return:
+        :param expense: Expense
+        :return: None
         """
         self.add_item(expense, self.database.add_expense, self.database.get_expenses)
 
     def get_expenses(self, date_filter=None, category_filter=None, sort_order=None):
         """
-        Get expenses from the database
-        :param date_filter:
-        :param category_filter:
-        :param sort_order:
-        :return:
+        Get expenses from the database, filtered and sorted
+        :param date_filter: date filter, default None, might be "This month", "This year"
+        :param category_filter: category filter, default None, might be "Food", "Transport", "Entertainment", "Other"
+        :param sort_order: sort order, default None, might be ascending or descending, for date or amount
+        :return: list of filtered and sorted expenses
         """
         filtered_expenses = self.items[:]
 
@@ -51,8 +54,8 @@ class UserExpenses(UserFinancials):
     def get_expense(self, autonumbered_id):
         """
         Get an expense by autonumbered ID
-        :param autonumbered_id:
-        :return:
+        :param autonumbered_id: ID of the expense
+        :return: expense
         """
         item_id = self.get_item_id(autonumbered_id, self.database.get_expenses)
         if item_id:
@@ -64,9 +67,9 @@ class UserExpenses(UserFinancials):
     def filter_by_date(self, expenses, date_filter):
         """
         Filter expenses by date
-        :param expenses:
-        :param date_filter:
-        :return:
+        :param expenses: list of expenses
+        :param date_filter: date filter, might be "This month", "This year"
+        :return: list of filtered expenses
         """
         if date_filter == "This month":
             start_date = datetime.now().replace(day=1)
@@ -80,24 +83,24 @@ class UserExpenses(UserFinancials):
     def delete_expense(self, autonumbered_id):
         """
         Delete an expense by autonumbered ID
-        :param autonumbered_id:
-        :return:
+        :param autonumbered_id: ID of the expense
+        :return: None
         """
         self.delete_item(autonumbered_id, self.database.del_expense, self.database.get_expenses)
 
     def update_user_expense(self, autonumbered_id, updated_expense):
         """
         Update an expense by autonumbered ID
-        :param autonumbered_id:
-        :param updated_expense:
-        :return:
+        :param autonumbered_id: ID of the expense
+        :param updated_expense: updated expense
+        :return: None
         """
         self.update_item(autonumbered_id, updated_expense, self.database.update_expense, self.database.get_expenses)
 
     def get_sum(self):
         """
         Get the sum of expenses for the current month
-        :return:
+        :return: sum of expenses
         """
         # expense[1] - amount
         # expense[4] - date

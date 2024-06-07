@@ -9,6 +9,17 @@ from gui.widgets_and_buttons import *
 
 
 class PaymentsPage(FinancialsPage):
+    """
+
+    Class PaymentPage.
+
+    This inherits from the abstract class FinancialsPage.
+
+    This class is responsible for displaying the payments page.
+    Users can add, edit, delete and view payments.
+    They can also filter and sort the payments.
+
+    """
     def __init__(self, parent, app, user_payments, currency):
         super().__init__(parent=parent, app=app, user_items=user_payments, currency=currency)
 
@@ -41,8 +52,16 @@ class PaymentsPage(FinancialsPage):
 
     def create_search_container_payment(self):
         """
-        Creates the search container for the payments page
-        :return:
+
+        Creates the search container for the payments page.
+        It includes:
+        - a date filter
+        - a title filter
+        - a sort filter
+        - a check button to filter the payments
+
+        (rest of the method is in the abstract class)
+
         """
         # Create the search container from the abstract class
         self.create_search_container(self.get_more_payment_info)
@@ -62,15 +81,26 @@ class PaymentsPage(FinancialsPage):
 
     def get_more_payment_info(self):
         """
-        Gets more info about a payment
-        :return:
+
+        Validates the id of the payment and if it is valid, it shows the payment details.
+
+        (rest of the method is in the abstract class)
+
         """
         self.validate_id(self.user_items.get_payments())
 
     def show_add_payment_form(self):
         """
-        Shows the form to add a new payment
-        :return:
+
+        Shows the form to add a new payment.
+
+        Add payment form includes:
+        - title entry
+        - amount entry
+        - date entry
+        - how often entry (combo box)
+        - description
+
         """
         # Call the method from the abstract class
         self.show_add_item_form()
@@ -91,8 +121,6 @@ class PaymentsPage(FinancialsPage):
         self.how_often_entry = get_how_often_combo_box(self.info_panel, 145)
         self.how_often_entry.pack(pady=(10, 10), padx=(10, 10))
 
-
-
         CTkButton(master=self.info_panel,
                   text="Add Description",
                   fg_color="white",
@@ -104,13 +132,18 @@ class PaymentsPage(FinancialsPage):
                   text_color_disabled="white",
                   command=self.add_description).pack(pady=(5, 5), padx=(10, 10))
 
+        # add buttons from the abstract class
         self.add_buttons()
         self.info_panel.pack(expand=True, fill="both", pady=(27, 27), padx=(0, 27))
 
     def validate_and_save(self):
         """
-        Validates the form and saves the new payment
-        :return:
+
+        Validates the form and saves the new payment.
+        Amount, how often, title and date are required.
+
+        If the form is not filled in, a warning is shown.
+
         """
         amount = self.amount_entry.get()
         how_often = self.how_often_entry.get()
@@ -124,8 +157,9 @@ class PaymentsPage(FinancialsPage):
 
     def save_new_item(self):
         """
-        Saves the new payment
-        :return:
+
+        Saves the new payment and clears the form.
+
         """
         new_amount = self.amount_entry.get()
         new_how_often = self.how_often_entry.get()
@@ -138,15 +172,17 @@ class PaymentsPage(FinancialsPage):
         # Clear the form
         self.cancel()
 
-        # Add the new expense
+        # Add the new payment
         self.user_items.add_payment(self.new_item)
         self.user_items_list = self.user_items.get_payments()
         self.show_user_items()
 
     def edit_item(self):
         """
-        Opens a dialog to edit an expense
-        :return:
+
+        Edit selected payment.
+        The user can edit the title, amount, how often and date.
+
         """
         self.edit_dialog = ctk.CTkToplevel(self)
         self.edit_dialog.title(f"Edit {self.title}")
@@ -190,8 +226,10 @@ class PaymentsPage(FinancialsPage):
 
     def delete_item(self):
         """
-        Deletes an expense
-        :return:
+
+        Deletes the selected payment, based on the row id.
+        Uptades the list of payments and shows the updated list.
+
         """
         self.user_items.delete_payment(self.selected_row)
         self.user_items_list = self.user_items.get_payments()
@@ -200,8 +238,9 @@ class PaymentsPage(FinancialsPage):
 
     def get_filtered_payments(self):
         """
-        Filters the expenses
-        :return:
+
+        Filters the payments based on the date, title and sort.
+
         """
         date = self.date_filter.get()
         title = self.title_filter.get()
@@ -213,8 +252,9 @@ class PaymentsPage(FinancialsPage):
 
     def save_edited_payment(self):
         """
-        Saves the edited payment
-        :return:
+
+        Saves the edited payment.
+
         """
         new_payment = Payment(amount=self.amount_entry.get(),
                               title=self.title_entry.get(),
@@ -228,8 +268,9 @@ class PaymentsPage(FinancialsPage):
 
     def cancel(self):
         """
-        Clears the form
-        :return:
+
+        Clears the form.
+
         """
         self.amount_entry.delete(0, 'end')
         self.title_entry.delete(0, 'end')
@@ -237,8 +278,9 @@ class PaymentsPage(FinancialsPage):
 
     def get_description(self):
         """
-        Adds a description to the payment
-        :return:
+
+        Gets the description of the selected payment.
+
         """
         # payment[6] is the description
         return self.user_items.get_payment(self.selected_row)[6]

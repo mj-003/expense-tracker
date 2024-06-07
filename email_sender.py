@@ -16,8 +16,10 @@ db = Database()
 
 def send_notifications():
     """
-    Send email notifications for upcoming payments
-    :return:
+
+    Sends email notifications for upcoming payments and updates the payment dates.
+    This function is dedicated to be run as a cron job.
+
     """
 
     # get upcoming payments

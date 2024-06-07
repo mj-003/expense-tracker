@@ -12,6 +12,14 @@ from gui.widgets_and_buttons import *
 
 
 class FinancialsPage(CTkFrame, ABC):
+    """
+
+    Class FinancialsPage.
+
+    Abstract class for the financials pages. It is a subclass of CTkFrame and ABC.
+    It is used as a base class for the ExpensesPage, IncomesPage, and PaymentsPage classes.
+
+    """
     def __init__(self, parent, app, user_items, currency):
         super().__init__(parent)
 
@@ -55,8 +63,10 @@ class FinancialsPage(CTkFrame, ABC):
 
     def create_title_frame(self):
         """
-        Create the title frame
-        :return:
+
+        Create the title frame.
+        It includes the title of the page and the current date.
+
         """
         title_frame = CTkFrame(master=self, fg_color="transparent")
         title_frame.pack(anchor="n", fill="x", padx=27, pady=(25, 0))
@@ -75,9 +85,15 @@ class FinancialsPage(CTkFrame, ABC):
 
     def create_metrics_frame(self, show_add_form_function, new_title):
         """
-        Create the metrics frame
-        :param show_add_form_function:
-        :return:
+
+        Create the metrics frame.
+
+        It includes:
+        - the total sum metric
+        - the button to add a new item
+
+        :param show_add_form_function: function to show the add form
+
         """
         metrics_frame = CTkFrame(master=self, fg_color="transparent")
         metrics_frame.pack(anchor="n", fill="x", padx=27, pady=(25, 0))
@@ -121,9 +137,14 @@ class FinancialsPage(CTkFrame, ABC):
 
     def create_search_container(self, more_info_function):
         """
-        Create the search container
-        :param more_info_function:
-        :return:
+
+        Create the search container.
+        It includes:
+        - the entry to search for an item by ID
+        - the button to show more info
+
+        :param more_info_function: function to show more information about the selected item
+
         """
         self.search_container = CTkFrame(master=self, height=50)
         self.search_container.pack(fill="x", pady=(27, 0), padx=27)
@@ -140,8 +161,9 @@ class FinancialsPage(CTkFrame, ABC):
 
     def create_info_panel(self):
         """
-        Create the info panel
-        :return:
+
+        Create the info panel.
+
         """
         self.info_panel = CTkFrame(master=self, border_width=0, border_color="#2A8C55", width=200)
         self.info_panel.pack(expand=True, fill="both", pady=20)
@@ -149,17 +171,21 @@ class FinancialsPage(CTkFrame, ABC):
 
     def show_user_items(self):
         """
-        Show the user items
-        :return:
+
+        Show the user items and update the table.
+
         """
         # 'show_user_items' is from gui/widgets_and_buttons.py. it returns the table
         self.table = show_user_items(self.table_frame, self, self.user_items_list, self.table)
 
     def validate_id(self, items):
         """
-        Validate the ID
-        :param items:
-        :return:
+
+        Validate the ID of the item.
+        If the ID is invalid, show a warning message, else show more information about the item.
+
+        :param items: list of items (expenses, incomes, or payments)
+
         """
         if (not self.row_id.get().isdigit()) or int(self.row_id.get()) < 1 or int(self.row_id.get()) > len(
                 items) - 1:  # -1 because of the header
@@ -172,16 +198,26 @@ class FinancialsPage(CTkFrame, ABC):
 
     def get_more_info(self):
         """
-        Get more info
-        :return:
+
+        Get more information about the selected item.
+        More info includes:
+        - the item's ID
+        - the item's date
+        - the item's description
+
+        (rest of the information is specific to the item type and is implemented in the subclasses)
+
         """
+        # Destroy the widgets in the info panel
         for widget in self.info_panel.winfo_children():
             widget.destroy()
 
+        # label including the item's ID
         label = CTkLabel(self.info_panel, text=f"{self.title} Info (ID: {self.selected_row})", font=("Aptos", 14),
                          width=30, height=2, text_color='#2A8C55')
         label.pack(pady=(27, 27), padx=(27, 27), fill='both')
 
+        # edit button
         edit_button = CTkButton(self.info_panel, text="Edit", fg_color='#2A8C55', hover_color='#207244',
                                 text_color='white',
                                 font=('Aptos', 12),
@@ -189,6 +225,7 @@ class FinancialsPage(CTkFrame, ABC):
 
         edit_button.pack(padx=(15, 15), pady=10, fill='both')
 
+        # Description button
         description_button = CTkButton(self.info_panel, text="Description", fg_color='#2A8C55', hover_color='#207244',
                                        text_color='white',
                                        font=('Aptos', 12),
@@ -196,24 +233,31 @@ class FinancialsPage(CTkFrame, ABC):
 
         description_button.pack(padx=(15, 15), pady=10, fill='both')
 
+        # Delete button
         delete_button = CTkButton(self.info_panel, text="Delete", font=('Aptos', 12), fg_color='#2A8C55',
                                   hover_color='#207244',
                                   text_color='white',
                                   command=lambda: self.delete_item())
         delete_button.pack(padx=15, pady=10, fill='both')
 
+        # Back button
         back_button = CTkButton(self.info_panel, text="Back", font=('Aptos', 12), fg_color='#2A8C55',
                                 hover_color='#207244',
                                 text_color='white',
                                 command=lambda: self.go_back())
         back_button.pack(padx=15, pady=15, fill='both', side='bottom')
 
+        # pack the info panel
         self.info_panel.pack(expand=True, fill="both", pady=(27, 27), padx=(0, 27))
 
     def show_add_item_form(self):
         """
-        Show the add item form
-        :return:
+
+        Show the form to add a new item.
+        It only includes the title.
+
+        (rest of the form is specific to the item type and is implemented in the subclasses)
+
         """
         # Destroy the widgets in the info panel
         for widget in self.info_panel.winfo_children():
@@ -225,8 +269,9 @@ class FinancialsPage(CTkFrame, ABC):
 
     def save_edited_item(self):
         """
-        Save the edited item
-        :return:
+
+        Save the edited item.
+
         """
         self.label.config(text=f'Total {self.title} this month: {self.user_items.get_sum():.2f} zł')
         self.label.pack(pady=(15, 10), padx=(27, 27))
@@ -236,30 +281,38 @@ class FinancialsPage(CTkFrame, ABC):
 
     def get_filtered_items(self):
         """
-        Get the filtered items
-        :return:
+
+        Get the filtered items.
+
         """
+        # select data to remove
         indicates_to_remove = []
         for i in range(self.table.rows):
             indicates_to_remove.append(i)
+
+        # delete data
         self.table.delete_rows(indicates_to_remove)
 
+        # add new data
         for row_data in self.user_items_list:
             self.table.add_row(row_data)
+
+        # set headers color
         self.table.edit_row(0, text_color="#fff", hover_color="#2A8C55")
 
     def get_user_items(self):
         """
-        Get the user items
-        :return:
+
+        Get the user items.
+
         """
         return self.user_items
 
     def open_calendar(self, event):
         """
-        Open the calendar
-        :param event:
-        :return:
+
+        Open the calendar, when the date entry is clicked.
+
         """
         self.top = tk.Toplevel(self)
         self.top.geometry("+%d+%d" % (
@@ -276,8 +329,9 @@ class FinancialsPage(CTkFrame, ABC):
 
     def select_date(self):
         """
-        Select the date
-        :return:
+
+        Select the date from the calendar.
+
         """
         self.date_var.set(self.calendar.get_date())
         self.top.grab_release()
@@ -285,8 +339,9 @@ class FinancialsPage(CTkFrame, ABC):
 
     def go_back(self):
         """
-        Go back
-        :return:
+
+        Return to the main view of the page.
+
         """
         # Destroy the widgets in the edit dialog
         if self.edit_dialog:
@@ -296,8 +351,13 @@ class FinancialsPage(CTkFrame, ABC):
 
     def add_buttons(self):
         """
-        Add buttons
-        :return:
+
+        Add buttons to the info panel.
+        Buttons are:
+        - Save (to save the item)
+        - Back (to go back)
+        - Cancel (to clear the form)
+
         """
         save_button = get_check_button(self.info_panel, self.validate_and_save)
         save_button.pack(pady=(10, 10), padx=(35, 2), side='left')
@@ -310,8 +370,10 @@ class FinancialsPage(CTkFrame, ABC):
 
     def add_description(self):
         """
-        Add description
-        :return:
+
+        Add a description to the item.
+        User can write a description in a new window.
+
         """
         self.description_window = tk.Toplevel(self.info_panel)
         self.description_window.title("Add Description")
@@ -328,17 +390,19 @@ class FinancialsPage(CTkFrame, ABC):
 
     def save_description(self, description):
         """
-        Save the description
-        :param description:
-        :return:
+
+        Save the description.
+
         """
         self.description = description.strip()  # Remove leading and trailing whitespaces
         self.description_window.destroy()
 
     def show_description(self):
         """
-        Show the description
-        :return:
+
+        Show the description of the item.
+        If there is no description, show a message.
+
         """
         description = self.get_description()
 

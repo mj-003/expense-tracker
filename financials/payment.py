@@ -2,11 +2,20 @@ import ssl
 from datetime import timedelta
 from email.message import EmailMessage
 
-EMAIL_SENDER = 'juchiewicz.malwina@gmail.com'
 
-
-# Payment - a class representing a payment
 class Payment:
+    """
+
+    Class Payment - a class representing a payment.
+    Attributes:
+    - amount: the amount of the payment
+    - date: the date of the payment
+    - how_often: how often the payment is made
+    - title: the title of the payment
+    - description: the description of the payment
+    - payment_id: the id of the payment
+
+    """
     def __init__(self, amount, date, how_often, title='Upcoming payment', description=None, payment_id=None):
         self.context = None
         self.body_msg = ''

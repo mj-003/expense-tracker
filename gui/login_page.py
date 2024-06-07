@@ -8,25 +8,41 @@ from user import User
 
 
 class LoginPage(CTkFrame):
+    """
+    Class LoginPage.
+
+    This class is responsible for the login page.
+    User can log in or register from this page.
+
+    To log in, the user must provide correct username and a correct password
+    that matches the username.
+
+    """
     def __init__(self, parent, app, database):
         super().__init__(parent)
 
-        self.user_incomes = None
+        set_appearance_mode("light")
+
+        # Set the app, parent, and database
         self.app = app
         self.parent = parent
         self.database = database
-
-        set_appearance_mode("light")
-
         self.user = None
+
+        # Set the user incomes and expenses
+        self.user_incomes = None
         self.user_expenses = None
+
+        # Set the username and password entry
         self.username_entry = None
         self.password_entry = None
 
+        # Set the frame and the icons
         self.frame = None
         self.email_icon = CTkImage(dark_image=Image.open("images/login.png"), size=(20, 20))
         self.password_icon = CTkImage(dark_image=Image.open("images/password.png"), size=(20, 20))
 
+        # Create the login page
         self.add_image()
         self.add_log_pass()
         self.login()
@@ -34,8 +50,9 @@ class LoginPage(CTkFrame):
 
     def add_image(self):
         """
-        Add the image to the login page
-        :return:
+
+        Add the image to the login page on the left side.
+
         """
         side_img_data = Image.open("images/green_background3.jpeg")
         side_img = CTkImage(dark_image=side_img_data, light_image=side_img_data, size=(450, 745))
@@ -44,8 +61,9 @@ class LoginPage(CTkFrame):
 
     def add_log_pass(self):
         """
-        Add the login and password fields
-        :return:
+
+        Add the welcome label and the login and password fields to the login page.
+
         """
         self.frame = CTkFrame(master=self, width=556, height=745)
         self.frame.pack_propagate(False)
@@ -75,8 +93,9 @@ class LoginPage(CTkFrame):
 
     def login(self):
         """
-        Add the login button
-        :return:
+
+        Add login button to the login page.
+
         """
         CTkButton(master=self.frame, text="Login", fg_color="#658354", hover_color="#4b6053", font=("Aptos", 12),
                   text_color="#ffffff", width=255, command=self.perform_login).pack(anchor="w", pady=(40, 0),
@@ -84,8 +103,11 @@ class LoginPage(CTkFrame):
 
     def perform_login(self):
         """
-        Perform the login
-        :return:
+
+        Perform login.
+        Check if the username and password are correct, if not, show an error message.
+        Create a new user object based on the username and password and log in.
+
         """
         username = self.username_entry.get()
         password = self.password_entry.get()
@@ -103,8 +125,9 @@ class LoginPage(CTkFrame):
 
     def add_register(self):
         """
-        Add the register button
-        :return:
+
+        Add register button to the login page.
+
         """
         CTkButton(master=self.frame, text="Register", fg_color="#658354", hover_color="#4b6053",
                   font=("Aptos", 12),
@@ -113,8 +136,9 @@ class LoginPage(CTkFrame):
 
     def show_register_window(self):
         """
-        Show the register window
-        :return:
+
+        Show the register window for the user to register.
+
         """
         register_window = RegistrationWindow(self, self.database)
         register_window.grab_set()

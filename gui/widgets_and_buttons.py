@@ -1,6 +1,7 @@
 from CTkTable import CTkTable
 from customtkinter import *
 
+# values for combo boxes
 date_values = ['Date', 'This month', 'This year']
 sort_values = ['Sort', '⬆ Amount', '⬇ Amount', '⬆ Time', '⬇ Time']
 categories_values = ['Categories', 'Food', 'Transport', 'Entertainment', 'Home', 'Personal', 'Other']

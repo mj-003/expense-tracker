@@ -27,11 +27,14 @@ class App(CTk):
         set_appearance_mode("dark")
         self.resizable(True, True)
 
+        # Create the container
         self.container = CTkFrame(self)
         self.container.pack(side="right", fill="both", expand=True)
 
+        # Initialize the frames
         self.frames = {}
 
+        # Initialize the user, database, expenses, incomes and payments
         self.user = None
         self.database = Database('expenses.db')
         self.user_expenses = None
@@ -43,7 +46,7 @@ class App(CTk):
     def show_login_page(self):
         """
         Shows the login page
-        :return:
+        :return: None
         """
         self.LoginPage = LoginPage(self.container, self, self.database)
         self.LoginPage.grid(row=0, column=0, sticky="nsew")
@@ -51,8 +54,8 @@ class App(CTk):
 
     def create_sidebar(self):
         """
-        Creates the sidebar
-        :return:
+        Creates the sidebar with the navigation buttons (Analytics, Financials, Incomes, Expenses, Payments, Export, Account)
+        :return: None
         """
         self.container.pack_forget()
         self.sidebar_frame = CTkFrame(master=self, fg_color="#2A8C55", width=176, height=650, corner_radius=0)
@@ -118,10 +121,11 @@ class App(CTk):
 
     def define_frame(self, frame_class):
         """
-        Define the frame
-        :param frame_class:
-        :return:
+        Define the frame. Create and return the frame based on the class
+        :param frame_class: class of the frame
+        :return: instance of the frame
         """
+        # Load the expenses, incomes and payments
         if self.user_expenses is not None:
             self.user_expenses.load_expenses()
         if self.user_incomes is not None:
@@ -129,6 +133,7 @@ class App(CTk):
         if self.user_payments is not None:
             self.user_payments.load_payments()
 
+        # Define the frame
         if frame_class == HomePage:
             frame = HomePage(self.container, self, self.user, self.user_expenses, self.user_incomes)
         elif frame_class == ExportPage:
@@ -150,8 +155,8 @@ class App(CTk):
     def show_frame(self, cont):
         """
         Show the frame
-        :param cont:
-        :return:
+        :param cont: the class of the frame to show
+        :return: None
         """
         frame = self.define_frame(cont)
         self.frames[cont] = frame
@@ -161,9 +166,9 @@ class App(CTk):
 
     def after_logged_in(self, user: User):
         """
-        After logging in
-        :param user:
-        :return:
+        After the user has logged in, show the home page
+        :param user: user that has logged in
+        :return: None
         """
         self.create_sidebar()
         self.user = user
@@ -179,8 +184,8 @@ class App(CTk):
 
     def log_out(self):
         """
-        Log out
-        :return:
+        Log out the user, show the login page
+        :return: None
         """
         self.sidebar_frame.pack_forget()
         self.container.pack_forget()

@@ -9,28 +9,32 @@ class UserPayments(UserFinancials):
         self.headers = self.get_headers()
 
     def get_headers(self):
+        """
+        Get the headers for the payments
+        :return:  headers, as a list of lists
+        """
         return [['No.', f'Amount {self.currency}', 'Title', 'Date']]
 
     def load_payments(self):
         """
-        Load incomes from the database
-        :return:
+        Load payments from the database
+        :return: None
         """
         self.load_items(self.database.get_payments)
 
     def add_payment(self, payment):
         """
-        Add an income to the database
-        :param payment:
-        :return:
+        Add a payment to the database
+        :param payment: payment to add
+        :return: None
         """
         self.add_item(payment, self.database.add_payment, self.database.get_payments)
 
     def get_payment(self, autonumbered_id: int) -> None:
         """
-        Get an income by autonumbered ID
-        :param autonumbered_id:
-        :return:
+        Get a payment by autonumbered ID
+        :param autonumbered_id: autonumbered ID of the payment
+        :return: payment from the database, or None if the ID is invalid
         """
         item_id = self.get_item_id(autonumbered_id, self.database.get_payments)
         if item_id:
@@ -41,13 +45,12 @@ class UserPayments(UserFinancials):
 
     def get_payments(self, date_filter=None, title_filter=None, sort_order=None) -> list:
         """
-        Get incomes from the database
-        :param date_filter:
-        :param title_filter:
-        :param sort_order:
-        :return:
+        Get payments from the database
+        :param date_filter: date filter, default is None, might be "This month", "This year" or "Upcoming"
+        :param title_filter: title filter, default is None
+        :param sort_order: sort order, default is None, might be ascending or descending, for date or amount
+        :return: filtered and sorted payments
         """
-        print('tutaj jestem')
         filtered_payments = self.items[:]
 
         if date_filter:
@@ -64,9 +67,9 @@ class UserPayments(UserFinancials):
 
     def delete_payment(self, autonumbered_id):
         """
-        Delete an income by autonumbered ID
-        :param autonumbered_id:
-        :return:
+        Delete a payment by autonumbered ID
+        :param autonumbered_id: autonumbered ID of the payment
+        :return: None
         """
         self.delete_item(autonumbered_id, self.database.del_payment, self.database.get_payments)
 
@@ -74,7 +77,7 @@ class UserPayments(UserFinancials):
         """
         Filter payments by date
         :param payments: List of payments
-        :param date_filter: Filter criteria as a string
+        :param date_filter: Filter criteria as a string, might be "This month", "This year" or "Upcoming"
         :return: List of filtered payments
         """
         today = datetime.now()
@@ -99,17 +102,17 @@ class UserPayments(UserFinancials):
 
     def update_user_payments(self, autonumbered_id: int, updated_payment) -> None:
         """
-        Update an income by autonumbered ID
-        :param autonumbered_id:
-        :param updated_payment:
-        :return:
+        Update a income by autonumbered ID
+        :param autonumbered_id: autonumbered ID of the payment
+        :param updated_payment: updated payment
+        :return: None
         """
         self.update_item(autonumbered_id, updated_payment, self.database.update_payment, self.database.get_payments)
 
     def get_sum(self) -> float:
         """
         Get the sum of all upcoming (3 days) payments
-        :return: float
+        :return: sum of all upcoming payments
         """
         # payment[1] - amount
         # payment[3] - date

@@ -1,8 +1,6 @@
 from datetime import datetime
 from .user_finances import UserFinancials
 
-headers = [['No.', 'Amount (zł)', 'From', 'Date']]
-
 
 class UserIncomes(UserFinancials):
     def __init__(self, database, user):
@@ -11,28 +9,32 @@ class UserIncomes(UserFinancials):
         self.headers = self.get_headers()
 
     def get_headers(self):
+        """
+        Get the headers for the incomes
+        :return: headers, as a list of lists
+        """
         return [['No.', f'Amount {self.currency}', 'From', 'Date']]
 
     def load_incomes(self):
         """
         Load incomes from the database
-        :return:
+        :return: None
         """
         self.load_items(self.database.get_incomes)
 
     def add_income(self, income):
         """
         Add an income to the database
-        :param income:
-        :return:
+        :param income: income to add
+        :return: None
         """
         self.add_item(income, self.database.add_income, self.database.get_incomes)
 
     def get_income(self, autonumbered_id: int) -> None:
         """
         Get an income by autonumbered ID
-        :param autonumbered_id:
-        :return:
+        :param autonumbered_id: autonumbered ID of the income
+        :return: income from the database, or None if the ID is invalid
         """
         item_id = self.get_item_id(autonumbered_id, self.database.get_incomes)
         if item_id:
@@ -43,11 +45,11 @@ class UserIncomes(UserFinancials):
 
     def get_incomes(self, date_filter=None, from_filter=None, sort_order=None) -> list:
         """
-        Get incomes from the database
-        :param date_filter:
-        :param from_filter:
-        :param sort_order:
-        :return:
+        Get incomes filtered and sorted incomes from the database
+        :param date_filter: date filter, default is None, might be "This month" or "This year"
+        :param from_filter: from filter, default is None
+        :param sort_order: sort order, default is None, might be ascending or descending, for date or amount
+        :return: filtered and sorted incomes
         """
         filtered_incomes = self.items[:]
 
@@ -66,20 +68,26 @@ class UserIncomes(UserFinancials):
     def delete_income(self, autonumbered_id):
         """
         Delete an income by autonumbered ID
-        :param autonumbered_id:
-        :return:
+        :param autonumbered_id: autonumbered ID of the income
+        :return: None
         """
         self.delete_item(autonumbered_id, self.database.del_income, self.database.get_incomes)
 
     def update_user_income(self, autonumbered_id, updated_income):
+        """
+        Update an income by autonumbered ID
+        :param autonumbered_id: autonumbered ID of the income
+        :param updated_income:  updated income
+        :return: None
+        """
         self.update_item(autonumbered_id, updated_income, self.database.update_income, self.database.get_incomes)
 
     def filter_by_date(self, incomes, date_filter):
         """
         Filter incomes by date
-        :param incomes:
-        :param date_filter:
-        :return:
+        :param incomes: list of incomes
+        :param date_filter: date filter, might be "This month" or "This year"
+        :return: filtered incomes
         """
         if date_filter == "This month":
             start_date = datetime.now().replace(day=1)
@@ -93,16 +101,16 @@ class UserIncomes(UserFinancials):
     def update_user_incomes(self, autonumbered_id: int, updated_income) -> None:
         """
         Update an income by autonumbered ID
-        :param autonumbered_id:
-        :param updated_income:
-        :return:
+        :param autonumbered_id: autonumbered ID of the income
+        :param updated_income: updated income
+        :return: None
         """
         self.update_item(autonumbered_id, updated_income, self.database.update_income, self.database.get_incomes)
 
     def get_sum(self) -> float:
         """
         Get the sum of all incomes
-        :return:
+        :return: sum of all incomes
         """
         # income[1] - amount
         # income[3] - date

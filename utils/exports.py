@@ -5,10 +5,13 @@ import openpyxl
 
 def export_to_excel(filename, data):
     """
-    Export data to excel file
-    :param filename:
-    :param data:
-    :return:
+
+    Export data to excel file.
+
+    :param filename: name of the file in which data will be exported
+    :param data: data to be exported
+    :return: None
+
     """
     # remove number of rows
     data = (row[1:] for row in data)
@@ -28,9 +31,11 @@ def export_to_excel(filename, data):
 def export_to_csv(filename, data):
     """
     Export data to csv file
-    :param filename:
-    :param data:
-    :return:
+
+    :param filename: name of the file in which data will be exported
+    :param data: data to be exported
+    :return: None
+
     """
     with open(filename, mode='w', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)

@@ -9,6 +9,16 @@ from gui.widgets_and_buttons import *
 
 
 class IncomesPage(FinancialsPage):
+    """
+
+    Class IncomePage.
+    Inherits from FinancialsPage.
+
+    This class is responsible for creating the Incomes page.
+    Users can add, edit, delete and view their incomes.
+    User can also filter the incomes by date, sender and sort them.
+
+    """
     def __init__(self, parent, app, user_incomes, currency):
         super().__init__(parent=parent, app=app, user_items=user_incomes, currency=currency)
 
@@ -40,8 +50,15 @@ class IncomesPage(FinancialsPage):
 
     def create_search_container_income(self):
         """
-        Creates the search container for the incomes page
-        :return:
+
+        Creates the search container for the Incomes page.
+        This container contains the filters for the incomes.
+
+        The filters are:
+        - Date
+        - From
+        - Sort
+
         """
         # Create the search container from the abstract class
         self.create_search_container(self.get_more_income_info)
@@ -61,15 +78,25 @@ class IncomesPage(FinancialsPage):
 
     def get_more_income_info(self):
         """
-        Gets more info about an income
-        :return:
+
+        Validate an entered income id.
+        And then (in validate_id, function get_more_info) get more information about the income.
+
         """
         self.validate_id(self.user_items.get_incomes())
 
     def show_add_income_form(self):
         """
-        Shows the form to add a new income
-        :return:
+
+        Show the form to add a new income.
+        It includes:
+        - Amount
+        - From
+        - Date
+        - Description (optional)
+
+        User can add new income, go back or cancel the form.
+
         """
         # Call the method from the abstract class
         self.show_add_item_form()
@@ -104,8 +131,14 @@ class IncomesPage(FinancialsPage):
 
     def validate_and_save(self):
         """
-        Validates the form and saves the new income
-        :return:
+
+        Validate the entered income and save it.
+
+        Amount, From and Date are required fields.
+
+        If the validation is successful, save the income.
+        If the validation is not successful, show a warning.
+
         """
         amount = self.amount_entry.get()
         from_entry = self.from_entry.get()
@@ -118,8 +151,9 @@ class IncomesPage(FinancialsPage):
 
     def save_new_item(self):
         """
-        Saves the new income
-        :return:
+
+        Save the new income.
+
         """
         new_price = self.amount_entry.get()
         new_from = self.from_entry.get()
@@ -138,8 +172,13 @@ class IncomesPage(FinancialsPage):
 
     def edit_item(self):
         """
-        Opens a dialog to edit an income
-        :return:
+
+        Opens the form to edit the selected income.
+        The form includes:
+        - Amount
+        - From
+        - Date
+
         """
 
         # Create a dialog
@@ -178,18 +217,23 @@ class IncomesPage(FinancialsPage):
 
     def delete_item(self):
         """
-        Deletes an income
-        :return:
+
+        Delete the selected income.
+
         """
         self.user_items.delete_income(self.selected_row)
         self.user_items_list = self.user_items.get_incomes()
         self.show_user_items()
+
+        # Hide the info panel after deleting
         self.info_panel.pack_forget()
 
     def get_filtered_incomes(self):
         """
-        Filters the incomes
-        :return:
+
+        Get the filtered incomes.
+        Filter by date and from, sort by amount or date.
+
         """
         date = self.date_filter.get()
         from_who = self.from_filter.get()
@@ -201,8 +245,9 @@ class IncomesPage(FinancialsPage):
 
     def save_edited_income(self):
         """
-        Saves the edited income
-        :return:
+
+        Save the edited income.
+
         """
         new_income = Income(amount=self.amount_entry.get(),
                             sender=self.from_entry.get(),
@@ -217,8 +262,9 @@ class IncomesPage(FinancialsPage):
 
     def cancel(self):
         """
-        Clears the form
-        :return:
+
+        Clear the form.
+
         """
         self.amount_entry.delete(0, 'end')
         self.from_entry.delete(0, 'end')
@@ -226,8 +272,9 @@ class IncomesPage(FinancialsPage):
 
     def get_description(self):
         """
-        Gets the description of the selected income
-        :return:
+
+        Get the description of the selected income.
+
         """
         # income[5] is the description
         return self.user_items.get_income(self.selected_row)[5]

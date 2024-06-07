@@ -11,33 +11,52 @@ from plots import MyPlotter
 
 
 class ChartsPage(CTkFrame):
+    """
+    Class for the Charts Page. This page displays the charts for the user's expenses and incomes.
+    It allows user to view the charts for different periods (months, years).
+
+    There are 4 types of charts:
+    1. Category Pie Chart - Shows the distribution of expenses based on categories. (you can change the month)
+    2. Monthly Expenses and Incomes - Shows the monthly expenses and incomes. (you can change the year)
+    3. Monthly Expenses and Incomes trends - Shows the trends of monthly expenses and incomes. (you can change the year)
+    4. Yearly Box Plot of Expenses and Incomes - Shows the box plot of yearly expenses and incomes. (you can change the year)
+
+    """
     def __init__(self, parent, app, user_expenses, user_incomes):
         super().__init__(parent)
 
+        # Initialize the app, parent, user_expenses and user_incomes
         self.app = app
         self.parent = parent
         self.user_expenses = user_expenses
         self.user_incomes = user_incomes
 
+        # Initialize the user_expenses_list and user_incomes_list
         self.user_expenses_list = self.user_expenses.get_expenses()
         self.user_incomes_list = self.user_incomes.get_incomes()
 
+        # Initialize the plotter and chart_controller
         self.plotter = MyPlotter(user_expenses, user_incomes)
         self.chart_controller = ChartPageController(self.plotter, self.user_expenses, self.user_incomes)
 
+        # Initialize the current date
         self.curr_month = datetime.datetime.now().replace(day=1)
         self.curr_month_str = self.curr_month.strftime('%Y-%m')
         self.curr_year = self.curr_month.year
 
+        # Initialize the current chart function
         self.current_chart_function = None
+
+        # Initialize the widgets
         self.button_frame = None
 
+        # Create the widgets
         self.create_widgets()
 
     def create_widgets(self):
         """
-        Create widgets
-        :return:
+        Create widgets for the Charts Page - Title, Thumbnail Frame, Chart Frame
+        :return: None
         """
         self.title_label = CTkLabel(self, text="Charts", font=("Aptos", 40, 'bold'), text_color="#2A8C55")
         self.title_label.pack(pady=20)
@@ -48,14 +67,17 @@ class ChartsPage(CTkFrame):
         self.chart_frame = CTkFrame(self)
         self.chart_frame.pack(pady=10, padx=10, fill='both', expand=True)
 
+        # Pack for the chart frame and create the chart thumbnails
         self.chart_frame.pack_forget()
         self.create_chart_thumbnails()
 
     def create_chart_thumbnails(self):
         """
-        Create chart thumbnails
-        :return:
+        Create chart thumbnails. These are the buttons that the user can click to view the charts.
+        :return: None
         """
+
+        # List of charts
         charts = [
             {"title": "Category Pie Chart", "image": "images/pie_chart.png",
              "function": self.plotter.plot_category_pie_chart},
@@ -67,9 +89,11 @@ class ChartsPage(CTkFrame):
              "function": self.plotter.plot_box_plot_expenses_incomes}
         ]
 
+        # initialize the row and column
         row = 0
         column = 0
 
+        # Create the chart buttons
         for chart in charts:
             chart_image = Image.open(chart["image"])
             chart_image = chart_image.resize((150, 150))
@@ -88,6 +112,7 @@ class ChartsPage(CTkFrame):
                 column = 0
                 row += 1
 
+        # Configure the columns and rows
         for i in range(2):
             self.thumbnail_frame.columnconfigure(i, weight=1)
         for i in range(row + 1):
@@ -95,11 +120,11 @@ class ChartsPage(CTkFrame):
 
     def show_chart(self, chart_function, month, year):
         """
-        Show chart
-        :param chart_function:
-        :param month:
-        :param year:
-        :return:
+        Show specific chart for the selected period
+        :param chart_function: function of the chart to plot
+        :param month: month - format: 'YYYY-MM'
+        :param year: year - format: 'YYYY'
+        :return: None
         """
         if self.button_frame:  # destroy the buttons frame
             self.button_frame.destroy()
@@ -125,20 +150,22 @@ class ChartsPage(CTkFrame):
 
     def switch_to_chart_frame(self):
         """
-        Switch to chart frame
-        :return:
+        Switch to chart frame. Hide the thumbnail frame and show the chart frame
+        :return: None
         """
         self.thumbnail_frame.pack_forget()
         self.title_label.pack_forget()
+
         self.chart_frame.pack(pady=(10, 10), padx=(10), fill='both', expand=True)
         self.button_frame = CTkFrame(master=self.chart_frame, height=50)
         self.button_frame.pack(side='bottom', pady=10, padx=10, fill='x')
 
     def switch_to_thumbnail_frame(self):
         """
-        Switch to thumbnail frame
-        :return:
+        Switch to thumbnail frame. Hide the chart frame and show the thumbnail frame
+        :return: None
         """
+        # destroy the buttons frame
         for widget in self.chart_frame.winfo_children():
             widget.destroy()
 
@@ -146,14 +173,15 @@ class ChartsPage(CTkFrame):
         self.curr_month = datetime.datetime.now().replace(day=1)
         self.curr_month_str = self.curr_month.strftime('%Y-%m')
 
+        # hide the chart frame and show the thumbnail frame
         self.chart_frame.pack_forget()
         self.title_label.pack(pady=20)
         self.thumbnail_frame.pack(pady=10, padx=10, fill='both', expand=True)
 
     def add_buttons(self):
         """
-        Add buttons
-        :return:
+        Add buttons to the chart frame. Buttons for back, next and previous
+        :return: None
         """
         back_button = CTkButton(self.button_frame, text="Back", fg_color='#2A8C55', hover_color='#207244',
                                 command=self.switch_to_thumbnail_frame)
@@ -170,8 +198,8 @@ class ChartsPage(CTkFrame):
 
     def show_prev(self):
         """
-        Show previous chart
-        :return:
+        Show previous chart. Show the chart for the previous month or year
+        :return: None
         """
         prev_month, prev_year = self.chart_controller.show_prev_date()  # get the previous month and year
 
@@ -180,8 +208,8 @@ class ChartsPage(CTkFrame):
 
     def show_next(self):
         """
-        Show next chart
-        :return:
+        Show next chart. Show the chart for the next month or year
+        :return: None
         """
         next_month_str, next_year = self.chart_controller.show_next_date()  # get the next month and year
 

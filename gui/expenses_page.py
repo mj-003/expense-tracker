@@ -10,6 +10,17 @@ from gui.widgets_and_buttons import *
 
 
 class ExpensesPage(FinancialsPage):
+    """
+
+    Class for the Expenses Page.
+
+    This class inherits from the FinancialsPage class.
+
+    This page displays the user's expenses.
+    It allows the user to add, edit and delete expenses. User can also filter
+    the expenses by date, category and sort them.
+
+    """
     def __init__(self, parent, app, user_expenses, currency):
         super().__init__(parent=parent, app=app, user_items=user_expenses, currency=currency)
 
@@ -43,8 +54,15 @@ class ExpensesPage(FinancialsPage):
 
     def create_search_container_expense(self):
         """
-        Creates the search container for the expenses page
-        :return:
+
+        Creates the search container for the expenses page.
+
+        Search container fields:
+        - Date filter
+        - Category filter
+        - Sort filter
+        - Check button
+
         """
         # Create the search container from the abstract class
         self.create_search_container(self.get_more_expense_info)
@@ -64,8 +82,14 @@ class ExpensesPage(FinancialsPage):
 
     def get_more_expense_info(self):
         """
-        Gets more info about an expense
-        :return:
+
+        Gets more info about an expense.
+
+        In this function more info includes:
+        - Recipe showing
+
+        Rest of the info is in the abstract class (get_more_info())
+
         """
         self.validate_id(self.user_items.get_expenses())
 
@@ -75,8 +99,17 @@ class ExpensesPage(FinancialsPage):
 
     def show_add_expense_form(self):
         """
-        Shows the form to add a new expense
-        :return:
+
+        Shows the form to add a new expense.
+
+        Add expense form includes:
+        - Amount
+        - Category
+        - Date
+        - Payment method
+        - Recipe (optional)
+        - Description (optional)
+
         """
         # Call the method from the abstract class
         self.show_add_item_form()
@@ -124,8 +157,9 @@ class ExpensesPage(FinancialsPage):
 
     def validate_and_save(self):
         """
-        Validates the form and saves the new expense
-        :return:
+
+        Validates the form and saves the new expense.
+
         """
         amount = self.amount_entry.get()
         category = self.category_entry.get()
@@ -139,8 +173,9 @@ class ExpensesPage(FinancialsPage):
 
     def save_new_item(self):
         """
-        Saves the new expense
-        :return:
+
+        Saves the new expense to the database.
+
         """
         new_price = self.amount_entry.get()
         new_category = self.category_entry.get()
@@ -162,8 +197,17 @@ class ExpensesPage(FinancialsPage):
 
     def edit_item(self):
         """
-        Opens a dialog to edit an expense
-        :return:
+
+        Opens a dialog to edit an expense.
+
+        Options:
+        - Price
+        - Category
+        - Date
+        - Payment method
+
+        User can save or cancel the changes.
+
         """
         self.edit_dialog = ctk.CTkToplevel(self)
         self.edit_dialog.title(f"Edit {self.title}")
@@ -203,18 +247,27 @@ class ExpensesPage(FinancialsPage):
 
     def delete_item(self):
         """
+
         Deletes an expense
-        :return:
+
         """
+        # Delete the expense
         self.user_items.delete_expense(self.selected_row)
+
+        # Update the list
         self.user_items_list = self.user_items.get_expenses()
+
+        # Show the updated list
         self.show_user_items()
+
+        # Hide the info panel
         self.info_panel.pack_forget()
 
     def show_photo(self):
         """
-        Shows the photo of the expense
-        :return:
+
+        Shows the photo of the expense. If no photo is found, a message is displayed.
+
         """
         # expense[6] is the file path
         file_path = self.user_items.get_expense(self.selected_row)[6]
@@ -235,8 +288,11 @@ class ExpensesPage(FinancialsPage):
 
     def get_filtered_expenses(self):
         """
-        Filters the expenses
-        :return:
+
+        Filters the expenses.
+        Expenses might be filtered by date and category.
+        They can be sorted descending or ascending for amount and date.
+
         """
         date = self.date_filter.get()
         category = self.category_filter.get()
@@ -248,8 +304,9 @@ class ExpensesPage(FinancialsPage):
 
     def upload_photo(self):
         """
+
         Uploads a photo of the expense
-        :return:
+
         """
         file_path = filedialog.askopenfilename(
             filetypes=[("Image Files", "*.png"), ("Image Files", "*.jpg"), ("Image Files", "*.jpeg"),
@@ -259,8 +316,9 @@ class ExpensesPage(FinancialsPage):
 
     def save_edited_expense(self):
         """
+
         Saves the edited expense
-        :return:
+
         """
         new_expense = Expense(amount=self.amount_entry.get(),
                               category=self.category_entry.get(),
@@ -276,8 +334,9 @@ class ExpensesPage(FinancialsPage):
 
     def cancel(self):
         """
+
         Clears the form
-        :return:
+
         """
         self.amount_entry.delete(0, 'end')
         self.date_var = StringVar(value=datetime.now().strftime('%Y-%m-%d'))
@@ -286,8 +345,9 @@ class ExpensesPage(FinancialsPage):
 
     def get_description(self):
         """
+
         Gets the description of the selected expense
-        :return:
+
         """
         # expense[7] is the description
         return self.user_items.get_expense(self.selected_row)[7]

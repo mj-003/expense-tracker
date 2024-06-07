@@ -7,6 +7,20 @@ from user import User
 
 
 class RegistrationWindow(CTkToplevel):
+    """
+
+    Class RegistrationWindow.
+
+    This class is responsible for the registration window.
+    It enables the user to register a new account.
+    If user already has an account, they can login instead.
+
+    To register, the user must provide:
+    - Email
+    - Username
+    - Password
+
+    """
     def __init__(self, parent, database):
         super().__init__(parent)
 
@@ -28,8 +42,13 @@ class RegistrationWindow(CTkToplevel):
 
     def add_register_fields(self):
         """
-        Add the fields for registration
-        :return:
+
+        Add the registration fields.
+        The fields are:
+        - Email
+        - Username
+        - Password
+
         """
         register_frame = CTkFrame(master=self, fg_color="transparent")
         register_frame.pack(anchor="center", pady=(50, 0))
@@ -63,8 +82,9 @@ class RegistrationWindow(CTkToplevel):
 
     def add_register_button(self):
         """
-        Add the register button
-        :return:
+
+        Add the register button.
+
         """
         CTkButton(master=self, text="Register", fg_color="#658354", hover_color="#4b6053",
                   font=("Aptos", 12),
@@ -72,8 +92,14 @@ class RegistrationWindow(CTkToplevel):
 
     def perform_register(self):
         """
-        Perform the registration
-        :return:
+
+        Perform the registration.
+        Validate the fields.
+        User must provide:
+        - Email
+        - Username (min 5 characters, max 15 characters)
+        - Password (min 5 characters, max 15 characters)
+
         """
         username = self.username_entry.get()
         password = self.password_entry.get()
@@ -86,13 +112,18 @@ class RegistrationWindow(CTkToplevel):
                 is_ok = False
                 messagebox.showerror("Error", "Password must be at least 5 characters")
 
-            if len(username.strip()) < 3:
+            if len(username.strip()) < 5:
                 is_ok = False
                 messagebox.showerror("Error", "Username must be at least 5 characters")
 
             if len(username.strip()) > 15:
                 is_ok = False
                 messagebox.showerror("Error", "Username must be less than 15 characters")
+
+            if len(password.strip()) > 15:
+                is_ok = False
+                messagebox.showerror("Error", "Password must be less than 15 characters")
+
             if is_ok:
                 user.register()
                 self.destroy()

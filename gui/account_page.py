@@ -5,20 +5,26 @@ from gui.widgets_and_buttons import *
 
 
 class AccountPage(CTkFrame):
+    """
+    Class that represents the account page. It allows the user to edit their account details,
+    such as email and password. It also allows the user to change their currency.
+    """
     def __init__(self, parent, app, user):
         super().__init__(parent)
 
         self.today = datetime.datetime.today().strftime('%a, %-d.%m')
 
-        self.app = app
-        self.parent = parent
-        self.user = user
+        self.app = app  # App instance
+        self.parent = parent    # Parent frame
+        self.user = user    # User instance
 
+        # Frames
         self.title_frame = None
         self.subtitle_frame = None
         self.options_frame = None
         self.action_frame = None
 
+        # Create widgets
         self.add_title()
         self.add_subtitle()
         self.add_options()
@@ -28,7 +34,7 @@ class AccountPage(CTkFrame):
     def add_title(self):
         """
         Add title label to the frame
-        :return:
+        :return: None
         """
         self.title_frame = CTkFrame(self, fg_color='transparent')
         self.title_frame.pack(anchor="n", fill="x", padx=27, pady=(25, 0))
@@ -41,8 +47,8 @@ class AccountPage(CTkFrame):
 
     def add_subtitle(self):
         """
-        Add subtitle label to the frame
-        :return:
+        Add subtitle label to the frame, with logout button
+        :return: None
         """
         self.subtitle_frame = CTkFrame(self, fg_color='transparent')
         self.subtitle_frame.pack(anchor="n", fill="x", padx=27, pady=(5, 0))
@@ -69,8 +75,8 @@ class AccountPage(CTkFrame):
 
     def add_options(self):
         """
-        Add options to the frame
-        :return:
+        Add options to the frame - edit account and change currency
+        :return: None
         """
         self.options_frame = CTkFrame(self, width=200)
         self.options_frame.pack(expand=True, fill="both", padx=27, pady=21, side='left')
@@ -95,7 +101,7 @@ class AccountPage(CTkFrame):
     def add_action_frame(self):
         """
         Add action frame to the main frame
-        :return:
+        :return: None
         """
         self.action_frame = CTkFrame(master=self, width=500)
         self.action_frame.pack(expand=True, fill="both", pady=20, padx=(0, 27))
@@ -103,8 +109,8 @@ class AccountPage(CTkFrame):
 
     def edit_account(self):
         """
-        Edit account options
-        :return:
+        Edit account options - change email or password
+        :return: None
         """
         for widget in self.action_frame.winfo_children():
             widget.destroy()
@@ -155,7 +161,7 @@ class AccountPage(CTkFrame):
     def change_currency(self):
         """
         Change currency options
-        :return:
+        :return: None
         """
         for widget in self.action_frame.winfo_children():
             widget.destroy()
@@ -191,8 +197,8 @@ class AccountPage(CTkFrame):
 
     def save_currency(self):
         """
-        Save currency to the database
-        :return:
+        Save currency to the database and show info message
+        :return: None
         """
         chosen_currency = self.currency_var.get()
         self.user.change_currency(chosen_currency)
@@ -200,9 +206,9 @@ class AccountPage(CTkFrame):
 
     def change_email(self, event=None):
         """
-        Change email in the database
-        :param event:
-        :return:
+        Change email in the database and show info message
+        :param event: None
+        :return: None
         """
         if self.user.email == self.email_entry.get():
             messagebox.showwarning("Warning", "Please provide a new email.")
@@ -215,9 +221,8 @@ class AccountPage(CTkFrame):
 
     def change_password(self, event=None):
         """
-        Change password in the database
-        :param event:
-        :return:
+        Change password in the database and show info message
+        :param event: None        :return:
         """
         if len(self.new_password_entry.get().strip()) < 5:
             messagebox.showwarning("Warning", "Password must be at least 5 characters long.")
@@ -236,6 +241,6 @@ class AccountPage(CTkFrame):
     def back_to_options(self):
         """
         Back to options
-        :return:
+        :return: None
         """
         self.action_frame.pack_forget()

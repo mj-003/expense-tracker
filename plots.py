@@ -8,10 +8,17 @@ from matplotlib import pyplot as plt
 from financials.user_expenses import UserExpenses
 from financials.user_incomes import UserIncomes
 
+# headers for the data
 incomes_columns = ["ID", "Amount", "From", "Date", "Description"]
 expenses_columns = ["ID", "Amount", "Category", "Payment method", "Date", "Photo path", "Description"]
 
 class MyPlotter:
+    """
+
+    Class MyPlotter.
+    MyPlotter class is responsible for plotting the data.
+
+    """
     def __init__(self, user_expenses: UserExpenses, user_incomes: UserIncomes):
         self.user_expenses_list = user_expenses.get_expenses()[1:]
         self.user_incomes_list = user_incomes.get_incomes()[1:]
@@ -21,8 +28,10 @@ class MyPlotter:
 
     def get_incomes_expenses_pd(self):
         """
+
         Function to get incomes and expenses as pandas dataframes
-        :return:
+        :return: incomes_pd, expenses_pd as pandas dataframes
+
         """
         incomes_pd = pd.DataFrame(self.user_incomes_list, columns=incomes_columns)
         expenses_pd = pd.DataFrame(self.user_expenses_list, columns=expenses_columns)
@@ -35,15 +44,20 @@ class MyPlotter:
 
     def plot_category_pie_chart(self, month, year=None):
         """
-        Function to plot a pie chart of expenses by category for a given month
-        :param month:
-        :param year:
-        :return:
+
+        Function to plot a pie chart of expenses by category for a given month.
+
+        :param month: given month
+        :param year: given year, default None
+        :return: Figure and Axes objects
+
         """
         colors = ['#8fbc8f', '#006400', '#228b22', '#679267', '#7bb661', '#8fbc8f', '#addfad']
 
+        # Filter the expenses by month
         filtered_expenses = self.get_expenses_by_month(month)
 
+        # Calculate the total expenses for each category
         categories = {}
         for expense in filtered_expenses:
             category = expense[self.category_column]
@@ -58,6 +72,7 @@ class MyPlotter:
 
         fig, ax = plt.subplots()
 
+        # Plot the pie chart
         wedges, texts, autotexts = ax.pie(sizes, colors=colors, autopct='%1.0f%%',
                                           shadow=False, startangle=140, wedgeprops=dict(width=0.5), pctdistance=0.85)
 
@@ -79,9 +94,11 @@ class MyPlotter:
 
     def plot_incomes_expenses_per_month(self, month):
         """
-        Function to plot a bar chart of total incomes and expenses for a given month
-        :param month:
-        :return:
+        Function to plot a bar chart of total incomes and expenses for a given month/
+
+        :param month: given month, in the format 'YYYY-MM'
+        :return: Figure and Axes objects
+
         """
 
         # Get the incomes and expenses as pandas dataframes
@@ -128,8 +145,9 @@ class MyPlotter:
     def get_expenses_by_month(self, month) -> list:
         """
         Function to filter expenses by month
-        :param month:
-        :return:
+
+        :param month: given month, in the format 'YYYY-MM'
+        :return: list of filtered expenses
         """
         filtered_expenses = []
         for expense in self.user_expenses_list:
@@ -141,9 +159,11 @@ class MyPlotter:
     def plot_expenses_incomes(self, year, month=None):
         """
         Function to plot a bar chart of total expenses and incomes for a given month
-        :param year:
-        :param month:
-        :return:
+
+        :param year: given year
+        :param month: given month
+        :return: Figure and Axes objects
+
         """
         income_df, expense_df = self.prepeare_dfs(year)
 
@@ -181,10 +201,14 @@ class MyPlotter:
 
     def plot_income_expense_trends(self, year, month=None):
         """
-        Function to plot a line chart of total expenses and incomes for a given year
-        :param year:
-        :param month:
-        :return:
+
+        Function to plot a line chart of total expenses and incomes for a given year.
+
+        :param year: given year, in the format 'YYYY'
+        :param month: given month, in the format 'YYYY-MM', default None
+
+        :return: Figure and Axes objects
+
         """
         income_df, expense_df = self.prepeare_dfs(year)
 
@@ -223,12 +247,16 @@ class MyPlotter:
 
         return fig, ax
 
-    def plot_box_plot_expenses_incomes(self, year, month):
+    def plot_box_plot_expenses_incomes(self, year, month=None):
         """
+
         Function to plot a box plot of expenses and incomes for a given year
-        :param year:
-        :param month:
-        :return:
+
+        :param year: given year, in the format 'YYYY'
+        :param month: given month, default None
+
+        :return: Figure and Axes objects
+
         """
         income_df, expense_df = self.prepeare_dfs(year)
 
@@ -254,6 +282,15 @@ class MyPlotter:
         return fig, ax
 
     def prepeare_dfs(self, year):
+        """
+
+        Function to prepare the dataframes for plotting.
+        Changes the data to the format suitable for plotting.
+
+        :param year:  given year, in the format 'YYYY'
+        :return: income_df, expense_df as pandas dataframes
+
+        """
         income_df, expense_df = self.get_incomes_expenses_pd()
 
         expense_df = expense_df.dropna(subset=['Date'])

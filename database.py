@@ -5,12 +5,74 @@ from financials.expense import Expense
 
 
 class Database:
+    """
+    Class Database.
+
+    This class is responsible for managing the database.
+    It creates the tables if they don't exist, and provides methods to interact with the database.
+
+    Tables:
+    - users: Contains the users of the application.
+    - expenses: Contains the expenses of the users.
+    - incomes: Contains the incomes of the users.
+    - payments: Contains the payments of the users.
+
+    """
     def __init__(self, db_name='expenses.db'):
         self.connection = sqlite3.connect(db_name)
         self.cursor = self.connection.cursor()
         self.create_tables()
 
     def create_tables(self):
+        """
+
+        Create tables if they don't exist.
+
+        Tabels:
+        - users: Contains the users of the application.
+
+            Attributes:
+            - id: unique identifier of the user
+            - username: username of the user
+            - password: password of the user
+            - email: email of the user
+            - currency: currency of the user
+
+        - expenses: Contains the expenses of the users.
+
+            Attributes:
+            - id: unique identifier of the expense
+            - user_id: id of the user who made the expense
+            - amount: amount of the expense
+            - category: category of the expense
+            - payment_method: payment method of the expense
+            - date: date of the expense
+            - photo_path: path to the photo of the expense
+            - description: description of the expense
+
+        - incomes: Contains the incomes of the users.
+
+            Attributes:
+            - id: unique identifier of the income
+            - user_id: id of the user who received the income
+            - amount: amount of the income
+            - sender: sender of the income
+            - date: date of the income
+            - description: description of the income
+
+        - payments: Contains the payments of the users.
+
+            Attributes:
+            - id: unique identifier of the payment
+            - user_id: id of the user who made the payment
+            - amount: amount of the payment
+            - title: title of the payment
+            - date: date of the payment
+            - how_often: how often the payment is made
+            - description: description of the payment
+
+        """
+
         self.cursor.execute('''
             CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -238,8 +300,12 @@ class Database:
 
     def get_upcoming_payments(self):
         """
-        Get upcoming payments (payments that are due today)
-        :return:
+
+        Get the upcoming payments.
+        Upcoming payments are the payments that are due today.
+
+        :return: list of upcoming payments
+
         """
         today = datetime.now().date()
         self.cursor.execute('''
@@ -251,10 +317,13 @@ class Database:
 
     def update_payment_date(self, payment_id, how_often):
         """
-        Update the date of the payment
-        :param payment_id:
-        :param how_often:
-        :return:
+
+        Update the date of the payment.
+        (e.g. if the payment is monthly, the date will be updated to the next month)
+
+        :param payment_id: id of the payment
+        :param how_often: how often the payment is made
+        :return: None
         """
         from datetime import timedelta
         current_date = self.get_payment(payment_id)['date']
@@ -284,6 +353,16 @@ class Database:
         self.connection.commit()
 
     def change_email(self, username, new_email):
+        """
+
+        Change the email of the user.
+
+        :param username: username of the user
+        :param new_email: new email provided by the user
+        :return: None
+
+        """
+
         self.cursor.execute('''
             UPDATE users
             SET email = ?
@@ -292,6 +371,15 @@ class Database:
         self.connection.commit()
 
     def change_password(self, username, new_password):
+        """
+
+        Change the password of the user.
+
+        :param username: username of the user
+        :param new_password: new password provided by the user
+        :return: None
+
+        """
         self.cursor.execute('''
             UPDATE users
             SET password = ?

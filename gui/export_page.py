@@ -6,6 +6,14 @@ from gui.widgets_and_buttons import *
 
 
 class ExportPage(CTkFrame):
+    """
+
+    Class ExportPage.
+    This page allows the user to export their financial data to an Excel or CSV file.
+    User can choose to export all data or filter the data by date and sort order.
+    User can also choose to export only expenses, only incomes or both.
+
+    """
     def __init__(self, parent, app, database, user, user_expenses, user_incomes):
         super().__init__(parent)
 
@@ -40,8 +48,9 @@ class ExportPage(CTkFrame):
 
     def add_title(self):
         """
-        Add the title
-        :return:
+
+        Add the title and export button.
+
         """
         title_frame = CTkFrame(master=self, fg_color="transparent")
         title_frame.pack(fill="both", padx=27, pady=(25, 0))
@@ -54,8 +63,14 @@ class ExportPage(CTkFrame):
 
     def add_filters(self):
         """
-        Add the filters
-        :return:
+
+        Add the filters.
+
+        Filter include:
+        - Date filter ('This month', 'This year', 'All')
+        - Item filter ('Expenses', 'Incomes', 'Both')
+        - Sort filter - ascending or descending for amount or date
+
         """
         self.filter_frame = CTkFrame(master=self, fg_color="transparent")
         self.filter_frame.pack(fill="both", padx=27, pady=(31, 0))
@@ -74,8 +89,9 @@ class ExportPage(CTkFrame):
 
     def add_table(self):
         """
-        Add the table
-        :return:
+
+        Add the table.
+
         """
         self.table_frame = CTkScrollableFrame(master=self, fg_color="transparent")
         self.table_frame.pack(expand=True, fill="both", padx=27, pady=21)
@@ -91,8 +107,9 @@ class ExportPage(CTkFrame):
 
     def export_data(self):
         """
-        Export the data to an Excel or CSV file
-        :return:
+
+        Export the selected data to an Excel or CSV file.
+
         """
         current_date = datetime.now().strftime('%Y-%m-%d')
         default_filename = f"{self.user.username}_{current_date}"
@@ -117,8 +134,10 @@ class ExportPage(CTkFrame):
 
     def get_filtered_items(self):
         """
-        Get the filtered items
-        :return:
+
+        Get the filtered items.
+        If the user selects a filter, the items list will be updated accordingly.
+
         """
         self.items_list = self.controller.create_user_items_list()
 
@@ -128,11 +147,13 @@ class ExportPage(CTkFrame):
 
         self.items_list = self.controller.get_filtered_items(items_list=self.items_list, date=date, category=item, sort=sort)
 
+        # Clear the table
         indicates_to_remove = []
         for i in range(self.table.rows):
             indicates_to_remove.append(i)
         self.table.delete_rows(indicates_to_remove)
 
+        # Add the new rows
         for row_data in self.items_list:
             self.table.add_row(row_data)
         self.table.edit_row(0, text_color="#fff", hover_color="#2A8C55")

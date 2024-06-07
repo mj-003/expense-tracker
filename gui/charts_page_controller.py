@@ -2,19 +2,27 @@ import datetime
 
 
 class ChartPageController:
+    """
+    Controller for the Charts Page. This class is responsible
+    for handling the logic for the charts page.
+    """
     def __init__(self, plotter, user_expenses, user_incomes):
         self.plotter = plotter
+
+        # Initialize the user_expenses and user_incomes
         self.user_expenses = user_expenses
         self.user_incomes = user_incomes
+
+        # Initialize the current month and year
         self.curr_month = datetime.datetime.now().replace(day=1)
         self.curr_year = self.curr_month.year
 
     def show_chart(self, chart_function, month, year):
         """
-        Show a chart
+        Show a chart for the selected month and year
         :param chart_function: Function to plot the chart
-        :param month: Month
-        :param year: Year
+        :param month: Month in the format 'YYYY-MM'
+        :param year: Year in the format 'YYYY'
         :return: Figure and axis
         """
         if (chart_function == self.plotter.plot_category_pie_chart and

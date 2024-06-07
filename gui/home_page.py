@@ -10,6 +10,14 @@ from gui.widgets_and_buttons import *
 
 
 class HomePage(CTkFrame):
+    """
+
+    Class HomePage.
+    This class is responsible for creating the home page of the application.
+    In this page, the user can see the total balance of the current month,
+    the user items (incomes, expenses or both), and a chart with the user incomes and expenses.
+
+    """
     def __init__(self, parent, app, user, user_expenses, user_incomes):
         super().__init__(parent)
 
@@ -57,8 +65,10 @@ class HomePage(CTkFrame):
 
     def create_title_frame(self):
         """
-        Create title frame
-        :return:
+
+        Create title frame.
+        Title label includes the user's name and today's date.
+
         """
         title_frame = CTkFrame(master=self, fg_color="transparent")
         title_frame.pack(anchor="n", fill="x", padx=27, pady=(25, 0))
@@ -71,8 +81,11 @@ class HomePage(CTkFrame):
 
     def create_metrics_frame(self):
         """
-        Create metrics frame
-        :return:
+
+        Create the frame for total balance current month.
+        The total balance is calculated as the difference between
+        the total incomes and the total expenses.
+
         """
         metrics_frame = CTkFrame(master=self, fg_color="transparent")
         metrics_frame.pack(anchor="n", fill="x", padx=27, pady=(25, 0))
@@ -93,8 +106,15 @@ class HomePage(CTkFrame):
 
     def create_search_container(self):
         """
-        Create search container
-        :return:
+
+        Create search container.
+        The search container includes the filters for the user items.
+
+        The filters are:
+        - Date filter (this month, this year, all)
+        - Category filter (incomes, expenses, both)
+        - Sort filter (by date, by amount)
+
         """
         search_container = CTkFrame(master=self, height=50)
         search_container.pack(fill="x", pady=(27, 0), padx=27)
@@ -119,16 +139,19 @@ class HomePage(CTkFrame):
 
     def show_user_items(self):
         """
-        Show user items
-        :return:
+
+        Show user items.
+        Expenses, incomes or both.
+
         """
         # 'show_user_items' from widgets_and_buttons, returns the table
         self.table = show_user_items(self.table_frame, self, self.user_items_list, self.table)
 
     def get_filtered_items(self):
         """
-        Get filtered items
-        :return:
+
+        Get the filtered items based on the filters.
+
         """
         self.user_items_list = self.controller.create_user_items_list()
 
@@ -152,8 +175,11 @@ class HomePage(CTkFrame):
 
     def if_show_chart(self):
         """
-        If show chart
-        :return:
+
+        Function to show or hide the chart, depending on the checkbox.
+        var_show_chart is a variable that stores the state of the checkbox.
+        If the checkbox is on, the chart is shown, otherwise it is hidden.
+
         """
         if self.var_show_chart.get() == "on":
             self.info_panel.pack(expand=True, fill="both", pady=27, padx=(0, 27))
@@ -162,8 +188,9 @@ class HomePage(CTkFrame):
 
     def create_chart_panel(self):
         """
-        Create chart panel
-        :return:
+
+        Create chart panel for the user incomes and expenses chart.
+
         """
         self.info_panel = CTkFrame(master=self, fg_color="#eeeeee", border_width=0, border_color="#2A8C55",
                                    corner_radius=10, width=200)
@@ -172,8 +199,10 @@ class HomePage(CTkFrame):
 
     def update_chart(self):
         """
-        Update chart
-        :return:
+
+        Update the chart.
+        The chart can be updated by changing the month.
+
         """
         # Clear the panel
         for widget in self.info_panel.winfo_children():
@@ -202,8 +231,9 @@ class HomePage(CTkFrame):
 
     def show_prev_month(self):
         """
-        Show the previous month
-        :return:
+
+        Get the previous month and check if data for that month is available.
+
         """
         # get the previous month
         prev_month = self.current_month - datetime.timedelta(days=1)
@@ -216,8 +246,9 @@ class HomePage(CTkFrame):
 
     def show_next_month(self):
         """
-        Show the next month
-        :return:
+
+        Get the next month and check if data for that month is available.
+
         """
         # Get the next month
         next_month = self.current_month + datetime.timedelta(days=31)
