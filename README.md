@@ -57,9 +57,8 @@ python3 app.py
   - `export_page.py`: UI for exporting financial data.
   - `home_page.py`: UI for the home page.
   - `incomes_page.py`: UI for managing incomes. It contains the `IncomesPage` class, which inherits from `ItemPageABC`.
-  - `item_controller.py`: Controller for items.
+  - `items_controller.py`: Controller for items (combined expenses and incones).
   - `item_page_abc.py`: Abstract base class for item pages.
-  - `items_controller.py`: Controller for multiple items.
   - `login_page.py`: UI for user login.
   - `payments_page.py`: UI for managing payments. It contains the `PaymentsPage` class, which inherits from `ItemPageABC`.
   - `registration_window.py`: UI for user registration.
@@ -93,7 +92,6 @@ The project is organized into different modules and directories. Here is an over
 │   ├── export_page.py
 │   ├── home_page.py
 │   ├── incomes_page.py
-│   ├── item_controller.py
 │   ├── item_page_abc.py
 │   ├── items_controller.py
 │   ├── login_page.py
