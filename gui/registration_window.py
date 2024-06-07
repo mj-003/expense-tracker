@@ -9,6 +9,7 @@ from user import User
 class RegistrationWindow(CTkToplevel):
     def __init__(self, parent, database):
         super().__init__(parent)
+
         self.password_entry = None
         self.username_entry = None
         self.email_entry = None
@@ -26,6 +27,10 @@ class RegistrationWindow(CTkToplevel):
         self.add_register_button()
 
     def add_register_fields(self):
+        """
+        Add the fields for registration
+        :return:
+        """
         register_frame = CTkFrame(master=self, fg_color="transparent")
         register_frame.pack(anchor="center", pady=(50, 0))
 
@@ -57,18 +62,39 @@ class RegistrationWindow(CTkToplevel):
         self.password_entry.pack(anchor="w", pady=(7, 0))
 
     def add_register_button(self):
+        """
+        Add the register button
+        :return:
+        """
         CTkButton(master=self, text="Register", fg_color="#658354", hover_color="#4b6053",
                   font=("Aptos", 12),
                   text_color="#ffffff", width=225, command=self.perform_register).pack(anchor='center', pady=(15, 0))
 
     def perform_register(self):
+        """
+        Perform the registration
+        :return:
+        """
         username = self.username_entry.get()
         password = self.password_entry.get()
         email = self.email_entry.get()
         user = User(username=username, password=password, email=email, database=self.database)
 
         if username and password and email:
-            user.register()
-            self.destroy()
+            is_ok = True
+            if len(password.strip()) < 5:
+                is_ok = False
+                messagebox.showerror("Error", "Password must be at least 5 characters")
+
+            if len(username.strip()) < 3:
+                is_ok = False
+                messagebox.showerror("Error", "Username must be at least 5 characters")
+
+            if len(username.strip()) > 15:
+                is_ok = False
+                messagebox.showerror("Error", "Username must be less than 15 characters")
+            if is_ok:
+                user.register()
+                self.destroy()
         else:
             messagebox.showerror("Error", "Please fill in all fields")

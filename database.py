@@ -235,7 +235,7 @@ class Database:
 
 
     def get_upcoming_payments(self):
-        today = datetime.now().date()  # używamy tylko daty, bez czasu
+        today = datetime.now().date()
         self.cursor.execute('''
                SELECT p.*, u.username, u.email FROM payments p
                JOIN users u ON p.user_id = u.id
@@ -248,18 +248,18 @@ class Database:
         current_date = self.get_payment(payment_id)['date']
         new_date = current_date
 
-        if how_often == 'daily':
+        if how_often == 'Daily':
             new_date += timedelta(days=1)
-        elif how_often == 'weekly':
+        elif how_often == 'Weekly':
             new_date += timedelta(weeks=1)
-        elif how_often == 'monthly':
+        elif how_often == 'Monthly':
             month = current_date.month % 12 + 1
             year = current_date.year if month > 1 else current_date.year + 1
             day = min(current_date.day,
                       [31, 29 if year % 4 == 0 and not year % 400 == 0 else 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][
                           month - 1])
             new_date = current_date.replace(year=year, month=month, day=day)
-        elif how_often == 'yearly':
+        elif how_often == 'Yearly':
             new_date += timedelta(days=365)
         else:
             self.del_payment(payment_id)    # delete single payment

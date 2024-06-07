@@ -17,6 +17,20 @@ class MyPlotter:
         self.category_column = 2
         self.date_column = 4
 
+    def get_incomes_expenses_pd(self):
+        """
+        Function to get incomes and expenses as pandas dataframes
+        :return:
+        """
+        incomes_pd = pd.DataFrame(self.user_incomes_list, columns=["ID", "Amount", "From", "Date", "Description"])
+        expenses_pd = pd.DataFrame(self.user_expenses_list,
+                                   columns=["ID", "Amount", "Category", "Payment method", "Date", "Photo path",
+                                            "Description"])
+        incomes_pd['Date'] = pd.to_datetime(incomes_pd['Date'])
+        expenses_pd['Date'] = pd.to_datetime(expenses_pd['Date'])
+
+        return incomes_pd, expenses_pd
+
     def plot_category_pie_chart(self, month, year=None):
         """
         Function to plot a pie chart of expenses by category for a given month
@@ -24,7 +38,7 @@ class MyPlotter:
         :param year:
         :return:
         """
-        colors = ['#5DADE2', '#AF7AC5', '#F1948A', '#F7DC6F', '#76D7C4', '#7FB3D5', '#A569BD']
+        colors = ['#8fbc8f', '#006400', '#228b22', '#679267', '#7bb661', '#8fbc8f', '#addfad']
 
         filtered_expenses = self.get_expenses_by_month(month)
 
@@ -60,11 +74,9 @@ class MyPlotter:
 
         plt.subplots_adjust(right=0.7)
         plt.legend(wedges, labels, bbox_to_anchor=(1, 0.5), ncol=1, loc='center left', fontsize='small', frameon=False)
-        plt.title(f'{month}', loc='right')
-
+        plt.title(f'{month}', loc='left')
 
         return fig, ax
-
 
     def plot_incomes_expenses_per_month(self, month, incomes_list, expenses_list):
         """
@@ -75,11 +87,7 @@ class MyPlotter:
         :return:
         """
 
-        incomes_pd = pd.DataFrame(incomes_list, columns=["ID", "Amount", "From", "Date", "Description"])
-        expenses_pd = pd.DataFrame(expenses_list,
-                                   columns=["ID", "Amount", "Category", "Payment method", "Date", "Photo path", "Description"])
-        incomes_pd['Date'] = pd.to_datetime(incomes_pd['Date'])
-        expenses_pd['Date'] = pd.to_datetime(expenses_pd['Date'])
+        incomes_pd, expenses_pd = self.get_incomes_expenses_pd()
 
         incomes_pd = incomes_pd[incomes_pd['Date'].dt.strftime('%Y-%m') == month]
         expenses_pd = expenses_pd[expenses_pd['Date'].dt.strftime('%Y-%m') == month]
@@ -88,11 +96,8 @@ class MyPlotter:
 
         fig, ax = plt.subplots(figsize=(3, 2))
 
-        fig.patch.set_facecolor('#eeeeee')  # kolor tła dla figury
+        fig.patch.set_facecolor('#eeeeee')
         ax.set_facecolor('#eeeeee')
-
-    # fig.patch.set_alpha(0.0)
-    #     ax.patch.set_alpha(0.0)
 
         categories = ['Income', 'Expenses']
         amounts = [total_income, total_expenses]
@@ -110,11 +115,12 @@ class MyPlotter:
 
         # Set limits and labels
         ax.set_xlim(-0.5, len(categories) - 0.5)
-        #ax.set_ylim(0, max(amounts) * 1.1)
         ax.set_xticks(range(len(categories)))
         ax.set_xticklabels(categories)
         ax.set_yticklabels([])
-        #ax.set_title(month, loc='right')
+        ax.yaxis.set_visible(False)
+        month_name = datetime.strptime(month, '%Y-%m').strftime('%b')
+        ax.set_title(month_name, loc='right', fontsize=10)
 
         return fig, ax
 
@@ -138,24 +144,12 @@ class MyPlotter:
         :param month:
         :return:
         """
-        # Create DataFrames with the given data
-        expense_df = pd.DataFrame(self.user_expenses_list, columns=['ID', 'Amount', 'Category', 'Payment','Date', 'Recipe'])
-        income_df = pd.DataFrame(self.user_incomes_list, columns=['ID','Amount', 'From', 'Date'])
-
-        expense_df = expense_df[['Amount', 'Date']]
-        income_df = income_df[['Amount', 'Date']]
-
-        temp = pd.to_datetime(expense_df['Date'])
-        temp2 = pd.to_datetime(income_df['Date'])
-
-        expense_df['Date'] = temp
-        income_df['Date'] = temp2
+        income_df, expense_df = self.get_incomes_expenses_pd()
 
         expense_df = expense_df[expense_df['Date'].dt.year == year]
         income_df = income_df[income_df['Date'].dt.year == year]
 
         if expense_df.empty or income_df.empty:
-
             print("No data available for the specified year after filtering.")
             return
 
@@ -168,23 +162,22 @@ class MyPlotter:
 
         # Bar plot for expenses and incomes
         ax.bar(expense_df.index.to_timestamp() - pd.DateOffset(days=7), expense_df['Amount'], width=14,
-               label='Expenses')
-        ax.bar(income_df.index.to_timestamp() + pd.DateOffset(days=7), income_df['Amount'], width=14, label='Incomes')
+               label='Expenses', color='#8fbc8f')
+        ax.bar(income_df.index.to_timestamp() + pd.DateOffset(days=7), income_df['Amount'], width=14, label='Incomes', color='#006400')
 
         # Calculate the average expenses and incomes
         avg_expenses = expense_df['Amount'].mean()
         avg_incomes = income_df['Amount'].mean()
 
         # Plotting the average lines
-        ax.axhline(avg_expenses, color='red', linestyle='--', linewidth=2, label=f'Avg Expenses: {avg_expenses:.2f}zł')
-        ax.axhline(avg_incomes, color='blue', linestyle='--', linewidth=2, label=f'Avg Incomes: {avg_incomes:.2f}zł')
+        ax.axhline(avg_expenses, color='#228b22', linestyle='--', linewidth=2, label=f'Avg Expenses: {avg_expenses:.2f} zł')
+        ax.axhline(avg_incomes, color='#679267', linestyle='--', linewidth=2, label=f'Avg Incomes: {avg_incomes:.2f} zł')
 
         ax.xaxis.set_major_locator(mdates.MonthLocator())
         ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %Y'))
 
         # Add labels and legend
         ax.set_title(f'{year}', loc='right')
-        ax.set_ylabel('Amount (zł)')
         ax.legend()
 
         plt.grid(True)
@@ -200,14 +193,7 @@ class MyPlotter:
         :param month:
         :return:
         """
-        expense_df = pd.DataFrame(self.user_expenses_list,
-                                  columns=['ID', 'Amount', 'Category', 'Payment', 'Date', 'Recipe', 'Description'])
-        income_df = pd.DataFrame(self.user_incomes_list, columns=['ID', 'Amount', 'From', 'Date'])
-
-        # Convert the Date columns to datetime, coerce errors to NaT
-        expense_df['Date'] = pd.to_datetime(expense_df['Date'])
-        income_df['Date'] = pd.to_datetime(income_df['Date'])
-
+        income_df, expense_df = self.get_incomes_expenses_pd()
         # Drop rows with NaT in the 'Date' column
         expense_df = expense_df.dropna(subset=['Date'])
         income_df = income_df.dropna(subset=['Date'])
@@ -224,18 +210,22 @@ class MyPlotter:
         fig, ax = plt.subplots()
 
         # Line plot for expenses and incomes
-        ax.plot(expense_df.index.to_timestamp(), expense_df['Amount'], label='Expenses', marker='o', linestyle='-', color='red')
-        ax.plot(income_df.index.to_timestamp(), income_df['Amount'], label='Incomes', marker='o', linestyle='-', color='green')
+        ax.plot(expense_df.index.to_timestamp(), expense_df['Amount'], label='Expenses', marker='o', linestyle='-',
+                color='#8fbc8f')
+        ax.plot(income_df.index.to_timestamp(), income_df['Amount'], label='Incomes', marker='o', linestyle='-',
+                color='#006400')
 
         # Adding a trend line for expenses
-        z_expenses = np.polyfit(expense_df.index.to_timestamp().astype(int) / 10**9, expense_df['Amount'], 1)
+        z_expenses = np.polyfit(expense_df.index.to_timestamp().astype(int) / 10 ** 9, expense_df['Amount'], 1)
         p_expenses = np.poly1d(z_expenses)
-        ax.plot(expense_df.index.to_timestamp(), p_expenses(expense_df.index.to_timestamp().astype(int) / 10**9), "r--", label='Expenses Trend Line')
+        ax.plot(expense_df.index.to_timestamp(), p_expenses(expense_df.index.to_timestamp().astype(int) / 10 ** 9),
+                "r--", label='Expenses Trend Line', color='#228b22')
 
         # Adding a trend line for incomes
-        z_incomes = np.polyfit(income_df.index.to_timestamp().astype(int) / 10**9, income_df['Amount'], 1)
+        z_incomes = np.polyfit(income_df.index.to_timestamp().astype(int) / 10 ** 9, income_df['Amount'], 1)
         p_incomes = np.poly1d(z_incomes)
-        ax.plot(income_df.index.to_timestamp(), p_incomes(income_df.index.to_timestamp().astype(int) / 10**9), "g--", label='Incomes Trend Line')
+        ax.plot(income_df.index.to_timestamp(), p_incomes(income_df.index.to_timestamp().astype(int) / 10 ** 9), "g--",
+                label='Incomes Trend Line', color='#8db600')
 
         # Formatting the x-axis
         ax.xaxis.set_major_locator(mdates.MonthLocator())
@@ -243,7 +233,6 @@ class MyPlotter:
 
         # Add labels and legend
         ax.set_title(f'{year}', loc='right')
-        ax.set_ylabel('Amount (zł)')
         ax.legend()
 
         plt.grid(True)
@@ -259,13 +248,7 @@ class MyPlotter:
         :param month:
         :return:
         """
-        expense_df = pd.DataFrame(self.user_expenses_list,
-                                  columns=['ID', 'Amount', 'Category', 'Payment', 'Date', 'Recipe'])
-        income_df = pd.DataFrame(self.user_incomes_list, columns=['ID', 'Amount', 'From', 'Date'])
-
-        # Convert the Date columns to datetime, coerce errors to NaT
-        expense_df['Date'] = pd.to_datetime(expense_df['Date'])
-        income_df['Date'] = pd.to_datetime(income_df['Date'])
+        income_df, expense_df = self.get_incomes_expenses_pd()
 
         # Drop rows with NaT in the 'Date' column
         expense_df = expense_df.dropna(subset=['Date'])
@@ -294,12 +277,9 @@ class MyPlotter:
 
         # Add labels and title
         ax.set_title(f'{year}', loc='right')
-        ax.set_ylabel('Amount (zł)')
 
         plt.grid(True)
         plt.tight_layout()
 
         # Save the plot as an image file
         return fig, ax
-
-

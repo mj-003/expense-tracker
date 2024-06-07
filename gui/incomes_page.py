@@ -2,11 +2,10 @@ from datetime import datetime
 from tkinter import messagebox
 
 import customtkinter as ctk
-from customtkinter import *
 
 from financials.income import Income
-from item_page_abc import FinancialsPage
-from widgets_and_buttons import *
+from gui.item_page_abc import FinancialsPage
+from gui.widgets_and_buttons import *
 
 
 class IncomesPage(FinancialsPage):
@@ -74,15 +73,15 @@ class IncomesPage(FinancialsPage):
 
         # Create the form
         self.amount_entry = CTkEntry(self.info_panel, placeholder_text="Amount", validate='key',
-                                     validatecommand=self.vcmd_money)
+                                     validatecommand=self.vcmd_money, border_width=1, border_color="#2A8C55")
         self.amount_entry.pack(pady=(15, 10), padx=(10, 10))
 
-        self.from_entry = CTkEntry(self.info_panel, placeholder_text="From")
+        self.from_entry = CTkEntry(self.info_panel, placeholder_text="From", border_width=1, border_color="#2A8C55")
         self.from_entry.pack(pady=(10, 10), padx=(10, 10))
 
         # Add rest from abstract class
         self.date_var = StringVar(value=datetime.now().strftime('%Y-%m-%d'))
-        self.date_entry = CTkEntry(self.info_panel, textvariable=self.date_var, state='readonly', fg_color="white")
+        self.date_entry = CTkEntry(self.info_panel, textvariable=self.date_var, state='readonly', fg_color="white", border_width=1, border_color="#2A8C55")
         self.date_entry.pack(pady=(10, 10), padx=(10, 10))
         self.date_entry.bind("<Button-1>", self.open_calendar)
 
@@ -92,7 +91,7 @@ class IncomesPage(FinancialsPage):
                   hover_color="#207244",
                   font=("Aptos", 12),
                   border_color="#2A8C55",
-                  border_width=2,
+                  border_width=1,
                   text_color="#2A8C55",
                   text_color_disabled="white",
                   command=self.add_description).pack(pady=(5, 5), padx=(10, 10))
@@ -157,16 +156,17 @@ class IncomesPage(FinancialsPage):
         self.from_entry.grid(row=2, column=1, pady=(20, 10), padx=12, sticky="w")
 
         CTkLabel(self.edit_dialog, text="Date:").grid(row=3, column=0, pady=10, padx=10, sticky="e")
+        self.date_var = StringVar(value=datetime.now().strftime('%Y-%m-%d'))
         self.date_entry = CTkEntry(self.edit_dialog, textvariable=self.date_var, state='readonly', fg_color="white")
         self.date_entry.bind("<Button-1>", self.open_calendar)
         self.date_entry.grid(row=3, column=1, pady=10, padx=12, sticky="w")
 
         # Create buttons
-        save_button = CTkButton(self.edit_dialog, text="Save", fg_color="#2A8C55",
+        save_button = CTkButton(self.edit_dialog, text="Save", fg_color="#2A8C55", hover_color='#207244',
                                 command=lambda: self.save_edited_income())
         save_button.grid(row=4, column=0, columnspan=2, pady=20, padx=20, sticky='w')
 
-        cancel_button = CTkButton(self.edit_dialog, text="Cancel", fg_color="#2A8C55", command=lambda: self.go_back())
+        cancel_button = CTkButton(self.edit_dialog, text="Cancel", fg_color="#2A8C55", hover_color='#207244', command=lambda: self.go_back())
         cancel_button.grid(row=4, column=1, columnspan=2, pady=20, padx=20, sticky='e')
 
         # Configure the dialog

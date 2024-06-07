@@ -1,19 +1,18 @@
 from PIL import Image
 from customtkinter import *
 
-from charts_page import ChartsPage
+from gui.charts_page import ChartsPage
 from database import Database
 from financials.user_expenses import UserExpenses
 from financials.user_incomes import UserIncomes
 from financials.user_payments import UserPayments
+from gui.account_page import AccountPage
 from gui.expenses_page import ExpensesPage
 from gui.export_page import ExportPage
 from gui.home_page import HomePage
-from gui.account_page import AccountPage
-from gui.home_page_controller import HomePageController
 from gui.incomes_page import IncomesPage
-from gui.payments_page import PaymentsPage
 from gui.login_page import LoginPage
+from gui.payments_page import PaymentsPage
 from user import User
 
 
@@ -33,7 +32,6 @@ class App(CTk):
 
         self.frames = {}
 
-
         self.user = None
         self.database = Database('expenses.db')
         self.user_expenses = None
@@ -43,11 +41,19 @@ class App(CTk):
         self.show_login_page()
 
     def show_login_page(self):
+        """
+        Shows the login page
+        :return:
+        """
         self.LoginPage = LoginPage(self.container, self, self.database)
         self.LoginPage.grid(row=0, column=0, sticky="nsew")
         self.LoginPage.tkraise()
 
     def create_sidebar(self):
+        """
+        Creates the sidebar
+        :return:
+        """
         self.container.pack_forget()
         self.sidebar_frame = CTkFrame(master=self, fg_color="#2A8C55", width=176, height=650, corner_radius=0)
         self.sidebar_frame.pack_propagate(False)
@@ -105,22 +111,23 @@ class App(CTk):
         person_img_data = Image.open("images/person_icon.png")
         person_img = CTkImage(dark_image=person_img_data, light_image=person_img_data)
         CTkButton(master=self.sidebar_frame, image=person_img, text="Account", fg_color="transparent",
-                  font=("Aptos", 14, 'bold'), hover_color="#207244", anchor="w", command=lambda: self.show_frame(AccountPage),).pack(anchor="s", ipady=5,
-                                                                                   pady=(100, 5))
+                  font=("Aptos", 14, 'bold'), hover_color="#207244", anchor="w",
+                  command=lambda: self.show_frame(AccountPage), ).pack(anchor="s", ipady=5,
+                                                                       pady=(100, 5))
         self.container.pack(side="right", fill="both", expand=True)
 
     def define_frame(self, frame_class):
+        """
+        Define the frame
+        :param frame_class:
+        :return:
+        """
         if self.user_expenses is not None:
             self.user_expenses.load_expenses()
         if self.user_incomes is not None:
             self.user_incomes.load_incomes()
         if self.user_payments is not None:
             self.user_payments.load_payments()
-
-
-        # self.user_incomes.load_incomes()
-        # self.user_expenses.load_expenses()
-        # self.user_payments.load_payments()
 
         if frame_class == HomePage:
             frame = HomePage(self.container, self, self.user, self.user_expenses, self.user_incomes)
@@ -141,6 +148,11 @@ class App(CTk):
         return frame
 
     def show_frame(self, cont):
+        """
+        Show the frame
+        :param cont:
+        :return:
+        """
         frame = self.define_frame(cont)
         self.frames[cont] = frame
         frame.grid(row=0, column=0, sticky="nsew")
@@ -148,6 +160,11 @@ class App(CTk):
         frame.tkraise()
 
     def after_logged_in(self, user: User):
+        """
+        After logging in
+        :param user:
+        :return:
+        """
         self.create_sidebar()
         self.user = user
         self.user_expenses = UserExpenses(self.database, self.user)
@@ -161,7 +178,10 @@ class App(CTk):
         self.show_frame(HomePage)
 
     def log_out(self):
-        print("Logging out")
+        """
+        Log out
+        :return:
+        """
         self.sidebar_frame.pack_forget()
         self.container.pack_forget()
         self.show_login_page()

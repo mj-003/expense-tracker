@@ -1,11 +1,11 @@
 import smtplib
 import ssl
 from email.message import EmailMessage
+import os
 
 from database import Database
-
-EMAIL_SENDER = 'juchiewicz.malwina@gmail.com'
-EMAIL_PASSWORD = 'zftw elox vfxy snbg'
+EMAIL_SENDER = os.environ['EMAIL_USER']
+EMAIL_PASSWORD = os.environ['EMAIL_PASSWORD']
 
 
 db = Database()
@@ -29,3 +29,6 @@ def send_notifications():
             print(f"Email sent to {payment['email']}")
         except smtplib.SMTPException as e:
             print(f"Failed to send email for {payment['email']}: {e}")
+
+    for payment in upcoming_payments:
+        db.update_payment_date(payment['id'], payment['how_often'])

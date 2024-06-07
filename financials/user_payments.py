@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from .user_finances import UserFinancials
 
 
@@ -9,7 +9,7 @@ class UserPayments(UserFinancials):
         self.headers = self.get_headers()
 
     def get_headers(self):
-        return [['No.', f'Amount {self.currency}', 'To', 'Date']]
+        return [['No.', f'Amount {self.currency}', 'Title', 'Date']]
 
     def load_payments(self):
         """
@@ -39,33 +39,33 @@ class UserPayments(UserFinancials):
             print(f"Invalid autonumbered ID: {autonumbered_id}")
             return None
 
-    def get_payments(self, date_filter=None, from_filter=None, sort_order=None) -> list:
+    def get_payments(self, date_filter=None, title_filter=None, sort_order=None) -> list:
         """
         Get incomes from the database
         :param date_filter:
-        :param from_filter:
+        :param title_filter:
         :param sort_order:
         :return:
         """
-        # filtered_incomes = self.items[:]
-        #
-        # if date_filter:
-        #     filtered_incomes = self.filter_by_date(filtered_incomes, date_filter)
-        #
-        # if from_filter and from_filter != "From":
-        #     filtered_incomes = [income for income in filtered_incomes if income[2] == from_filter]
-        #
-        # if sort_order:
-        #     reverse = sort_order.split()[0] == "⬇"
-        #     if sort_order != 'Sort':
-        #
-        #         if sort_order.split()[1] == "Amount":
-        #             filtered_incomes.sort(key=lambda x: x[1], reverse=reverse)
-        #         elif sort_order.split()[1] == "Time":
-        #             filtered_incomes.sort(key=lambda x: datetime.strptime(x[3], '%Y-%m-%d'), reverse=reverse)
+        print('tutaj jestem')
+        filtered_payments = self.items[:]
+
+        if date_filter:
+            filtered_payments = self.filter_by_date(filtered_payments, date_filter)
+
+        if title_filter and title_filter != "Title":
+            filtered_payments = [payment for payment in filtered_payments if payment[2] == title_filter]
+
+        if sort_order:
+            reverse = sort_order.split()[0] == "⬇"
+            if sort_order != 'Sort':
+                if sort_order.split()[1] == "Amount":
+                    filtered_payments.sort(key=lambda x: x[1], reverse=reverse)
+                elif sort_order.split()[1] == "Time":
+                    filtered_payments.sort(key=lambda x: datetime.strptime(x[3], '%Y-%m-%d'), reverse=reverse)
 
         self.headers = self.get_headers()
-        return self.headers + self.items
+        return self.headers + filtered_payments
 
     def delete_payment(self, autonumbered_id):
         """
@@ -75,22 +75,32 @@ class UserPayments(UserFinancials):
         """
         self.delete_item(autonumbered_id, self.database.del_payment, self.database.get_payments)
 
+    def filter_by_date(self, payments, date_filter):
+        """
+        Filter payments by date
+        :param payments: List of payments
+        :param date_filter: Filter criteria as a string
+        :return: List of filtered payments
+        """
+        today = datetime.now()
 
-    # def filter_by_date(self, payments, date_filter):
-    #     """
-    #     Filter incomes by date
-    #     :param pay:
-    #     :param date_filter:
-    #     :return:
-    #     """
-    #     if date_filter == "This month":
-    #         start_date = datetime.now().replace(day=1)
-    #     elif date_filter == "This year":
-    #         start_date = datetime.now().replace(month=1, day=1)
-    #     else:
-    #         return payments
-    #
-    #     return [payment for payment in payments if datetime.strptime(payment[3], '%Y-%m-%d') >= start_date]
+        if date_filter == "This month":
+            start_date = today.replace(day=1)
+            end_date = None
+        elif date_filter == "This year":
+            start_date = today.replace(month=1, day=1)
+            end_date = None
+        elif date_filter == "Upcoming":
+            start_date = today
+            end_date = today + timedelta(days=7)  # get payments for the next 7 days
+        else:
+            return payments
+
+        if end_date:
+            return [payment for payment in payments if
+                    start_date <= datetime.strptime(payment[3], '%Y-%m-%d') <= end_date]
+        else:
+            return [payment for payment in payments if datetime.strptime(payment[3], '%Y-%m-%d') >= start_date]
 
     def update_user_payments(self, autonumbered_id: int, updated_payment) -> None:
         """

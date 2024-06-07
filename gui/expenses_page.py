@@ -1,12 +1,12 @@
 from datetime import datetime
-from tkinter import messagebox, Toplevel, Text
+from tkinter import messagebox
 
 import customtkinter as ctk
 from PIL import Image, ImageTk
 
 from financials.expense import Expense
-from item_page_abc import FinancialsPage
-from widgets_and_buttons import *
+from gui.item_page_abc import FinancialsPage
+from gui.widgets_and_buttons import *
 
 
 class ExpensesPage(FinancialsPage):
@@ -66,7 +66,7 @@ class ExpensesPage(FinancialsPage):
         """
         self.validate_id(self.user_items.get_expenses())
 
-        photo_button = CTkButton(self.info_panel, text="Recipe", fg_color='#2A8C55', text_color='white',
+        photo_button = CTkButton(self.info_panel, text="Recipe", fg_color='#2A8C55', hover_color='#207244', text_color='white',
                                  command=lambda: self.show_photo())
         photo_button.pack(padx=15, pady=10, fill='both')
 
@@ -80,18 +80,18 @@ class ExpensesPage(FinancialsPage):
 
         # Create the form
         self.amount_entry = CTkEntry(self.info_panel, placeholder_text="Price", validate='key',
-                                     validatecommand=self.vcmd_money)
+                                     validatecommand=self.vcmd_money, border_width=1, border_color="#2A8C55")
         self.amount_entry.pack(pady=(10, 5), padx=(10, 10))
 
-        self.category_entry = get_categories_combo_box(self.info_panel, 145)
+        self.category_entry = get_categories_no_title_combo_box(self.info_panel, 140)
         self.category_entry.pack(pady=(5, 5), padx=(10, 10))
 
         self.date_var = StringVar(value=datetime.now().strftime('%Y-%m-%d'))
-        self.date_entry = CTkEntry(self.info_panel, textvariable=self.date_var, state='readonly', fg_color="white")
+        self.date_entry = CTkEntry(self.info_panel, textvariable=self.date_var, state='readonly', fg_color="white", border_width=1, border_color="#2A8C55")
         self.date_entry.pack(pady=(5, 5), padx=(10, 10))
         self.date_entry.bind("<Button-1>", self.open_calendar)
 
-        self.payment_method_entry = CTkComboBox(self.info_panel, values=['Online', 'Card', 'Cash', 'Other'])
+        self.payment_method_entry = get_payment_method_combo_box(self.info_panel, 140)
         self.payment_method_entry.pack(pady=(5, 5), padx=(10, 10))
 
         CTkButton(master=self.info_panel,
@@ -100,7 +100,7 @@ class ExpensesPage(FinancialsPage):
                   hover_color="#207244",
                   font=("Aptos", 12),
                   border_color="#2A8C55",
-                  border_width=2,
+                  border_width=1,
                   text_color="#2A8C55",
                   text_color_disabled="white",
                   command=self.upload_photo).pack(pady=(5, 5), padx=(10, 10))
@@ -111,7 +111,7 @@ class ExpensesPage(FinancialsPage):
                   hover_color="#207244",
                   font=("Aptos", 12),
                   border_color="#2A8C55",
-                  border_width=2,
+                  border_width=1,
                   text_color="#2A8C55",
                   text_color_disabled="white",
                   command=self.add_description).pack(pady=(5, 5), padx=(10, 10))
@@ -175,7 +175,7 @@ class ExpensesPage(FinancialsPage):
         self.amount_entry.grid(row=1, column=1, pady=(20, 10), padx=10, sticky="w")
 
         CTkLabel(self.edit_dialog, text="Category:").grid(row=2, column=0, pady=10, padx=10, sticky="e")
-        self.category_entry = get_categories_combo_box(self.edit_dialog, 140)
+        self.category_entry = get_categories_no_title_combo_box(self.edit_dialog, 140)
         self.category_entry.grid(row=2, column=1, pady=10, padx=10, sticky="w")
 
         CTkLabel(self.edit_dialog, text="Date:").grid(row=3, column=0, pady=10, padx=10, sticky="e")
@@ -189,10 +189,10 @@ class ExpensesPage(FinancialsPage):
         self.payment_method_entry = CTkComboBox(self.edit_dialog, values=['Online', 'Card', 'Cash', 'Other'])
         self.payment_method_entry.grid(row=4, column=1, pady=10, padx=10, sticky='w')
 
-        save_button = ctk.CTkButton(self.edit_dialog, text="Save", fg_color="#2A8C55", command=lambda: self.save_edited_expense())
+        save_button = ctk.CTkButton(self.edit_dialog, text="Save", fg_color="#2A8C55", hover_color='#207244', command=lambda: self.save_edited_expense())
         save_button.grid(row=5, column=0, columnspan=2, pady=20, padx=20, sticky='w')
 
-        cancel_button = ctk.CTkButton(self.edit_dialog, text="Cancel", fg_color="#2A8C55", command=lambda: self.go_back())
+        cancel_button = ctk.CTkButton(self.edit_dialog, text="Cancel", fg_color="#2A8C55", hover_color='#207244', command=lambda: self.go_back())
         cancel_button.grid(row=5, column=1, columnspan=2, pady=20, padx=20, sticky='e')
 
         self.edit_dialog.columnconfigure(0, weight=1)
@@ -213,9 +213,8 @@ class ExpensesPage(FinancialsPage):
         Shows the photo of the expense
         :return:
         """
+        # expense[6] is the file path
         file_path = self.user_items.get_expense(self.selected_row)[6]
-        description = self.user_items.get_expense(self.selected_row)[7]
-        print(description)
 
         if file_path and os.path.exists(file_path):
             photo_dialog = CTkToplevel(self)
@@ -263,8 +262,7 @@ class ExpensesPage(FinancialsPage):
         new_expense = Expense(amount=self.amount_entry.get(),
                               category=self.category_entry.get(),
                               date=self.date_entry.get(),
-                              payment_method=self.payment_method_entry.get(),
-                              )
+                              payment_method=self.payment_method_entry.get())
 
         # Update the expense and list
         self.user_items.update_user_expense(self.selected_row, new_expense)
@@ -279,6 +277,7 @@ class ExpensesPage(FinancialsPage):
         :return:
         """
         self.amount_entry.delete(0, 'end')
+        self.date_var = StringVar(value=datetime.now().strftime('%Y-%m-%d'))
         self.recipe_entry = None
         self.description = None
 

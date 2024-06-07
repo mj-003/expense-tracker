@@ -1,6 +1,7 @@
 from datetime import datetime
 
 
+# Expense - a class representing an expense
 class Expense:
     def __init__(self, amount, category, payment_method, date=None, photo_path=None, expense_id=None, description=None):
         self.category = category

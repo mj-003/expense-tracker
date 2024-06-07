@@ -1,6 +1,7 @@
 from datetime import datetime
 
 
+# Income - a class representing an income
 class Income:
     def __init__(self, amount, sender, date=None, income_id=None, description=None):
         self.amount = amount

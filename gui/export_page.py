@@ -1,126 +1,82 @@
 from datetime import datetime
 
-from CTkTable import CTkTable
-from customtkinter import *
-
-from item_controller import ItemController
+from gui.items_controller import ItemsController
 from utils.exports import export_to_excel, export_to_csv
+from gui.widgets_and_buttons import *
 
 
 class ExportPage(CTkFrame):
     def __init__(self, parent, app, database, user, user_expenses, user_incomes):
         super().__init__(parent)
 
-        self.item_filter = None
-        self.date_filter = None
-        self.table = None
-        self.table_frame = None
-        self.user_expenses = user_expenses
-        self.user_incomes = user_incomes
-
+        # Initialize the app, parent, user, and database
         self.app = app
         self.parent = parent
         self.user = user
         self.database = database
+
+        # Initialize the filters and table
+        self.item_filter = None
+        self.date_filter = None
+        self.table = None
+        self.table_frame = None
+
+        # Initialize the user expenses and incomes
+        self.user_expenses = user_expenses
+        self.user_incomes = user_incomes
+
+        # Initialize the user expenses and incomes lists
         self.user_expenses_list = self.user_expenses.get_expenses()
         self.user_incomes_list = self.user_incomes.get_incomes()
-        self.controller = ItemController(database, user, user_expenses, user_incomes)
+
+        # Initialize the item controller and items list
+        self.controller = ItemsController(user_expenses, user_incomes, self.user.currency)
         self.items_list = self.controller.create_user_items_list()
 
+        # Create the widgets
         self.add_title()
         self.add_filters()
         self.add_table()
 
     def add_title(self):
+        """
+        Add the title
+        :return:
+        """
         title_frame = CTkFrame(master=self, fg_color="transparent")
         title_frame.pack(fill="both", padx=27, pady=(25, 0))
 
-        CTkLabel(master=title_frame,
-                 text="Export Financials",
-                 font=("Aptos", 40, 'bold'),
-                 text_color="#2A8C55").pack(
-            anchor="nw",
-            side="left")
+        title = CTkLabel(master=title_frame, text="Export Financials", font=("Aptos", 40, 'bold'), text_color="#2A8C55")
+        title.pack(anchor="nw", side="left")
 
-        CTkButton(master=title_frame,
-                  text="Export",
-                  width=100,
-                  height=50,
-                  font=("Aptos", 16),
-                  text_color="#fff",
-                  fg_color="#2A8C55",
-                  hover_color="#207244",
-                  corner_radius=50,
-                  command=self.export_data).pack(
-            anchor="ne",
-            side="right")
+        export_button = (CTkButton(master=title_frame, text="Export", width=100, height=50, font=("Aptos", 16), text_color="#fff", fg_color="#2A8C55", hover_color="#207244", corner_radius=50, command=self.export_data))
+        export_button.pack(anchor="ne",side="right")
 
     def add_filters(self):
+        """
+        Add the filters
+        :return:
+        """
         self.filter_frame = CTkFrame(master=self, fg_color="transparent")
         self.filter_frame.pack(fill="both", padx=27, pady=(31, 0))
 
-        self.date_filter = CTkComboBox(master=self.filter_frame,
-                                       width=220,
-                                       values=["Date", "This month", "This year"],
-                                       button_color="#2A8C55",
-                                       border_color="#2A8C55",
-                                       border_width=2,
-                                       button_hover_color="#207244",
-                                       dropdown_hover_color="#207244",
-                                       dropdown_fg_color="#2A8C55",
-                                       dropdown_text_color="#fff")
-        self.date_filter.grid(
-            row=0,
-            column=1,
-            sticky="w",
-            padx=(0, 20))
+        self.date_filter = get_date_combo_box(my_master=self.filter_frame, my_width=220)
+        self.date_filter.grid(row=0, column=1, sticky="w", padx=(0, 20))
 
-        self.item_filter = CTkComboBox(master=self.filter_frame,
-                                       width=220,
-                                       values=['Both', 'Expenses', 'Incomes'],
-                                       button_color="#2A8C55",
-                                       border_color="#2A8C55",
-                                       border_width=2,
-                                       button_hover_color="#207244",
-                                       dropdown_hover_color="#207244",
-                                       dropdown_fg_color="#2A8C55",
-                                       dropdown_text_color="#fff")
-        self.item_filter.grid(
-            row=0,
-            column=2,
-            sticky="w",
-            padx=(0, 20))
+        self.item_filter = get_items_combo_box(my_master=self.filter_frame, my_width=220)
+        self.item_filter.grid(row=0, column=2, sticky="w", padx=(0, 20))
 
-        self.sort_filter = CTkComboBox(master=self.filter_frame,
-                                       width=220,
-                                       values=['Sort', '⬆ Amount', '⬇ Amount', '⬆ Time', '⬇ Time'],
-                                       button_color="#2A8C55",
-                                       border_color="#2A8C55",
-                                       border_width=2,
-                                       button_hover_color="#207244",
-                                       dropdown_hover_color="#207244",
-                                       dropdown_fg_color="#2A8C55",
-                                       dropdown_text_color="#fff")
-        self.sort_filter.grid(
-            row=0,
-            column=4,
-            sticky="w",
-            padx=(0, 20))
+        self.sort_filter = get_sort_combo_box(my_master=self.filter_frame, my_width=220)
+        self.sort_filter.grid(row=0, column=4, sticky="w", padx=(0, 20))
 
-        CTkButton(master=self.filter_frame,
-                  text="✔",
-                  width=35,
-                  font=("Arial", 15),
-                  text_color="#fff",
-                  fg_color="#2A8C55",
-                  hover_color="#207244",
-                  command=self.get_filtered_items).grid(
-            column=5,
-            sticky="e",
-            padx=(0, 27),
-            row=0)
+        check_button = get_check_button(my_master=self.filter_frame, on_command=self.get_filtered_items, my_width=35)
+        check_button.grid(column=5, sticky="e", padx=(0, 27), row=0)
 
     def add_table(self):
+        """
+        Add the table
+        :return:
+        """
         self.table_frame = CTkScrollableFrame(master=self, fg_color="transparent")
         self.table_frame.pack(expand=True, fill="both", padx=27, pady=21)
 
@@ -134,7 +90,10 @@ class ExportPage(CTkFrame):
         self.table.pack(expand=True, fill='both')
 
     def export_data(self):
-
+        """
+        Export the data to an Excel or CSV file
+        :return:
+        """
         current_date = datetime.now().strftime('%Y-%m-%d')
         default_filename = f"{self.user.username}_{current_date}"
 
@@ -143,13 +102,24 @@ class ExportPage(CTkFrame):
                                                             ("CSV files", "*.csv")],
                                                  initialfile=default_filename)
 
+        # Export the data
         if file_path:
+            if self.item_filter.get() == 'Both':
+                data = self.items_list
+            elif self.item_filter.get() == 'Expenses':
+                data = self.user_expenses.get_expenses(date_filter=self.date_filter.get(), sort_order=self.sort_filter.get())
+            else:
+                data = self.user_incomes.get_incomes(date_filter=self.date_filter.get(), sort_order=self.sort_filter.get())
             if file_path.endswith('.xlsx'):
-                export_to_excel(file_path, self.items_list)
+                export_to_excel(file_path, data)
             elif file_path.endswith('.csv'):
-                export_to_csv(file_path, self.items_list)
+                export_to_csv(file_path, data)
 
     def get_filtered_items(self):
+        """
+        Get the filtered items
+        :return:
+        """
         self.items_list = self.controller.create_user_items_list()
 
         date = self.date_filter.get()

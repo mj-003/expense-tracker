@@ -4,40 +4,49 @@ import customtkinter as ctk
 from PIL import Image
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
-from gui.home_page_controller import HomePageController
+from gui.items_controller import ItemsController
 from plots import MyPlotter
-from widgets_and_buttons import *
+from gui.widgets_and_buttons import *
 
 
 class HomePage(CTkFrame):
     def __init__(self, parent, app, user, user_expenses, user_incomes):
         super().__init__(parent)
 
+        # Initialize the app, parent, and user
         self.app = app
         self.parent = parent
         self.user = user
 
-        self.controller = HomePageController(user_expenses, user_incomes, self.user.currency)
+        # Initialize the controller and plotter
+        self.controller = ItemsController(user_expenses, user_incomes, self.user.currency)
         self.plotter = MyPlotter(user_expenses, user_incomes)
+
+        # Initialize the current month and today
         self.current_month = datetime.datetime.now().replace(day=1)
         self.today = datetime.datetime.today().strftime('%a, %-d.%m')
 
+        # Initialize the widgets
         self.is_chart = None
         self.selected_row = None
         self.table_frame = None
         self.var_show_chart = ctk.StringVar(value="on")
 
+        # Initialize the user expenses and incomes
         self.user_expenses = user_expenses
         self.user_incomes = user_incomes
 
+        # Initialize the user expenses and incomes lists
         self.user_expenses_list = self.user_expenses.get_expenses()
         self.user_incomes_list = self.user_incomes.get_incomes()
         self.user_items_list = self.controller.create_user_items_list()
 
+        # Initialize the filters
         self.date_filter = None
         self.category_filter = None
         self.sort_filter = None
 
+        # Create the widgets
         self.create_title_frame()
         self.create_metrics_frame()
         self.create_search_container()
@@ -60,6 +69,10 @@ class HomePage(CTkFrame):
         today_label.pack(anchor='nw', side='right', pady=5)
 
     def create_metrics_frame(self):
+        """
+        Create metrics frame
+        :return:
+        """
         metrics_frame = CTkFrame(master=self, fg_color="transparent")
         metrics_frame.pack(anchor="n", fill="x", padx=27, pady=(25, 0))
 
@@ -67,7 +80,7 @@ class HomePage(CTkFrame):
         total_sum_metric.grid_propagate(False)
         total_sum_metric.pack(side="left")
 
-        logistics_img_data = Image.open("images/money.png")
+        logistics_img_data = Image.open("images/money2.png")
         logistics_img = CTkImage(light_image=logistics_img_data, dark_image=logistics_img_data, size=(43, 43))
 
         img_label = CTkLabel(master=total_sum_metric, image=logistics_img, text="")
@@ -81,7 +94,7 @@ class HomePage(CTkFrame):
         Create search container
         :return:
         """
-        search_container = CTkFrame(master=self, height=50, fg_color="#F0F0F0")
+        search_container = CTkFrame(master=self, height=50)
         search_container.pack(fill="x", pady=(27, 0), padx=27)
 
         self.date_filter = get_date_combo_box(my_master=search_container, my_width=185)
@@ -98,10 +111,14 @@ class HomePage(CTkFrame):
 
         self.is_chart = CTkCheckBox(master=search_container, text="Chart", font=('Aptos', 15),
                                     variable=self.var_show_chart, onvalue="on", offvalue="off",
-                                    command=self.if_show_chart, fg_color="#2A8C55", width=30, height=30)
+                                    command=self.if_show_chart, fg_color="#2A8C55", width=30, height=30, hover_color='#207244')
         self.is_chart.pack(pady=15)
 
     def show_user_items(self):
+        """
+        Show user items
+        :return:
+        """
         if self.table_frame is None:
             self.table_frame = CTkScrollableFrame(master=self, fg_color="transparent")
             self.table_frame.pack(expand=True, fill="both", padx=27, pady=21, side='left')
@@ -119,72 +136,110 @@ class HomePage(CTkFrame):
             self.table.delete_rows(indicates_to_remove)
 
             for row_data in self.user_items_list:
-                if len(row_data) > 1:
-                    row_data[1] = f"{row_data[1]} zł"
                 self.table.add_row(row_data)
 
         if self.table.rows > 0:
             self.table.edit_row(0, text_color="#fff", hover_color="#2A8C55")
 
     def get_filtered_items(self):
+        """
+        Get filtered items
+        :return:
+        """
         self.user_items_list = self.controller.create_user_items_list()
+
+        # Get the filters
         date = self.date_filter.get()
         category = self.category_filter.get()
         sort = self.sort_filter.get()
 
         self.user_items_list = self.controller.get_filtered_items(self.user_items_list, date, category, sort)
 
+        # Remove all rows
         indicates_to_remove = []
         for i in range(self.table.rows):
             indicates_to_remove.append(i)
         self.table.delete_rows(indicates_to_remove)
 
+        # Add new rows
         for row_data in self.user_items_list:
             self.table.add_row(row_data)
         self.table.edit_row(0, text_color="#fff", hover_color="#2A8C55")
 
     def if_show_chart(self):
+        """
+        If show chart
+        :return:
+        """
         if self.var_show_chart.get() == "on":
             self.info_panel.pack(expand=True, fill="both", pady=27, padx=(0, 27))
         else:
             self.info_panel.pack_forget()
 
     def create_chart_panel(self):
+        """
+        Create chart panel
+        :return:
+        """
         self.info_panel = CTkFrame(master=self, fg_color="#eeeeee", border_width=0, border_color="#2A8C55",
                                        corner_radius=10, width=200)
         self.info_panel.pack_forget()
         self.update_chart()
 
     def update_chart(self):
+        """
+        Update chart
+        :return:
+        """
+        # Clear the panel
         for widget in self.info_panel.winfo_children():
             widget.destroy()
 
+        # Get the data
         month_str, self.user_incomes_list, self.user_expenses_list = self.controller.get_chart_data(self.current_month)
         fig, ax = self.plotter.plot_incomes_expenses_per_month(month_str, self.user_incomes_list,
                                                                self.user_expenses_list)
 
+        # Create the chart
         chart_canvas = FigureCanvasTkAgg(fig, master=self.info_panel)
         chart_canvas.draw()
         chart_canvas.get_tk_widget().pack(fill='both', expand=True, padx=10, pady=10)
 
+        # Create the buttons
         button_frame = ctk.CTkFrame(master=self.info_panel, fg_color="transparent")
         button_frame.pack(side='bottom', pady=10)
 
-        prev_button = ctk.CTkButton(master=button_frame, text="Previous", fg_color='#2A8C55',
+        prev_button = ctk.CTkButton(master=button_frame, text="Previous", fg_color='#2A8C55', hover_color='#207244',
                                     command=self.show_prev_month)
         prev_button.pack(side='left', padx=5)
 
-        next_button = ctk.CTkButton(master=button_frame, text="Next", fg_color='#2A8C55', command=self.show_next_month)
+        next_button = ctk.CTkButton(master=button_frame, text="Next", fg_color='#2A8C55', hover_color='#207244',command=self.show_next_month)
         next_button.pack(side='right', padx=5)
 
     def show_prev_month(self):
-        if self.controller.check_if_available_month(self.current_month):
-            self.current_month = self.current_month - datetime.timedelta(days=1)
-            self.current_month = self.current_month.replace(day=1)
+        """
+        Show the previous month
+        :return:
+        """
+        # get the previous month
+        prev_month = self.current_month - datetime.timedelta(days=1)
+        prev_month = prev_month.replace(day=1)
+
+        # check if the previous month is available
+        if self.controller.check_if_available_month(prev_month.strftime('%Y-%m')):
+            self.current_month = prev_month
             self.update_chart()
 
     def show_next_month(self):
-        if self.controller.check_if_available_month(self.current_month):
-            next_month = self.current_month + datetime.timedelta(days=31)
-            self.current_month = next_month.replace(day=1)
+        """
+        Show the next month
+        :return:
+        """
+        # Get the next month
+        next_month = self.current_month + datetime.timedelta(days=31)
+        next_month = next_month.replace(day=1)
+
+        # check if the next month is available
+        if self.controller.check_if_available_month(next_month.strftime('%Y-%m')):
+            self.current_month = next_month
             self.update_chart()

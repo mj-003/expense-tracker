@@ -4,7 +4,9 @@ from customtkinter import *
 date_values = ['Date', 'This month', 'This year']
 sort_values = ['Sort', '⬆ Amount', '⬇ Amount', '⬆ Time', '⬇ Time']
 categories_values = ['Categories', 'Food', 'Transport', 'Entertainment', 'Home', 'Personal', 'Other']
+categories_no_title_values = ['Personal', 'Transport', 'Entertainment', 'Home', 'Food', 'Other']
 items_values = ['Items', 'Incomes', 'Expenses']
+payment_method_values = ['Online', 'Cash', 'Card', 'Other']
 
 
 def get_button(my_master, on_command: callable, my_text, my_width=30) -> CTkButton:
@@ -36,18 +38,19 @@ def get_combo_box(my_master, my_values: list, my_width: int = None) -> CTkComboB
                        values=my_values,
                        button_color="#2A8C55",
                        border_color="#2A8C55",
-                       border_width=2,
+                       border_width=1,
                        button_hover_color="#207244",
                        dropdown_hover_color="#207244",
                        dropdown_fg_color="#2A8C55",
-                       dropdown_text_color="#fff")
+                       dropdown_text_color="#fff",
+                       )
 
 
 def get_entry(my_master, my_width: int, my_placeholder: str) -> CTkEntry:
     return CTkEntry(master=my_master,
                     width=my_width,
                     border_color="#2A8C55",
-                    border_width=2,
+                    border_width=1,
                     placeholder_text=my_placeholder)
 
 
@@ -63,8 +66,16 @@ def get_categories_combo_box(my_master, my_width: int) -> CTkComboBox:
     return get_combo_box(my_master, categories_values, my_width)
 
 
+def get_categories_no_title_combo_box(my_master, my_width: int) -> CTkComboBox:
+    return get_combo_box(my_master, categories_no_title_values, my_width)
+
+
+def get_payment_method_combo_box(my_master, my_width: int) -> CTkComboBox:
+    return get_combo_box(my_master, payment_method_values, my_width)
+
+
 def get_how_often_combo_box(my_master, my_width: int) -> CTkComboBox:
-    return get_combo_box(my_master, ['How often', 'Daily', 'Weekly', 'Monthly', 'Yearly', 'Single'], my_width)
+    return get_combo_box(my_master, ['Daily', 'Weekly', 'Monthly', 'Yearly', 'Single'], my_width)
 
 
 def get_upcoming_combo_box(my_master, my_width: int) -> CTkComboBox:
@@ -74,16 +85,17 @@ def get_upcoming_combo_box(my_master, my_width: int) -> CTkComboBox:
 def get_items_combo_box(my_master, my_width: int) -> CTkComboBox:
     return get_combo_box(my_master, items_values, my_width)
 
+
 def show_user_items(table_frame, my_master, user_items_list, table):
     if table_frame is None:
         table_frame = CTkScrollableFrame(master=my_master, fg_color="transparent")
         table_frame.pack(expand=True, fill="both", padx=27, pady=21, side='left')
 
         table = CTkTable(master=table_frame,
-                              values=user_items_list,
-                              colors=["#E6E6E6", "#EEEEEE"],
-                              header_color="#2A8C55",
-                              hover_color="#B4B4B4")
+                         values=user_items_list,
+                         colors=["#E6E6E6", "#EEEEEE"],
+                         header_color="#2A8C55",
+                         hover_color="#B4B4B4")
 
         table.pack(expand=True, fill='both')
 
@@ -109,7 +121,7 @@ def get_validate_entry(my_master, my_width: int, my_placeholder: str, my_validat
                     validatecommand=my_validate_command,
                     textvariable=my_text_variable,
                     border_color="#2A8C55",
-                    border_width=2)
+                    border_width=1)
 
 
 def get_today_label(my_master, my_text: str) -> CTkLabel:

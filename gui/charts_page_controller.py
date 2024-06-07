@@ -7,8 +7,16 @@ class ChartPageController:
         self.user_expenses = user_expenses
         self.user_incomes = user_incomes
         self.curr_month = datetime.datetime.now().replace(day=1)
+        self.curr_year = self.curr_month.year
 
     def show_chart(self, chart_function, month, year):
+        """
+        Show a chart
+        :param chart_function:
+        :param month:
+        :param year:
+        :return:
+        """
         if (chart_function == self.plotter.plot_category_pie_chart and
             self.check_if_available_month(month)) or (
                 chart_function != self.plotter.plot_category_pie_chart and
@@ -18,15 +26,32 @@ class ChartPageController:
         else:
             return None, None
 
-    def show_prev_month(self):
+    def show_prev_date(self):
+        """
+        Show the previous month and year
+        :return:
+        """
         self.curr_month = (self.curr_month - datetime.timedelta(days=1)).replace(day=1)
-        return self.curr_month.strftime('%Y-%m'), self.curr_month.year - 1
+        self.curr_year = self.curr_year - 1
+        return self.curr_month.strftime('%Y-%m'), self.curr_year
 
-    def show_next_month(self):
+    def show_next_date(self):
+        """
+        Show the next month and year
+        :return:
+        """
         self.curr_month = (self.curr_month + datetime.timedelta(days=31)).replace(day=1)
-        return self.curr_month.strftime('%Y-%m'), self.curr_month.year + 1
+        self.curr_year = self.curr_year + 1
+        return self.curr_month.strftime('%Y-%m'), self.curr_year
 
     def check_available_data(self, chart_function, month, year):
+        """
+        Check if data is available for the selected period
+        :param chart_function:
+        :param month:
+        :param year:
+        :return:
+        """
         if (chart_function == self.plotter.plot_category_pie_chart and
             self.check_if_available_month(month)) or (
                 chart_function != self.plotter.plot_category_pie_chart and
@@ -36,15 +61,39 @@ class ChartPageController:
             return False
 
     def check_if_available(self, year):
-        for item in self.user_expenses.get_expenses()[1:]:
-            if item[4][:4] == str(year):
-                return True
-        for item in self.user_incomes.get_incomes()[1:]:
-            if item[3][:4] == str(year):
-                return True
-        return False
+        """
+        Check if data is available for the selected year
+        :param year:
+        :return:
+        """
+        expenses_found = False
+        incomes_found = False
+
+        # check expenses only if incomes are found
+        for expense in self.user_expenses.get_expenses()[1:]:
+            if expense[4][:4] == str(year):
+                expenses_found = True
+                break  #
+
+        # check incomes only if expenses are found
+        if expenses_found:
+            for income in self.user_incomes.get_incomes()[1:]:
+                if income[3][:4] == str(year):
+                    incomes_found = True
+                    break
+
+        # return True if both expenses and incomes are found
+        return expenses_found and incomes_found
 
     def check_if_available_month(self, month):
+        """
+        Check if data is available for the selected month
+        :param month:
+        :return:
+        """
+        # item[4] is the date field for expenses
+        # item[3] is the date field for incomes
+
         for item in self.user_expenses.get_expenses()[1:]:
             if item[4][:7] == month:
                 return True
@@ -52,3 +101,13 @@ class ChartPageController:
             if item[3][:7] == month:
                 return True
         return False
+
+    def reset_date(self):
+        """
+        Reset the current month and year
+        :return:
+        """
+        self.curr_month = datetime.datetime.now().replace(day=1)
+        self.curr_year = self.curr_month.year
+
+

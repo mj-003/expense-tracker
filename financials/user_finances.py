@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
 
+# Abstract class for user financials
 class UserFinancials(ABC):
     def __init__(self, database, user):
         self.database = database

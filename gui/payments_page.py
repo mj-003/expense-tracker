@@ -4,8 +4,8 @@ from tkinter import messagebox
 import customtkinter as ctk
 
 from financials.payment import Payment
-from item_page_abc import FinancialsPage
-from widgets_and_buttons import *
+from gui.item_page_abc import FinancialsPage
+from gui.widgets_and_buttons import *
 
 
 class PaymentsPage(FinancialsPage):
@@ -17,7 +17,7 @@ class PaymentsPage(FinancialsPage):
         # Filters
         self.sort_filter = None
         self.title_filter = None
-        self.upcoming_filter = None
+        self.date_filter = None
 
         # Entry fields
         self.date_entry = None
@@ -45,8 +45,8 @@ class PaymentsPage(FinancialsPage):
         self.create_search_container(self.get_more_payment_info)
 
         # Create the rest of the search container
-        self.upcoming_filter = get_upcoming_combo_box(self.search_container, 155)
-        self.upcoming_filter.pack(side="left", padx=(13, 0), pady=15)
+        self.date_filter = get_upcoming_combo_box(self.search_container, 155)
+        self.date_filter.pack(side="left", padx=(13, 0), pady=15)
 
         self.title_filter = get_entry(self.search_container, 155, "Title")
         self.title_filter.pack(side="left", padx=(13, 0), pady=15)
@@ -80,13 +80,15 @@ class PaymentsPage(FinancialsPage):
                                      validatecommand=self.vcmd_money)
         self.amount_entry.pack(pady=(10, 10), padx=(10, 10))
 
-        self.how_often_entry = get_how_often_combo_box(self.info_panel, 145)
-        self.how_often_entry.pack(pady=(10, 10), padx=(10, 10))
-
         self.date_var = StringVar(value=datetime.now().strftime('%Y-%m-%d'))
         self.date_entry = CTkEntry(self.info_panel, textvariable=self.date_var, state='readonly', fg_color="white")
         self.date_entry.pack(pady=(10, 10), padx=(10, 10))
         self.date_entry.bind("<Button-1>", self.open_calendar)
+
+        self.how_often_entry = get_how_often_combo_box(self.info_panel, 145)
+        self.how_often_entry.pack(pady=(10, 10), padx=(10, 10))
+
+
 
         CTkButton(master=self.info_panel,
                   text="Add Description",
@@ -94,7 +96,7 @@ class PaymentsPage(FinancialsPage):
                   hover_color="#207244",
                   font=("Aptos", 12),
                   border_color="#2A8C55",
-                  border_width=2,
+                  border_width=1,
                   text_color="#2A8C55",
                   text_color_disabled="white",
                   command=self.add_description).pack(pady=(5, 5), padx=(10, 10))
@@ -150,32 +152,33 @@ class PaymentsPage(FinancialsPage):
         # Get the row id
         self.item_info = self.user_items.get_payments()[self.selected_row]
 
+        CTkLabel(self.edit_dialog, text="Title:").grid(row=4, column=0, pady=10, padx=10, sticky="e")
+        self.title_entry = CTkEntry(self.edit_dialog, textvariable=StringVar(value=self.item_info[2]))
+        self.title_entry.grid(row=1, column=1, pady=(20, 10), padx=10, sticky='w')
+
         CTkLabel(self.edit_dialog, text="Amount:").grid(row=1, column=0, pady=10, padx=10, sticky="e")
         self.amount_entry = CTkEntry(self.edit_dialog, textvariable=StringVar(value=self.item_info[1]), validate='key',
                                      validatecommand=self.vcmd_money)
-        self.amount_entry.grid(row=1, column=1, pady=(20, 10), padx=10, sticky="w")
+        self.amount_entry.grid(row=2, column=1, pady=(10, 10), padx=10, sticky="w")
 
         CTkLabel(self.edit_dialog, text="How often:").grid(row=2, column=0, pady=10, padx=10, sticky="e")
         self.how_often_entry = get_how_often_combo_box(self.edit_dialog, 140)
-        self.how_often_entry.grid(row=2, column=1, pady=10, padx=10, sticky="w")
+        self.how_often_entry.grid(row=3, column=1, pady=10, padx=10, sticky="w")
 
-        CTkLabel(self.edit_dialog, text="Date:").grid(row=3, column=0, pady=10, padx=10, sticky="e")
+        CTkLabel(self.edit_dialog, text="Date:").grid(row=4, column=0, pady=10, padx=10, sticky="e")
 
         # from abstract class
         self.date_var = StringVar(value=datetime.now().strftime('%Y-%m-%d'))
         self.date_entry = CTkEntry(self.edit_dialog, textvariable=self.date_var, state='readonly', fg_color="white")
-        self.date_entry.grid(row=3, column=1, pady=10, padx=10, sticky='w')
+        self.date_entry.grid(row=4, column=1, pady=10, padx=10, sticky='w')
         self.date_entry.bind("<Button-1>", self.open_calendar)
 
-        CTkLabel(self.edit_dialog, text="Title:").grid(row=4, column=0, pady=10, padx=10, sticky="e")
-        self.title_entry = CTkEntry(self.edit_dialog, textvariable=StringVar(value=self.item_info[2]))
-        self.title_entry.grid(row=4, column=1, pady=10, padx=10, sticky='w')
 
-        save_button = ctk.CTkButton(self.edit_dialog, text="Save", fg_color="#2A8C55",
+        save_button = ctk.CTkButton(self.edit_dialog, text="Save", fg_color="#2A8C55", hover_color='#207244',
                                     command=lambda: self.save_edited_payment())
         save_button.grid(row=5, column=0, columnspan=2, pady=20, padx=20, sticky='w')
 
-        cancel_button = ctk.CTkButton(self.edit_dialog, text="Cancel", fg_color="#2A8C55",
+        cancel_button = ctk.CTkButton(self.edit_dialog, text="Cancel", fg_color="#2A8C55", hover_color='#207244',
                                       command=lambda: self.go_back())
         cancel_button.grid(row=5, column=1, columnspan=2, pady=20, padx=20, sticky='e')
 
@@ -202,7 +205,7 @@ class PaymentsPage(FinancialsPage):
         sort = self.sort_filter.get()
 
         # Get the filtered incomes from the controller
-        self.user_items_list = self.user_items.get_filtered_payments(date, title, sort)
+        self.user_items_list = self.user_items.get_payments(date, title, sort)
         self.get_filtered_items()
 
     def save_edited_payment(self):

@@ -1,0 +1,9 @@
+CTkTable==1.1
+CTkTable==1.1
+customtkinter==5.2.2
+matplotlib==3.8.0
+numpy==1.26.4
+openpyxl==3.0.10
+pandas==2.2.2
+Pillow==10.3.0
+tkcalendar==1.6.1

@@ -13,6 +13,7 @@ from plots import MyPlotter
 class ChartsPage(CTkFrame):
     def __init__(self, parent, app, user_expenses, user_incomes):
         super().__init__(parent)
+
         self.app = app
         self.parent = parent
         self.user_expenses = user_expenses
@@ -34,6 +35,10 @@ class ChartsPage(CTkFrame):
         self.create_widgets()
 
     def create_widgets(self):
+        """
+        Create widgets
+        :return:
+        """
         self.title_label = CTkLabel(self, text="Charts", font=("Aptos", 40, 'bold'), text_color="#2A8C55")
         self.title_label.pack(pady=20)
 
@@ -47,6 +52,10 @@ class ChartsPage(CTkFrame):
         self.create_chart_thumbnails()
 
     def create_chart_thumbnails(self):
+        """
+        Create chart thumbnails
+        :return:
+        """
         charts = [
             {"title": "Category Pie Chart", "image": "images/pie_chart.png",
              "function": self.plotter.plot_category_pie_chart},
@@ -68,6 +77,7 @@ class ChartsPage(CTkFrame):
 
             chart_button = CTkButton(self.thumbnail_frame, image=chart_image, text=chart["title"],
                                      font=('Aptos', 14, 'bold'), compound="top", fg_color='#2A8C55',
+                                     hover_color='#207244',
                                      command=lambda chart_func=chart["function"]: self.show_chart(chart_func,
                                                                                                   month=self.curr_month_str,
                                                                                                   year=self.curr_year))
@@ -84,16 +94,24 @@ class ChartsPage(CTkFrame):
             self.thumbnail_frame.rowconfigure(i, weight=1)
 
     def show_chart(self, chart_function, month, year):
-        if self.button_frame:
+        """
+        Show chart
+        :param chart_function:
+        :param month:
+        :param year:
+        :return:
+        """
+        if self.button_frame:  # destroy the buttons frame
             self.button_frame.destroy()
 
-        for widget in self.chart_frame.winfo_children():
+        for widget in self.chart_frame.winfo_children():  # destroy the chart frame widgets
             widget.destroy()
 
         self.current_chart_function = chart_function
-        self.switch_to_chart_frame()
 
+        # check if data is available for the selected period
         if self.chart_controller.check_available_data(chart_function, month, year):
+            self.switch_to_chart_frame()
             fig, ax = self.chart_controller.show_chart(chart_function, month, year)
             if fig and ax:
                 chart_canvas = FigureCanvasTkAgg(fig, master=self.chart_frame)
@@ -102,9 +120,14 @@ class ChartsPage(CTkFrame):
                 self.add_buttons()
         else:
             self.switch_to_thumbnail_frame()
+            self.chart_controller.reset_date()
             messagebox.showinfo("No Data", "No data available for the selected period.")
 
     def switch_to_chart_frame(self):
+        """
+        Switch to chart frame
+        :return:
+        """
         self.thumbnail_frame.pack_forget()
         self.title_label.pack_forget()
         self.chart_frame.pack(pady=(10, 10), padx=(10), fill='both', expand=True)
@@ -112,33 +135,55 @@ class ChartsPage(CTkFrame):
         self.button_frame.pack(side='bottom', pady=10, padx=10, fill='x')
 
     def switch_to_thumbnail_frame(self):
+        """
+        Switch to thumbnail frame
+        :return:
+        """
         for widget in self.chart_frame.winfo_children():
             widget.destroy()
+
+        # reset the current month
         self.curr_month = datetime.datetime.now().replace(day=1)
         self.curr_month_str = self.curr_month.strftime('%Y-%m')
+
         self.chart_frame.pack_forget()
         self.title_label.pack(pady=20)
         self.thumbnail_frame.pack(pady=10, padx=10, fill='both', expand=True)
 
     def add_buttons(self):
-        back_button = CTkButton(self.button_frame, text="Back", fg_color='#2A8C55',
+        """
+        Add buttons
+        :return:
+        """
+        back_button = CTkButton(self.button_frame, text="Back", fg_color='#2A8C55', hover_color='#207244',
                                 command=self.switch_to_thumbnail_frame)
         back_button.pack(side='left', padx=27, pady=15)
 
-        next_button = ctk.CTkButton(master=self.button_frame, text="Next", fg_color='#2A8C55', command=self.show_next)
+        next_button = ctk.CTkButton(master=self.button_frame, text="Next", fg_color='#2A8C55', hover_color='#207244',
+                                    command=self.show_next)
         next_button.pack(side='right', padx=(20, 27), pady=15)
 
-        prev_button = ctk.CTkButton(master=self.button_frame, text="Previous", fg_color='#2A8C55',
+        prev_button = ctk.CTkButton(master=self.button_frame, text="Previous", hover_color='#207244',
+                                    fg_color='#2A8C55',
                                     command=self.show_prev)
         prev_button.pack(side='right', padx=(0, 0), pady=15)
 
     def show_prev(self):
-        prev_month, prev_year = self.chart_controller.show_prev_month()
+        """
+        Show previous chart
+        :return:
+        """
+        prev_month, prev_year = self.chart_controller.show_prev_date()  # get the previous month and year
+
         if self.current_chart_function:
             self.show_chart(self.current_chart_function, month=prev_month, year=prev_year)
 
     def show_next(self):
-        next_month_str, next_year = self.chart_controller.show_next_month()
+        """
+        Show next chart
+        :return:
+        """
+        next_month_str, next_year = self.chart_controller.show_next_date()  # get the next month and year
+
         if self.current_chart_function:
             self.show_chart(self.current_chart_function, month=next_month_str, year=next_year)
-

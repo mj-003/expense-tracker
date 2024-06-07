@@ -3,7 +3,7 @@ from tkinter import messagebox
 from PIL import Image
 from customtkinter import *
 
-from registration_window import RegistrationWindow
+from gui.registration_window import RegistrationWindow
 from user import User
 
 
@@ -33,12 +33,20 @@ class LoginPage(CTkFrame):
         self.add_register()
 
     def add_image(self):
+        """
+        Add the image to the login page
+        :return:
+        """
         side_img_data = Image.open("images/green_background3.jpeg")
         side_img = CTkImage(dark_image=side_img_data, light_image=side_img_data, size=(450, 745))
 
         CTkLabel(master=self, text="", image=side_img).pack(expand=True, side="left")
 
     def add_log_pass(self):
+        """
+        Add the login and password fields
+        :return:
+        """
         self.frame = CTkFrame(master=self, width=556, height=745)
         self.frame.pack_propagate(False)
         self.frame.pack(expand=True, fill="both", padx=(0, 0))
@@ -66,11 +74,19 @@ class LoginPage(CTkFrame):
         self.password_entry.pack(anchor="w", padx=(150, 0))
 
     def login(self):
+        """
+        Add the login button
+        :return:
+        """
         CTkButton(master=self.frame, text="Login", fg_color="#658354", hover_color="#4b6053", font=("Aptos", 12),
                   text_color="#ffffff", width=255, command=self.perform_login).pack(anchor="w", pady=(40, 0),
                                                                                     padx=(150, 0))
 
     def perform_login(self):
+        """
+        Perform the login
+        :return:
+        """
         username = self.username_entry.get()
         password = self.password_entry.get()
 
@@ -86,11 +102,19 @@ class LoginPage(CTkFrame):
                 self.app.after_logged_in(self.user)
 
     def add_register(self):
+        """
+        Add the register button
+        :return:
+        """
         CTkButton(master=self.frame, text="Register", fg_color="#658354", hover_color="#4b6053",
                   font=("Aptos", 12),
                   text_color="#ffffff", width=255, command=self.show_register_window).pack(anchor="w", pady=(15, 0),
                                                                                            padx=(150, 0))
 
     def show_register_window(self):
+        """
+        Show the register window
+        :return:
+        """
         register_window = RegistrationWindow(self, self.database)
         register_window.grab_set()
